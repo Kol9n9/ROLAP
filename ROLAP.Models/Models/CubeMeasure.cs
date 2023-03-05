@@ -10,6 +10,6 @@ namespace ROLAP.Model.Models
     {
         public Guid Id { get; set; }
         public double Value { get; set; }
-        public CubeDimension Dimension { get; set; }
+        public List<Guid> Dimensions { get; set; }
     }
 }

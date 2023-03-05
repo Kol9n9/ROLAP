@@ -2,8 +2,9 @@
 
 namespace ROLAP.Model.Interface
 {
-    public interface IRepository<T>
+    public interface IRepository
     {
-        public List<T> GetData(List<CubeDimension> dimensions);
+        public List<CubeMeasure> GetMeasures(List<Guid> dimensionIds);
+        public List<CubeDimension> GetDimensions(List<Guid> dimensionIds);
     }
 }
