@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP", "ROLAP\ROLAP.csproj", "{F35404BD-4260-4689-AA98-BE2FCF28A8F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROLAP.StartUp", "ROLAP\ROLAP.StartUp.csproj", "{F35404BD-4260-4689-AA98-BE2FCF28A8F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Process", "ROLAP.Process\ROLAP.Process.csproj", "{C409B8DB-6E20-4152-A4D4-CB815D4B451D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Model", "ROLAP.Models\ROLAP.Model.csproj", "{61A823AC-34AC-436F-BD04-0171AB3AAEEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.TestLocalRepository", "ROLAP.TestLocalRepository\ROLAP.TestLocalRepository.csproj", "{9CD93DE7-DF85-42B3-965F-2E062FB4C2BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Utils", "ROLAP.Utils\ROLAP.Utils.csproj", "{84AEA64F-27BB-4B17-BCAF-8D541A952215}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{F35404BD-4260-4689-AA98-BE2FCF28A8F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F35404BD-4260-4689-AA98-BE2FCF28A8F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F35404BD-4260-4689-AA98-BE2FCF28A8F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C409B8DB-6E20-4152-A4D4-CB815D4B451D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C409B8DB-6E20-4152-A4D4-CB815D4B451D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C409B8DB-6E20-4152-A4D4-CB815D4B451D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C409B8DB-6E20-4152-A4D4-CB815D4B451D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A823AC-34AC-436F-BD04-0171AB3AAEEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A823AC-34AC-436F-BD04-0171AB3AAEEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A823AC-34AC-436F-BD04-0171AB3AAEEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A823AC-34AC-436F-BD04-0171AB3AAEEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CD93DE7-DF85-42B3-965F-2E062FB4C2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CD93DE7-DF85-42B3-965F-2E062FB4C2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CD93DE7-DF85-42B3-965F-2E062FB4C2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CD93DE7-DF85-42B3-965F-2E062FB4C2BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
