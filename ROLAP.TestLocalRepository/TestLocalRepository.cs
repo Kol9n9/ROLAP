@@ -72,7 +72,7 @@ namespace ROLAP.TestLocalRepository
                 {
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
                     new Guid("2182f312-6e6b-42f9-adb0-f0165ba617c7"),
-                    new Guid("34476B59-5EF1-4AF7-AFA4-3CD0A17E2CA8")
+                    new Guid("34476B59-5EF1-4AF7-AFA4-3CD0A17E2CA8")                
                 }
             },
             new CubeMeasure() // Томск - тпу - план
@@ -148,12 +148,12 @@ namespace ROLAP.TestLocalRepository
 
         public List<CubeDimension> GetDimensions(List<Guid> dimensionIds)
         {
-            throw new NotImplementedException();
+            return TestDimensions.Where(x => dimensionIds.Contains(x.Id)).ToList();
         }
 
         public List<CubeMeasure> GetMeasures(List<Guid> dimensionIds)
         {
-            throw new NotImplementedException();
+            return TestMeasures.Where(w => dimensionIds.All(x => w.Dimensions.Contains(x))).ToList();
         }
     }
 }
