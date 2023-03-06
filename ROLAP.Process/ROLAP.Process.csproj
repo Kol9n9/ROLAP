@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ROLAP.Models\ROLAP.Model.csproj" />
+    <ProjectReference Include="..\ROLAP.TestLocalRepository\ROLAP.TestLocalRepository.csproj" />
+  </ItemGroup>
+
 </Project>

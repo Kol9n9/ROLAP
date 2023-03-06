@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Model.Models
 {
-    public class CubeMeasure
+    public class CubeValue
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public double Value { get; set; }
+        public List<Guid> Dimensions { get; set; }
+        public Guid MeasureId { get; set; } 
     }
 }

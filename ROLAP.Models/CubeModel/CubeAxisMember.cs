@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Model.CubeModel
 {
-    internal class CubeAxisMember
+    public class CubeAxisMember
     {
         public string Name { get; set; }
     }

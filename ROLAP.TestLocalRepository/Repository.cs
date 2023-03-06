@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ROLAP.TestLocalRepository
 {
-    public class TestLocalRepository : IRepository
+    public class Repository : IRepository
     {
         private static List<CubeDimension> TestDimensions = new List<CubeDimension>()
         {
@@ -53,10 +53,19 @@ namespace ROLAP.TestLocalRepository
         };
         private static List<CubeMeasure> TestMeasures = new List<CubeMeasure>()
         {
-            new CubeMeasure() // Томск - тгу - план
+            new CubeMeasure()
             {
-                Id = new Guid(),
+                Id = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
+                Name = "Количество абитуриентов"
+            }
+        };
+        private static List<CubeValue> TestValues = new List<CubeValue>()
+        {
+            new CubeValue() // Томск - тгу - план
+            {
+                Id = Guid.NewGuid(),
                 Value = 1000,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
@@ -64,10 +73,11 @@ namespace ROLAP.TestLocalRepository
                     new Guid("FC9122BD-4075-42AC-8F29-B7CC44C843D0")
                 }
             },
-            new CubeMeasure() // Томск - тгу - факт
+            new CubeValue() // Томск - тгу - факт
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 950,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
@@ -75,10 +85,11 @@ namespace ROLAP.TestLocalRepository
                     new Guid("34476B59-5EF1-4AF7-AFA4-3CD0A17E2CA8")                
                 }
             },
-            new CubeMeasure() // Томск - тпу - план
+            new CubeValue() // Томск - тпу - план
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 1000,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
@@ -87,10 +98,11 @@ namespace ROLAP.TestLocalRepository
                 }
             },
 
-            new CubeMeasure() // Томск - тпу - факт
+            new CubeValue() // Томск - тпу - факт
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 900,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
@@ -99,10 +111,11 @@ namespace ROLAP.TestLocalRepository
                 }
             },
 
-            new CubeMeasure() // Новосибирск - нгу - план
+            new CubeValue() // Новосибирск - нгу - план
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 1000,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
@@ -110,10 +123,11 @@ namespace ROLAP.TestLocalRepository
                     new Guid("FC9122BD-4075-42AC-8F29-B7CC44C843D0")
                 }
             },
-            new CubeMeasure() // Новосибирск - нгу - факт
+            new CubeValue() // Новосибирск - нгу - факт
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 950,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
@@ -121,10 +135,11 @@ namespace ROLAP.TestLocalRepository
                     new Guid("34476B59-5EF1-4AF7-AFA4-3CD0A17E2CA8")
                 }
             },
-            new CubeMeasure() // Новосибирск - нпу - план
+            new CubeValue() // Новосибирск - нпу - план
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 1000,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
@@ -133,10 +148,11 @@ namespace ROLAP.TestLocalRepository
                 }
             },
 
-            new CubeMeasure() // Новосибирск - нпу - факт
+            new CubeValue() // Новосибирск - нпу - факт
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Value = 900,
+                MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
@@ -150,10 +166,13 @@ namespace ROLAP.TestLocalRepository
         {
             return TestDimensions.Where(x => dimensionIds.Contains(x.Id)).ToList();
         }
-
-        public List<CubeMeasure> GetMeasures(List<Guid> dimensionIds)
+        public List<CubeMeasure> GetMeasures(List<Guid> measuresId)
         {
-            return TestMeasures.Where(w => dimensionIds.All(x => w.Dimensions.Contains(x))).ToList();
+            return TestMeasures.Where(x => measuresId.Contains(x.Id)).ToList();
+        }
+        public List<CubeValue> GetValues (List<Guid> dimensionIds, Guid measureId)
+        {
+            return TestValues.Where(w => dimensionIds.All(x => w.Dimensions.Contains(x) && w.MeasureId == measureId)).ToList();
         }
     }
 }
