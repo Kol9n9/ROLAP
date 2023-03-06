@@ -2,6 +2,6 @@
 {
     public class CubeQuery
     {
-        public List<AxisQuery> Query { get; set;} = new List<AxisQuery>();
+        public List<AxisQuery> Axis { get; set;} = new List<AxisQuery>();
     }
 }
