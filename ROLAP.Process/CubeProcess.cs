@@ -7,12 +7,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ROLAP.TestModel;
 
 namespace ROLAP.Process
 {
     public class CubeProcess
     {
-        //private readonly string exampleMdxQuery = "SELECT {([Measure].&id_1)} ON COLUMNS, {([Measure].&id_1)} ON ROWS"
+        private CubeQuery cubeQuery = new CubeQuery()
+        {
+            Axis = new List<AxisQuery> { new AxisQuery()
+            {
+                AxisItems = new List<AxisItem>()
+                {
+                    new AxisItem()
+                    {
+                        Value = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
+                        Type = AxisItemType.Measure
+                    }
+                }
+            }, new AxisQuery {
+                AxisItems = new List<AxisItem>()
+                {
+                    new AxisItem()
+                    {
+                        Value = new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
+                        Type = AxisItemType.Dimension
+                    }
+                }
+            } }
+        };
         private readonly IRepository repository = new Repository();
         public void Process()
         {

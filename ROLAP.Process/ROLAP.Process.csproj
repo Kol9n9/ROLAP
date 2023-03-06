@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ROLAP.Models\ROLAP.Model.csproj" />
     <ProjectReference Include="..\ROLAP.TestLocalRepository\ROLAP.TestLocalRepository.csproj" />
+    <ProjectReference Include="..\ROLAP.TestModel\ROLAP.TestModel.csproj" />
   </ItemGroup>
 
 </Project>
