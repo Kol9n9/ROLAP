@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ROLAP.TestModel
 {
-    public class CubeAxisItem
+    public class AxisItem
     {
         public Guid Value { get; set; }
         public AxisItemType Type { get; set; }

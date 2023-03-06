@@ -8,6 +8,6 @@ namespace ROLAP.TestModel
 {
     public class AxisQuery
     {
-        public List<AxisItemType> AxisItems { get; set; }  
+        public List<AxisItem> AxisItems { get; set; }
     }
 }
