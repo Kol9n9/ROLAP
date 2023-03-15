@@ -8,34 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ROLAP.TestModel;
+using ROLAP.Model.CubeRequest;
 
 namespace ROLAP.Process
 {
     public class CubeProcess
     {
-        private CubeQuery cubeQuery = new CubeQuery()
+        private readonly CubeRequest request = new CubeRequest()
         {
-            Axis = new List<AxisQuery> { new AxisQuery()
-            {
-                AxisItems = new List<AxisItem>()
-                {
-                    new AxisItem()
-                    {
-                        Value = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
-                        Type = AxisItemType.Measure
-                    }
-                }
-            }, new AxisQuery {
-                AxisItems = new List<AxisItem>()
-                {
-                    new AxisItem()
-                    {
-                        Value = new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
-                        Type = AxisItemType.Dimension
-                    }
-                }
-            } }
-        };
+            Axes = new List<string> { }
+        }
         private readonly IRepository repository = new Repository();
         public void Process()
         {
