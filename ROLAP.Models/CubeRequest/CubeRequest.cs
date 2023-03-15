@@ -8,6 +8,6 @@ namespace ROLAP.Model.CubeRequest
 {
     public class CubeRequest
     {
-        List<CubeAxisRequest> Axes = new List<CubeAxisRequest>();
+        public List<CubeAxisRequest> Axes = new List<CubeAxisRequest>();
     }
 }

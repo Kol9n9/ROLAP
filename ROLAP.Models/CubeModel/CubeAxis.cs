@@ -8,10 +8,10 @@ namespace ROLAP.Model.CubeModel
 {
     public class CubeAxis
     {
-        public List<CubeAxisMember> Members { get; set;} = new List<CubeAxisMember>();
-        public void AddMember(CubeAxisMember member)
+        public List<CubeAxisTuple> Tuples { get; set;} = new List<CubeAxisTuple>();
+        public void AddTuple(CubeAxisTuple tuple)
         {
-            Members.Add(member);
+            Tuples.Add(tuple);
         }
     }
 }
