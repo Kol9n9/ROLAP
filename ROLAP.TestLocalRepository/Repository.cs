@@ -11,6 +11,11 @@ namespace ROLAP.TestLocalRepository
         {
             new CubeDimension()
             {
+                Id = new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
+                Name = "Город"
+            },
+            new CubeDimension()
+            {
                 Id = new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                 Name = "Университет"
             },
@@ -78,6 +83,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
                     new Guid("2182f312-6e6b-42f9-adb0-f0165ba617c7"),
@@ -92,6 +98,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
                     new Guid("2182f312-6e6b-42f9-adb0-f0165ba617c7"),
@@ -106,6 +113,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
                     new Guid("902c2d8a-b6ac-4732-9918-6637af85dcba"),
@@ -121,6 +129,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("3ac02e75-2988-4bd6-9471-80557bbbcc0d"),
                     new Guid("902c2d8a-b6ac-4732-9918-6637af85dcba"),
@@ -136,6 +145,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
                     new Guid("5f4d8716-b3c8-4e95-b791-23830c271345"),
@@ -150,6 +160,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
                     new Guid("5f4d8716-b3c8-4e95-b791-23830c271345"),
@@ -164,6 +175,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
                     new Guid("56A531BB-0AB1-49DF-BF46-57BFE16283B0"),
@@ -179,6 +191,7 @@ namespace ROLAP.TestLocalRepository
                 MeasureId = new Guid("A0980404-7665-4DB4-8233-39FAEBC4C4E0"),
                 Dimensions = new List<Guid>
                 {
+                    new Guid("541CE05C-578A-451B-8980-4AA0F3245FA7"),
                     new Guid("706B4D3A-210A-4C7A-8E6C-36658A9712AB"),
                     new Guid("82e6587a-6350-4cb5-ba12-b18174aaec26"),
                     new Guid("56A531BB-0AB1-49DF-BF46-57BFE16283B0"),
