@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROLAP.TestLocalRepository",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROLAP.Utils", "ROLAP.Utils\ROLAP.Utils.csproj", "{84AEA64F-27BB-4B17-BCAF-8D541A952215}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Parser", "ROLAP.Parser\ROLAP.Parser.csproj", "{F094F7B2-D1B9-4932-AA29-850C57876162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84AEA64F-27BB-4B17-BCAF-8D541A952215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F094F7B2-D1B9-4932-AA29-850C57876162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F094F7B2-D1B9-4932-AA29-850C57876162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F094F7B2-D1B9-4932-AA29-850C57876162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F094F7B2-D1B9-4932-AA29-850C57876162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
