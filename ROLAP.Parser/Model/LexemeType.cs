@@ -8,10 +8,13 @@ namespace ROLAP.Parser.Model
 {
     internal enum LexemeType
     {
-        SELECT_COMMAND = 0,
-        AXIS_ON,
-        SELECT_FROM,
-        SELECT_WHERE,
+        EMPTY = 0,
+        SELECT,
+        FROM,
+        ON,
+        IDENTIFIER,
+        NUMBER,
+        FUNC,
         LEFT_BRACE, // {
         RIGHT_BRACE, // }
         LEFT_SQUARE_BRACKET, // [
@@ -19,10 +22,7 @@ namespace ROLAP.Parser.Model
         LEFT_ROUND_BRACKET, // (
         RIGHT_ROUND_BRACKET, // )
         DOT, // .
-        WORD, //
-        FUNCTION,
         AMPERSAND,
-        NUMBER,
         COMMA,
         FINISH
     }
