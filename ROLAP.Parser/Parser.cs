@@ -1,4 +1,5 @@
-﻿using ROLAP.Parser.Model;
+﻿using ROLAP.Parser.InterpreterModel;
+using ROLAP.Parser.Model;
 
 namespace ROLAP.Parser
 {
@@ -7,33 +8,40 @@ namespace ROLAP.Parser
         public static void Parse(string mdx)
         {
             Scanner scanner = new Scanner(mdx);
-            QueryState(scanner);
+            CubeItem cube = QueryState(scanner);
+
         }
-        private static void QueryState(Scanner scanner)
+        private static CubeItem QueryState(Scanner scanner)
         {
+            
             Console.WriteLine("QueryState");
             var lexeme = scanner.GetLexeme();
             if(lexeme.Type != Model.LexemeType.SELECT)
             {
                 throw new Exception("");
             }
-            AxesState(scanner);
+            CubeItem cube = new CubeItem();
+            cube.Axes.AddRange(AxesState(scanner));
             lexeme = scanner.GetLexeme();
             if(lexeme.Type != Model.LexemeType.FROM)
             {
                 throw new Exception("");
             }
-            HierarchyIdentifierState(scanner);
+            cube.CubeName = HierarchyIdentifierState(scanner);
             lexeme = scanner.GetLexeme();
             if(lexeme.Type != Model.LexemeType.FINISH)
             {
                 throw new Exception("");
             }
+            return cube;
         }
-        private static void AxesState(Scanner scanner)
+        private static List<AxisItem> AxesState(Scanner scanner)
         {
             Console.WriteLine("AxesState");
-            AxisState(scanner);
+            List<AxisItem> axes = new List<AxisItem>
+            {
+                AxisState(scanner)
+            };
             Lexeme lexeme = scanner.GetLexeme();
             if(lexeme.Type != LexemeType.COMMA)
             {
@@ -43,7 +51,7 @@ namespace ROLAP.Parser
             {
                 while (lexeme.Type == LexemeType.COMMA)
                 {
-                    AxisState(scanner);
+                    axes.Add(AxisState(scanner));
                     lexeme = scanner.GetLexeme();
                     if (lexeme.Type != LexemeType.COMMA)
                     {
@@ -51,12 +59,14 @@ namespace ROLAP.Parser
                     }
                 }
             }
+            return axes;
             
         }
-        private static void AxisState(Scanner scanner)
+        private static AxisItem AxisState(Scanner scanner)
         {
+            AxisItem axis = new AxisItem();
             Console.WriteLine("AxisState");
-            TupleState(scanner);
+            axis.Tuples.AddRange(TupleState(scanner));
             Lexeme lexeme = scanner.GetLexeme();
             if(lexeme.Type != LexemeType.ON)
             {
@@ -67,15 +77,20 @@ namespace ROLAP.Parser
             {
                 throw new Exception("");
             }
+            axis.AxisNumber = int.Parse(lexeme.Value);
+            return axis;
         }
-        private static void TupleState(Scanner scanner)
+        private static List<TupleItem> TupleState(Scanner scanner)
         {
             Console.WriteLine("TupleState");
+            List<TupleItem> tuples = new List<TupleItem>();
+            TupleItem tuple = new TupleItem();
+            tuples.Add(tuple);
             Lexeme lexeme = scanner.GetLexeme();
             if(lexeme.Type == LexemeType.LEFT_BRACE)
             {
                 scanner.PutLexemeToStack(lexeme);
-                SetState(scanner);
+                tuple.Items.AddRange(SetState(scanner));
             }
             else if(lexeme.Type == LexemeType.RIGHT_BRACE)
             {
@@ -84,31 +99,34 @@ namespace ROLAP.Parser
             else if(lexeme.Type == LexemeType.IDENTIFIER)
             {
                 scanner.PutLexemeToStack(lexeme);
-                FuncState(scanner);
+                tuple.Items.Add(FuncState(scanner));
             }
             else if(lexeme.Type == LexemeType.LEFT_SQUARE_BRACKET)
             {
                 scanner.PutLexemeToStack(lexeme);
-                MemberState(scanner);
+                tuple.Items.Add(MemberState(scanner));
             }
             else
             {
                 throw new Exception("");
             }
+            return tuples;
 
         }
-        private static void FuncState(Scanner scanner)
+        private static FunctionItem FuncState(Scanner scanner)
         {
             
             Lexeme lexeme = scanner.GetLexeme();
             string funcName = lexeme.Value.ToString();
+            FunctionItem functionItem = new FunctionItem();
+            functionItem.Name = funcName;
             Console.WriteLine("FuncState - " + funcName);
             lexeme = scanner.GetLexeme(); // (
             if(lexeme.Type != LexemeType.LEFT_ROUND_BRACKET)
             {
                 throw new Exception("");
             }
-            TupleState(scanner);
+            functionItem.Arguments.AddRange(TupleState(scanner));
             lexeme = scanner.GetLexeme();
             if(lexeme.Type != LexemeType.COMMA)
             {
@@ -118,7 +136,7 @@ namespace ROLAP.Parser
             {
                 while (lexeme.Type == LexemeType.COMMA)
                 {
-                    TupleState(scanner);
+                    functionItem.Arguments.AddRange(TupleState(scanner));
                     lexeme = scanner.GetLexeme();
                     if (lexeme.Type != LexemeType.COMMA)
                     {
@@ -131,12 +149,14 @@ namespace ROLAP.Parser
             {
                 throw new Exception("");
             }
+            return functionItem;
         }
-        private static void SetState(Scanner scanner)
+        private static List<TupleItem> SetState(Scanner scanner)
         {
             Console.WriteLine("SetState");
+            List<TupleItem> tuples= new List<TupleItem>();
             Lexeme lexeme = scanner.GetLexeme();
-            TupleState(scanner);
+            tuples.AddRange(TupleState(scanner));
             lexeme = scanner.GetLexeme();
             if (lexeme.Type != LexemeType.COMMA)
             {
@@ -146,7 +166,7 @@ namespace ROLAP.Parser
             {
                 while (lexeme.Type == LexemeType.COMMA)
                 {
-                    TupleState(scanner);
+                    tuples.AddRange(TupleState(scanner));
                     lexeme = scanner.GetLexeme();
                     if (lexeme.Type != LexemeType.COMMA)
                     {
@@ -159,11 +179,13 @@ namespace ROLAP.Parser
             {
                 throw new Exception("");
             }
+            return tuples;
         }
-        private static void MemberState(Scanner scanner)
+        private static MemberItem MemberState(Scanner scanner)
         {
             Console.WriteLine("MemberState");
-            HierarchyItemState(scanner);
+            MemberItem member = new MemberItem();
+            HierarchyItemState(scanner,member);
             Lexeme lexeme = scanner.GetLexeme();
             if(lexeme.Type != LexemeType.DOT)
             {
@@ -173,7 +195,7 @@ namespace ROLAP.Parser
             {
                 while(lexeme.Type == LexemeType.DOT)
                 {
-                    HierarchyItemState(scanner);
+                    HierarchyItemState(scanner, member);
                     lexeme = scanner.GetLexeme();
                     if(lexeme.Type != LexemeType.DOT)
                     {
@@ -181,52 +203,55 @@ namespace ROLAP.Parser
                     }
                 }
             }
+            return member;
         }
-        private static void HierarchyItemState(Scanner scanner)
+        private static void HierarchyItemState(Scanner scanner, MemberItem member)
         {
             Console.WriteLine("HierarchyItemState");
             Lexeme lexeme = scanner.GetLexeme();
             if(lexeme.Type == LexemeType.IDENTIFIER)
             {
                 scanner.PutLexemeToStack(lexeme);
-                MemberFunc(scanner);
+                MemberFunc(scanner,member);
             }
             else if(lexeme.Type == LexemeType.AMPERSAND)
             {
                 scanner.PutLexemeToStack(lexeme);
-                HierarchyKeyState(scanner);
+                HierarchyKeyState(scanner, member);
             }
             else if(lexeme.Type == LexemeType.LEFT_SQUARE_BRACKET)
             {
                 scanner.PutLexemeToStack(lexeme);
-                HierarchyNameState(scanner);
+                HierarchyNameState(scanner, member);
             }
         }
-        private static void HierarchyNameState(Scanner scanner)
+        private static void HierarchyNameState(Scanner scanner, MemberItem member)
         {
             Console.WriteLine("HierarchyNameState");
-            HierarchyIdentifierState(scanner);
+            member.Hierarchy.Add(HierarchyIdentifierState(scanner));
 
         }
        
-        private static void HierarchyKeyState(Scanner scanner)
+        private static void HierarchyKeyState(Scanner scanner, MemberItem member)
         {
             Lexeme lexeme = scanner.GetLexeme(); // &
             Console.WriteLine("HierarchyKeyState");
-            HierarchyIdentifierState(scanner);
+            member.Hierarchy.Add("&"+HierarchyIdentifierState(scanner));
         }
-        private static void MemberFunc(Scanner scanner)
+        private static void MemberFunc(Scanner scanner,MemberItem member)
         {
             Lexeme lexeme = scanner.GetLexeme();
             Console.WriteLine("MemberFunc - " + lexeme.Value);
-          
+            member.FunctionName = lexeme.Value;
         }
-        private static void HierarchyIdentifierState(Scanner scanner)
+        private static string HierarchyIdentifierState(Scanner scanner)
         {
             Lexeme lexeme = scanner.GetLexeme(); // [
             lexeme = scanner.GetLexeme();
-            Console.WriteLine("IdentifierState - " + lexeme.Value);
+            string value = lexeme.Value;
+            Console.WriteLine("IdentifierState - " + value);
             lexeme = scanner.GetLexeme(); // ]
+            return value;
         }
     }
 }
