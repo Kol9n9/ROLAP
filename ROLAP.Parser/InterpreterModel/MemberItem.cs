@@ -10,5 +10,10 @@ namespace ROLAP.Parser.InterpreterModel
     {
         public List<string> Hierarchy { get; } = new List<string>();
         public string FunctionName { get; set; }
+
+        public List<IInterpreterItem> Run()
+        {
+            return new List<IInterpreterItem>() { this };
+        }
     }
 }

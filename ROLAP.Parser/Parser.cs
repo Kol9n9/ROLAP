@@ -9,7 +9,7 @@ namespace ROLAP.Parser
         {
             Scanner scanner = new Scanner(mdx);
             CubeItem cube = QueryState(scanner);
-
+            var result = cube.Run();
         }
         private static CubeItem QueryState(Scanner scanner)
         {

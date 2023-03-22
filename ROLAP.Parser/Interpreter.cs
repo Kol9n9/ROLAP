@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ROLAP.Parser.InterpreterModel
+namespace ROLAP.Parser
 {
-    internal interface IInterpreterItem
+    internal static class Interpreter
     {
-        public List<IInterpreterItem> Run();
+
     }
 }
