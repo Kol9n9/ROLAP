@@ -8,9 +8,12 @@ namespace ROLAP.Parser
         private string query;
         private int position;
         private Stack<Lexeme> lexemeStack = new Stack<Lexeme>();
+        private Regex guidRegexp;
         public Scanner(string query) {
             this.query = query;
             position = 0;
+            guidRegexp = new Regex("^([0-9A-Fa-f]{8}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{12})$");
+
         }
         private char GetNextSymbol()
         {
@@ -30,6 +33,17 @@ namespace ROLAP.Parser
             if(lexemeStack.Count > 0)
             {
                 return lexemeStack.Pop();
+            }
+
+            if (IsCurrentPositionGuid())
+            {
+                buffer = string.Join("", query.Skip(position).Take(36));
+                position += 36;
+                return new Lexeme()
+                {
+                    Type = LexemeType.IDENTIFIER,
+                    Value = buffer
+                };
             }
             while (!IsEndQueryString())
             {
@@ -98,9 +112,16 @@ namespace ROLAP.Parser
                 Value = ""
             };
         }
+
+        private bool IsCurrentPositionGuid()
+        {
+            string buffer = string.Join("",query.Skip(position).Take(36));
+            return guidRegexp.IsMatch(buffer);
+        }
+
         private static bool IsChar(char ch)
         {
-            return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_';
+            return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_' || ch == '-';
         }
         private static bool IsDigit(char ch)
         {

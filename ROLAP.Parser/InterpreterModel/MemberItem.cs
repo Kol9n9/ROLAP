@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Parser.InterpreterModel
 {
-    internal class MemberItem : IInterpreterItem
+    internal class MemberItem : TupleItem
     {
-        public List<string> Hierarchy { get; } = new List<string>();
-        public string FunctionName { get; set; }
+        public List<string> Hierarchy { get; set; } = new List<string>();
+        public string FuncName { get; set; }
 
-        public List<IInterpreterItem> Run()
+        public override List<TupleItem> Run()
         {
-            return new List<IInterpreterItem>() { this };
+            return new List<TupleItem> { this as TupleItem };
         }
     }
 }

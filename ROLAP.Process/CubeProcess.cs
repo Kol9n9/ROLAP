@@ -208,7 +208,7 @@ namespace ROLAP.Process
                     cubeTuple.AddMember(new CubeAxisMember() { 
                         Id = member.Id,
                         Name = cubeDimension.Name,
-                        Type = member.Type
+                        Type = (CubeMemberType2)member.Type
                     });
                 }
                 resultAxis.AddTuple(cubeTuple);
@@ -226,11 +226,11 @@ namespace ROLAP.Process
                     List<Guid> dimensionIds = new List<Guid>();
                     foreach (var member in tuple.Members)
                     {
-                        if(member.Type == CubeMemberType.Dimension)
+                        if(member.Type == CubeMemberType2.Dimension)
                         {
                              dimensionIds.Add(member.Id);
                         } 
-                        else if(member.Type == CubeMemberType.Measure)
+                        else if(member.Type == CubeMemberType2.Measure)
                         {
                             measureIds.Add(member.Id);
                         }
@@ -271,11 +271,11 @@ namespace ROLAP.Process
                 List<Guid> measureIds = new List<Guid>();
                 foreach (var member in tuple.Members)
                 {
-                    if(member.Type == CubeMemberType.Dimension)
+                    if(member.Type == CubeMemberType2.Dimension)
                     {
                         dimensionIds.Add(member.Id);
                     } 
-                    else if(member.Type == CubeMemberType.Measure)
+                    else if(member.Type == CubeMemberType2.Measure)
                     {
                         measureIds.Add(member.Id);
                     }
@@ -286,11 +286,11 @@ namespace ROLAP.Process
                     {
                         foreach (var member in prevTuple.Members)
                         {
-                            if (member.Type == CubeMemberType.Dimension)
+                            if (member.Type == CubeMemberType2.Dimension)
                             {
                                 dimensionIds.Add(member.Id);
                             }
-                            else if (member.Type == CubeMemberType.Measure)
+                            else if (member.Type == CubeMemberType2.Measure)
                             {
                                 measureIds.Add(member.Id);
                             }

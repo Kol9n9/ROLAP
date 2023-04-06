@@ -9,7 +9,8 @@ namespace ROLAP.Parser
         {
             Scanner scanner = new Scanner(mdx);
             CubeItem cube = QueryState(scanner);
-            var result = cube.Run();
+            cube.Run();
+            var request = cube.GetCubeRequest();
         }
         private static CubeItem QueryState(Scanner scanner)
         {
@@ -113,12 +114,12 @@ namespace ROLAP.Parser
             return tuples;
 
         }
-        private static FunctionItem FuncState(Scanner scanner)
+        private static FuncItem FuncState(Scanner scanner)
         {
             
             Lexeme lexeme = scanner.GetLexeme();
             string funcName = lexeme.Value.ToString();
-            FunctionItem functionItem = new FunctionItem();
+            FuncItem functionItem = new FuncItem();
             functionItem.Name = funcName;
             Console.WriteLine("FuncState - " + funcName);
             lexeme = scanner.GetLexeme(); // (
@@ -126,7 +127,7 @@ namespace ROLAP.Parser
             {
                 throw new Exception("");
             }
-            functionItem.Arguments.AddRange(TupleState(scanner));
+            functionItem.Items.AddRange(TupleState(scanner));
             lexeme = scanner.GetLexeme();
             if(lexeme.Type != LexemeType.COMMA)
             {
@@ -136,7 +137,7 @@ namespace ROLAP.Parser
             {
                 while (lexeme.Type == LexemeType.COMMA)
                 {
-                    functionItem.Arguments.AddRange(TupleState(scanner));
+                    functionItem.Items.AddRange(TupleState(scanner));
                     lexeme = scanner.GetLexeme();
                     if (lexeme.Type != LexemeType.COMMA)
                     {
@@ -242,7 +243,7 @@ namespace ROLAP.Parser
         {
             Lexeme lexeme = scanner.GetLexeme();
             Console.WriteLine("MemberFunc - " + lexeme.Value);
-            member.FunctionName = lexeme.Value;
+            member.FuncName = lexeme.Value;
         }
         private static string HierarchyIdentifierState(Scanner scanner)
         {

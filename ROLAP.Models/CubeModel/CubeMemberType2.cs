@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ROLAP.Parser.InterpreterModel
+namespace ROLAP.Model.Models
 {
-    internal interface IInterpreterItem
+    public enum CubeMemberType2
     {
-        public List<IInterpreterItem> Run();
+        Dimension = 0,
+        Measure
     }
 }

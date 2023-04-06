@@ -11,6 +11,6 @@ namespace ROLAP.Model.CubeModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public CubeMemberType Type { get; set; }
+        public CubeMemberType2 Type { get; set; }
     }
 }

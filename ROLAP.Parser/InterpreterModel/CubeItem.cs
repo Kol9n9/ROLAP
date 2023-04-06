@@ -1,27 +1,32 @@
-﻿using System;
+﻿using ROLAP.Model.CubeRequest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ROLAP.Parser.InterpreterModel
 {
-    internal class CubeItem : IInterpreterItem
+    internal class CubeItem
     {
-        public List<AxisItem> Axes { get; } = new List<AxisItem>();
         public string CubeName { get; set; }
+        public List<AxisItem> Axes { get; set; } = new List<AxisItem>();
 
-        public List<IInterpreterItem> Run()
+        public void Run()
         {
-            List<IInterpreterItem> result = new List<IInterpreterItem>();
-
-            foreach (var item in Axes)
+            foreach (AxisItem axis in Axes) 
             {
-                result.AddRange(item.Run());
+                axis.Run();
             }
-
-            return result;
+        }
+        public CubeRequest GetCubeRequest()
+        {
+            CubeRequest cubeRequest = new CubeRequest();
+            foreach (AxisItem axis in Axes)
+            {
+                cubeRequest.Axes.Add(axis.GetAxisRequest());
+            }
+            return cubeRequest;
         }
     }
 }
