@@ -1,9 +1,5 @@
-﻿using ROLAP.Model.CubeRequest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ROLAP.Common.Model.Enums;
+using ROLAP.Common.Model.Models.CubeRequest;
 
 namespace ROLAP.Parser.InterpreterModel
 {
@@ -14,20 +10,20 @@ namespace ROLAP.Parser.InterpreterModel
 
         public override List<TupleItem> Run()
         {
-            return new List<TupleItem> { this as TupleItem };
+            return new List<TupleItem> { this };
         }
-        private Tuple<ROLAP.Model.Models.CubeMemberType,Guid> GetKey()
+        private Tuple<CubeMemberType,Guid> GetKey()
         {
-            ROLAP.Model.Models.CubeMemberType hierarchyType = ROLAP.Model.Models.CubeMemberType.Unknown;
+            CubeMemberType hierarchyType = CubeMemberType.Unknown;
             string firstHierarchy = Hierarchy.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(firstHierarchy)) throw new Exception("");
             if(Hierarchy.Count < 2) throw new Exception("");
             if (firstHierarchy.ToLower().StartsWith("dimension"))
             {
-                hierarchyType = ROLAP.Model.Models.CubeMemberType.Dimension;
+                hierarchyType = CubeMemberType.Dimension;
             }
             else if (firstHierarchy.ToLower().StartsWith("Measure")){
-                hierarchyType = ROLAP.Model.Models.CubeMemberType.Measure;
+                hierarchyType = CubeMemberType.Measure;
             }
             string lastHierarchy = Hierarchy.LastOrDefault();
             Guid key = Guid.Empty;
@@ -39,7 +35,7 @@ namespace ROLAP.Parser.InterpreterModel
             {
 
             }
-            return new Tuple<ROLAP.Model.Models.CubeMemberType, Guid>(hierarchyType, key);
+            return new Tuple<CubeMemberType, Guid>(hierarchyType, key);
         }
         internal override List<CubeMemberRequest> GetCubeMemberRequest()
         {

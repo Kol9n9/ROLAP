@@ -1,4 +1,4 @@
-﻿using ROLAP.Model.CubeRequest;
+﻿using ROLAP.Common.Model.Models.CubeRequest;
 using ROLAP.Parser.InterpreterModel;
 using ROLAP.Parser.Model;
 

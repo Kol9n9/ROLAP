@@ -1,6 +1,6 @@
-﻿using ROLAP.Model.Models;
+﻿using ROLAP.Common.Model.Models;
 
-namespace ROLAP.Model.Interface
+namespace ROLAP.Common.Model.Interfaces
 {
     public interface IRepository
     {

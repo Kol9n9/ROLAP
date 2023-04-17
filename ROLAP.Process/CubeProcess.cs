@@ -1,14 +1,10 @@
-﻿using ROLAP.Model.Interface;
-using ROLAP.Model.Models;
-using ROLAP.Model.CubeModel;
+﻿using ROLAP.Common.Model.Enums;
+using ROLAP.Common.Model.Interfaces;
+using ROLAP.Common.Model.Models;
+using ROLAP.Common.Model.Models.CubeRequest;
+using ROLAP.Model.Model;
+using ROLAP.Model.Model.CubeModel;
 using ROLAP.TestLocalRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ROLAP.Model.CubeRequest;
-using ROLAP.Parser;
 
 namespace ROLAP.Process
 {
@@ -22,7 +18,7 @@ namespace ROLAP.Process
             Cube cube = new Cube();
             cube.Axes = GenerateAxes(request);
             var values = GetValues(cube.Axes);
-            var cubeValues = SetAxesValues(values,cube.Axes);
+            cube.Values = SetAxesValues(values, cube.Axes);
         }
         private List<CubeAxis> GenerateAxes(CubeRequest request)
         {
@@ -51,7 +47,7 @@ namespace ROLAP.Process
                     cubeTuple.AddMember(new CubeAxisMember() { 
                         Id = member.Id,
                         Name = cubeDimension.Name,
-                        Type = (CubeMemberType2)member.Type
+                        Type = member.Type
                     });
                 }
                 resultAxis.AddTuple(cubeTuple);
@@ -69,11 +65,11 @@ namespace ROLAP.Process
                     List<Guid> dimensionIds = new List<Guid>();
                     foreach (var member in tuple.Members)
                     {
-                        if(member.Type == CubeMemberType2.Dimension)
+                        if(member.Type == CubeMemberType.Dimension)
                         {
                              dimensionIds.Add(member.Id);
                         } 
-                        else if(member.Type == CubeMemberType2.Measure)
+                        else if(member.Type == CubeMemberType.Measure)
                         {
                             measureIds.Add(member.Id);
                         }
@@ -83,9 +79,9 @@ namespace ROLAP.Process
             }
             return repository.GetValues(dimensionTuplesIds, measureIds);
         }
-        private List<CubeValue> SetAxesValues(List<CubeValue> values, List<CubeAxis> axes, List<CubeAxisTuple> prevAxisTuples = null)
+        private List<AggregateValue> SetAxesValues(List<CubeValue> values, List<CubeAxis> axes, List<CubeAxisTuple> prevAxisTuples = null)
         {
-            List<CubeValue> resultValues = new List<CubeValue>();
+            List<AggregateValue> resultValues = new List<AggregateValue>();
             if (axes.Count == 1)
             {
                 return SetAxisValues(values, axes[0].Tuples, prevAxisTuples);
@@ -104,9 +100,9 @@ namespace ROLAP.Process
             return resultValues;
         }
 
-        private List<CubeValue> SetAxisValues(List<CubeValue> values, List<CubeAxisTuple> currentAxisTuples, List<CubeAxisTuple> prevAxisTuples = null)
+        private List<AggregateValue> SetAxisValues(List<CubeValue> values, List<CubeAxisTuple> currentAxisTuples, List<CubeAxisTuple> prevAxisTuples = null)
         {
-            List<CubeValue> resultCubeValues= new List<CubeValue>();
+            List<AggregateValue> resultCubeValues= new List<AggregateValue>();
 
             foreach(var tuple in currentAxisTuples)
             {
@@ -114,11 +110,11 @@ namespace ROLAP.Process
                 List<Guid> measureIds = new List<Guid>();
                 foreach (var member in tuple.Members)
                 {
-                    if(member.Type == CubeMemberType2.Dimension)
+                    if(member.Type == CubeMemberType.Dimension)
                     {
                         dimensionIds.Add(member.Id);
                     } 
-                    else if(member.Type == CubeMemberType2.Measure)
+                    else if(member.Type == CubeMemberType.Measure)
                     {
                         measureIds.Add(member.Id);
                     }
@@ -129,11 +125,11 @@ namespace ROLAP.Process
                     {
                         foreach (var member in prevTuple.Members)
                         {
-                            if (member.Type == CubeMemberType2.Dimension)
+                            if (member.Type == CubeMemberType.Dimension)
                             {
                                 dimensionIds.Add(member.Id);
-                            }
-                            else if (member.Type == CubeMemberType2.Measure)
+                            }   
+                            else if (member.Type == CubeMemberType.Measure)
                             {
                                 measureIds.Add(member.Id);
                             }
@@ -145,16 +141,17 @@ namespace ROLAP.Process
             }
             return resultCubeValues;
         }
-        private CubeValue AggregateValues(List<CubeValue> values)
+        private AggregateValue AggregateValues(List<CubeValue> values)
         {
-            double result = 0;
+            decimal result = 0;
             foreach (var value in values)
             {
                 result += value.Value;
             }
-            return new CubeValue()
+            return new AggregateValue()
             {
-                Value = result
+                Value = result,
+                FormattedValue = result.ToString()
             };
         }
     }

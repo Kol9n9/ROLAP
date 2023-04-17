@@ -1,7 +1,5 @@
-﻿using ROLAP.Model.Interface;
-using ROLAP.Model.Models;
-using ROLAP.Utils;
-using System.Linq;
+﻿using ROLAP.Common.Model.Interfaces;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.TestLocalRepository
 {

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ROLAP.Common.Model\ROLAP.Common.Model.csproj" />
+  </ItemGroup>
+
 </Project>
