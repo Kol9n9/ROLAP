@@ -22,13 +22,16 @@ namespace ROLAP.Parser.InterpreterModel
             Tuples = newTuples;
         }
 
-        internal CubeAxisRequest GetAxisRequest()
+        internal List<CubeAxisTupleRequest> GetAxisTuplesRequest()
         {
-            CubeAxisRequest request = new CubeAxisRequest();
+            List<CubeAxisTupleRequest> request = new List<CubeAxisTupleRequest>();
 
             foreach (var tuple in Tuples)
             {
-                request.Tuples.Add(tuple.GetAxisTupleRequest());
+                request.Add(new CubeAxisTupleRequest()
+                {
+                    Members = tuple.GetCubeMemberRequest()
+                });
             }
 
             return request;

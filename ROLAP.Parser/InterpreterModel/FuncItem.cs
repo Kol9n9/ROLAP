@@ -26,6 +26,11 @@ namespace ROLAP.Parser.InterpreterModel
         {
 
             List<TupleItem> firstTuple = GetAllMembers(Items[0].Run());
+            if(Items.Count == 1)
+            {
+                Items = firstTuple;
+                return;
+            }
             List<TupleItem> secondTuple = GetAllMembers(Items[1].Run());
 
             List<TupleItem> result = new List<TupleItem>();

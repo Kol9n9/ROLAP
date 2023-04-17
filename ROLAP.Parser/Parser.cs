@@ -1,20 +1,20 @@
-﻿using ROLAP.Parser.InterpreterModel;
+﻿using ROLAP.Model.CubeRequest;
+using ROLAP.Parser.InterpreterModel;
 using ROLAP.Parser.Model;
 
 namespace ROLAP.Parser
 {
     public static class Parser
     {
-        public static void Parse(string mdx)
+        public static CubeRequest Parse(string mdx)
         {
             Scanner scanner = new Scanner(mdx);
             CubeItem cube = QueryState(scanner);
             cube.Run();
-            var request = cube.GetCubeRequest();
+            return cube.GetCubeRequest();
         }
         private static CubeItem QueryState(Scanner scanner)
         {
-            
             Console.WriteLine("QueryState");
             var lexeme = scanner.GetLexeme();
             if(lexeme.Type != Model.LexemeType.SELECT)

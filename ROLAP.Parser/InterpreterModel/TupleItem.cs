@@ -22,21 +22,16 @@ namespace ROLAP.Parser.InterpreterModel
             return Items;
         }
 
-        internal CubeAxisTupleRequest GetAxisTupleRequest()
+        internal virtual List<CubeMemberRequest> GetCubeMemberRequest()
         {
-            CubeAxisTupleRequest requestrequest = new CubeAxisTupleRequest();
+            List<CubeMemberRequest> members = new List<CubeMemberRequest>();
 
             foreach (var item in Items)
             {
-                requestrequest.Members.Add(new CubeMemberRequest()
-                {
-                    Id = Guid.Empty,
-                    Type = ROLAP.Model.Models.CubeMemberType.Dimension
-                });
+                members.AddRange(item.GetCubeMemberRequest());
             }
 
-
-            return requestrequest;
+            return members;
         }
     }
 }

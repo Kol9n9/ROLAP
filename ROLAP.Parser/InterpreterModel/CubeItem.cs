@@ -24,7 +24,10 @@ namespace ROLAP.Parser.InterpreterModel
             CubeRequest cubeRequest = new CubeRequest();
             foreach (AxisItem axis in Axes)
             {
-                cubeRequest.Axes.Add(axis.GetAxisRequest());
+                cubeRequest.Axes.Add(new CubeAxisRequest
+                {
+                    Tuples = axis.GetAxisTuplesRequest()
+                });
             }
             return cubeRequest;
         }
