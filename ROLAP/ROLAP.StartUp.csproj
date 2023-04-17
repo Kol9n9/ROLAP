@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ROLAP.Parser\ROLAP.Parser.csproj" />
     <ProjectReference Include="..\ROLAP.Process\ROLAP.Process.csproj" />
   </ItemGroup>
 

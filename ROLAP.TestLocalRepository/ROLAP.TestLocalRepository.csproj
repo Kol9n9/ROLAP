@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ROLAP.Models\ROLAP.Model.csproj" />
-    <ProjectReference Include="..\ROLAP.Utils\ROLAP.Utils.csproj" />
   </ItemGroup>
 
 </Project>
