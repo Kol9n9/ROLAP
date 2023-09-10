@@ -1,4 +1,5 @@
-﻿using ROLAP.Process;
+﻿using ROLAP.Parser;
+using ROLAP.Process;
 
 public class Program
 {
@@ -8,7 +9,13 @@ public class Program
             "{[Dimension].&[3ac02e75-2988-4bd6-9471-80557bbbcc0d],[Dimension].&[82e6587a-6350-4cb5-ba12-b18174aaec26]} ON 1 " +
             "FROM [Adventure_Cube]";
 
-        CubeProcess process = new CubeProcess();
-        process.Process(mdx);
+        //CubeProcess process = new CubeProcess();
+        //process.Process(mdx);
+
+        string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
+
+
+        var result = new Parser(new Lexer(mdy).Tokenize()).Parse();
+        Console.WriteLine(result);
     }
 }

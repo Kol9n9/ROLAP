@@ -13,12 +13,12 @@ namespace ROLAP.Process
         private readonly IRepository repository = new Repository();
         public void Process(string mdx)
         {
-            Console.WriteLine("Process start");
-            var request = Parser.Parser.Parse(mdx);
-            Cube cube = new Cube();
-            cube.Axes = GenerateAxes(request);
-            var values = GetValues(cube.Axes);
-            cube.Values = SetAxesValues(values, cube.Axes);
+            //Console.WriteLine("Process start");
+            //var request = Parser.Parser.Parse(mdx);
+            //Cube cube = new Cube();
+            //cube.Axes = GenerateAxes(request);
+            //var values = GetValues(cube.Axes);
+            //cube.Values = SetAxesValues(values, cube.Axes);
         }
         private List<CubeAxis> GenerateAxes(CubeRequest request)
         {
@@ -81,13 +81,12 @@ namespace ROLAP.Process
         }
         private List<AggregateValue> SetAxesValues(List<CubeValue> values, List<CubeAxis> axes, List<CubeAxisTuple> prevAxisTuples = null)
         {
-            List<AggregateValue> resultValues = new List<AggregateValue>();
             if (axes.Count == 1)
             {
                 return SetAxisValues(values, axes[0].Tuples, prevAxisTuples);
             }
-
-            foreach(var tuple in axes[axes.Count - 1].Tuples)
+            List<AggregateValue> resultValues = new List<AggregateValue>();
+            foreach (var tuple in axes[axes.Count - 1].Tuples)
             {
                 List<CubeAxisTuple> prevTuples = new List<CubeAxisTuple>();
                 if(prevAxisTuples != null)
@@ -104,6 +103,27 @@ namespace ROLAP.Process
         {
             List<AggregateValue> resultCubeValues= new List<AggregateValue>();
 
+            List<Guid> prevTuplesDimensions = new List<Guid>();
+            List<Guid> prevTuplesMeasures = new List<Guid>();
+
+            if(prevAxisTuples!= null)
+            {
+                foreach (var prevTuple in prevAxisTuples)
+                {
+                    foreach (var member in prevTuple.Members)
+                    {
+                        if (member.Type == CubeMemberType.Dimension)
+                        {
+                            prevTuplesDimensions.Add(member.Id);
+                        }
+                        else if (member.Type == CubeMemberType.Measure)
+                        {
+                            prevTuplesMeasures.Add(member.Id);
+                        }
+                    }
+                }
+            }
+
             foreach(var tuple in currentAxisTuples)
             {
                 List<Guid> dimensionIds = new List<Guid>();
@@ -119,23 +139,8 @@ namespace ROLAP.Process
                         measureIds.Add(member.Id);
                     }
                 }
-                if(prevAxisTuples != null)
-                {
-                    foreach(var prevTuple in prevAxisTuples)
-                    {
-                        foreach (var member in prevTuple.Members)
-                        {
-                            if (member.Type == CubeMemberType.Dimension)
-                            {
-                                dimensionIds.Add(member.Id);
-                            }   
-                            else if (member.Type == CubeMemberType.Measure)
-                            {
-                                measureIds.Add(member.Id);
-                            }
-                        }
-                    }
-                }
+                dimensionIds.AddRange(prevTuplesDimensions);
+                measureIds.AddRange(prevTuplesMeasures);
                 var filteredValues = values.Where(v => dimensionIds.All(d => v.Dimensions.Contains(d)) && (!measureIds.Any() || measureIds.All(m => v.MeasureId == m))).ToList();
                 resultCubeValues.Add(AggregateValues(filteredValues));
             }

@@ -1,258 +1,106 @@
-﻿using ROLAP.Common.Model.Models.CubeRequest;
-using ROLAP.Parser.InterpreterModel;
-using ROLAP.Parser.Model;
+﻿using ROLAP.Parser.Models.CubeRequest;
+using ROLAP.Parser.Models.Expressions;
+using ROLAP.Parser.Models.ExpressionValues;
+using ROLAP.Parser.Models.Token;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ROLAP.Parser
 {
-    public static class Parser
+    public class Parser
     {
-        public static CubeRequest Parse(string mdx)
+        private readonly Token _eof = new Token(TokenType.EOF, "");
+        private readonly List<Token> _tokens = new List<Token>();
+        private int _pos;
+        public Parser(List<Token> tokens)
         {
-            Scanner scanner = new Scanner(mdx);
-            CubeItem cube = QueryState(scanner);
-            cube.Run();
-            return cube.GetCubeRequest();
+            _tokens = tokens;
+            _pos = 0;
         }
-        private static CubeItem QueryState(Scanner scanner)
-        {
-            Console.WriteLine("QueryState");
-            var lexeme = scanner.GetLexeme();
-            if(lexeme.Type != Model.LexemeType.SELECT)
-            {
-                throw new Exception("");
-            }
-            CubeItem cube = new CubeItem();
-            cube.Axes.AddRange(AxesState(scanner));
-            lexeme = scanner.GetLexeme();
-            if(lexeme.Type != Model.LexemeType.FROM)
-            {
-                throw new Exception("");
-            }
-            cube.CubeName = HierarchyIdentifierState(scanner);
-            lexeme = scanner.GetLexeme();
-            if(lexeme.Type != Model.LexemeType.FINISH)
-            {
-                throw new Exception("");
-            }
-            return cube;
-        }
-        private static List<AxisItem> AxesState(Scanner scanner)
-        {
-            Console.WriteLine("AxesState");
-            List<AxisItem> axes = new List<AxisItem>
-            {
-                AxisState(scanner)
-            };
-            Lexeme lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.COMMA)
-            {
-                scanner.PutLexemeToStack(lexeme);
-            } 
-            else
-            {
-                while (lexeme.Type == LexemeType.COMMA)
-                {
-                    axes.Add(AxisState(scanner));
-                    lexeme = scanner.GetLexeme();
-                    if (lexeme.Type != LexemeType.COMMA)
-                    {
-                        scanner.PutLexemeToStack(lexeme);
-                    }
-                }
-            }
-            return axes;
-            
-        }
-        private static AxisItem AxisState(Scanner scanner)
-        {
-            AxisItem axis = new AxisItem();
-            Console.WriteLine("AxisState");
-            axis.Tuples.AddRange(TupleState(scanner));
-            Lexeme lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.ON)
-            {
-                throw new Exception("");
-            }
-            lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.NUMBER)
-            {
-                throw new Exception("");
-            }
-            axis.AxisNumber = int.Parse(lexeme.Value);
-            return axis;
-        }
-        private static List<TupleItem> TupleState(Scanner scanner)
-        {
-            Console.WriteLine("TupleState");
-            List<TupleItem> tuples = new List<TupleItem>();
-            TupleItem tuple = new TupleItem();
-            tuples.Add(tuple);
-            Lexeme lexeme = scanner.GetLexeme();
-            if(lexeme.Type == LexemeType.LEFT_BRACE)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                tuple.Items.AddRange(SetState(scanner));
-            }
-            else if(lexeme.Type == LexemeType.RIGHT_BRACE)
-            {
-                scanner.PutLexemeToStack(lexeme);
-            }
-            else if(lexeme.Type == LexemeType.IDENTIFIER)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                tuple.Items.Add(FuncState(scanner));
-            }
-            else if(lexeme.Type == LexemeType.LEFT_SQUARE_BRACKET)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                tuple.Items.Add(MemberState(scanner));
-            }
-            else
-            {
-                throw new Exception("");
-            }
-            return tuples;
 
-        }
-        private static FuncItem FuncState(Scanner scanner)
+        public TupleExpression Parse()
         {
-            
-            Lexeme lexeme = scanner.GetLexeme();
-            string funcName = lexeme.Value.ToString();
-            FuncItem functionItem = new FuncItem();
-            functionItem.Name = funcName;
-            Console.WriteLine("FuncState - " + funcName);
-            lexeme = scanner.GetLexeme(); // (
-            if(lexeme.Type != LexemeType.LEFT_ROUND_BRACKET)
-            {
-                throw new Exception("");
-            }
-            functionItem.Items.AddRange(TupleState(scanner));
-            lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.COMMA)
-            {
-                scanner.PutLexemeToStack(lexeme);
-            }
-            else
-            {
-                while (lexeme.Type == LexemeType.COMMA)
-                {
-                    functionItem.Items.AddRange(TupleState(scanner));
-                    lexeme = scanner.GetLexeme();
-                    if (lexeme.Type != LexemeType.COMMA)
-                    {
-                        scanner.PutLexemeToStack(lexeme);
-                    }
-                }
-            }
-            lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.RIGHT_ROUND_BRACKET)
-            {
-                throw new Exception("");
-            }
-            return functionItem;
+            var res = TupleExpression();
+            res.Execute();
+            return res;
         }
-        private static List<TupleItem> SetState(Scanner scanner)
-        {
-            Console.WriteLine("SetState");
-            List<TupleItem> tuples= new List<TupleItem>();
-            Lexeme lexeme = scanner.GetLexeme();
-            tuples.AddRange(TupleState(scanner));
-            lexeme = scanner.GetLexeme();
-            if (lexeme.Type != LexemeType.COMMA)
-            {
-                scanner.PutLexemeToStack(lexeme);
-            } 
-            else
-            {
-                while (lexeme.Type == LexemeType.COMMA)
-                {
-                    tuples.AddRange(TupleState(scanner));
-                    lexeme = scanner.GetLexeme();
-                    if (lexeme.Type != LexemeType.COMMA)
-                    {
-                        scanner.PutLexemeToStack(lexeme);
-                    }
-                }
-            }
-            lexeme= scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.RIGHT_BRACE)
-            {
-                throw new Exception("");
-            }
-            return tuples;
-        }
-        private static MemberItem MemberState(Scanner scanner)
-        {
-            Console.WriteLine("MemberState");
-            MemberItem member = new MemberItem();
-            HierarchyItemState(scanner,member);
-            Lexeme lexeme = scanner.GetLexeme();
-            if(lexeme.Type != LexemeType.DOT)
-            {
-                scanner.PutLexemeToStack(lexeme);
-            } 
-            else
-            {
-                while(lexeme.Type == LexemeType.DOT)
-                {
-                    HierarchyItemState(scanner, member);
-                    lexeme = scanner.GetLexeme();
-                    if(lexeme.Type != LexemeType.DOT)
-                    {
-                        scanner.PutLexemeToStack(lexeme);
-                    }
-                }
-            }
-            return member;
-        }
-        private static void HierarchyItemState(Scanner scanner, MemberItem member)
-        {
-            Console.WriteLine("HierarchyItemState");
-            Lexeme lexeme = scanner.GetLexeme();
-            if(lexeme.Type == LexemeType.IDENTIFIER)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                MemberFunc(scanner,member);
-            }
-            else if(lexeme.Type == LexemeType.AMPERSAND)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                HierarchyKeyState(scanner, member);
-            }
-            else if(lexeme.Type == LexemeType.LEFT_SQUARE_BRACKET)
-            {
-                scanner.PutLexemeToStack(lexeme);
-                HierarchyNameState(scanner, member);
-            }
-        }
-        private static void HierarchyNameState(Scanner scanner, MemberItem member)
-        {
-            Console.WriteLine("HierarchyNameState");
-            member.Hierarchy.Add(HierarchyIdentifierState(scanner));
 
-        }
-       
-        private static void HierarchyKeyState(Scanner scanner, MemberItem member)
+        private TupleExpression TupleExpression()
         {
-            Lexeme lexeme = scanner.GetLexeme(); // &
-            Console.WriteLine("HierarchyKeyState");
-            member.Hierarchy.Add("&"+HierarchyIdentifierState(scanner));
+            List<IExpression> res = new List<IExpression>(); 
+            if (Get(0).Type == TokenType.LBRACE)
+            {
+                Match(TokenType.LBRACE);
+                res.Add(MemberExpression());
+                while(Get(0).Type == TokenType.COMMA)
+                {
+                    Match(TokenType.COMMA);
+                    res.Add(MemberExpression());
+                }
+            }
+            else
+            {
+                res.Add(MemberExpression());
+            }
+            return new Models.ExpressionValues.TupleExpression(res);
         }
-        private static void MemberFunc(Scanner scanner,MemberItem member)
+
+        private MemberExpression MemberExpression()
         {
-            Lexeme lexeme = scanner.GetLexeme();
-            Console.WriteLine("MemberFunc - " + lexeme.Value);
-            member.FuncName = lexeme.Value;
+            if (Get(0).Type == TokenType.LBRACKET)
+            {
+                string dimensionName = GetIdentifier();
+                if (dimensionName[0] == '&') throw new Exception("Dimension name start with \"&\".");
+                List<string> names = new List<string>();
+                while (Get(0).Type == TokenType.DOT)
+                {
+                    Match(TokenType.DOT);
+                    names.Add(GetIdentifier());
+                }
+                if (names.Count == 0) throw new Exception("Hierarchy is empty");
+                return new MemberExpression(new Models.ExpressionValues.DimensionMemberValue(new CubeRequestAxisMember(dimensionName,names)));
+            }
+            throw new Exception("Unknown expression");
         }
-        private static string HierarchyIdentifierState(Scanner scanner)
+
+        private string GetIdentifier()
         {
-            Lexeme lexeme = scanner.GetLexeme(); // [
-            lexeme = scanner.GetLexeme();
-            string value = lexeme.Value;
-            Console.WriteLine("IdentifierState - " + value);
-            lexeme = scanner.GetLexeme(); // ]
-            return value;
+            var current = Get(0);
+            bool isKey = false;
+            if(current.Type != TokenType.LBRACKET && current.Type != TokenType.AMPERSAND) throw new Exception($"Expected \"[\" or \"&\" but gived: {Get(0).Value}");
+            if(current.Type == TokenType.AMPERSAND)
+            {
+                Match(TokenType.AMPERSAND);
+                isKey = true;
+            }
+            Match(TokenType.LBRACKET);
+            string identifier = Get(0).Value;
+            if (isKey) identifier = "&" + identifier;
+            Match(TokenType.WORD);
+            Match(TokenType.RBRACKET);
+            return identifier;
+        }
+
+        /// <summary>
+        /// Проверяет текущий токен на ожидаемый тип
+        /// </summary>
+        /// <param name="type"></param>
+        private bool Match(TokenType type)
+        {
+            Token token = Get(0);
+            if (token.Type != type) return false;
+            _pos++;
+            return true;
+        }
+
+        private Token Get(int offset)
+        {
+            int pos = _pos + offset;
+            if (pos >= _tokens.Count) return _eof;
+            return _tokens[pos];
         }
     }
 }
