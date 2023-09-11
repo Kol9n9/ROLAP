@@ -8,6 +8,5 @@ namespace ROLAP.Parser.Models.ExpressionValues
 {
     public interface IExpressionValue
     {
-        Object Raw();
     }
 }

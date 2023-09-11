@@ -17,27 +17,32 @@ namespace ROLAP.Parser.Models.CubeRequest
             Axes = new List<CubeRequestAxis>();
         }
     }
-    public class CubeRequestAxis
+    public class CubeRequestAxis : IExpressionValue
+    {
+        public CubeRequestAxisSet Set { get; }
+        public int AxisNumber { get; }
+        public CubeRequestAxis(int axisNumber, CubeRequestAxisSet set)
+        {
+            Set = set;
+            AxisNumber = axisNumber;
+        }
+    }
+
+    public class CubeRequestAxisSet : IExpressionValue
     {
         public List<CubeRequestAxisTuple> Tuples { get; }
-        public int AxisNumber { get; }
-        public CubeRequestAxis(int axisNumber)
+
+        public CubeRequestAxisSet(List<CubeRequestAxisTuple> tuples)
         {
-            Tuples = new List<CubeRequestAxisTuple>();
-            AxisNumber = axisNumber;
+            Tuples = tuples;
         }
     }
     public class CubeRequestAxisTuple : IExpressionValue
     {
-        public List<IExpressionValue> Members { get; }
-        public CubeRequestAxisTuple()
+        public List<CubeRequestAxisMember> Members { get; }
+        public CubeRequestAxisTuple(List<CubeRequestAxisMember> members)
         {
-            Members = new List<IExpressionValue> ();
-        }
-
-        public object Raw()
-        {
-            return Members;
+            Members = members;
         }
     }
     public class CubeRequestAxisMember : IExpressionValue
@@ -48,11 +53,6 @@ namespace ROLAP.Parser.Models.CubeRequest
         {
             DimensionName = dimensionName;
             Hierarchy = hierarchy;
-        }
-
-        public object Raw()
-        {
-            return this;
         }
     }
 }

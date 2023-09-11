@@ -1,4 +1,5 @@
 ﻿using ROLAP.Parser.Models.CubeRequest;
+using ROLAP.Parser.Models.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,12 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Parser.Models.ExpressionValues
 {
-    internal class DimensionMemberValue : IExpressionValue
+    public class TupleValue : IExpressionValue
     {
-        private readonly CubeRequestAxisMember _value;
-        public DimensionMemberValue(CubeRequestAxisMember value)
+        private CubeRequestAxisTuple _value;
+        public TupleValue(CubeRequestAxisTuple value)
         {
             _value = value;
         }
-
-        public object Raw()
-        {
-            return _value;
-        }
     }
 }
-    

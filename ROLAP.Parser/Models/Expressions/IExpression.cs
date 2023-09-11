@@ -9,6 +9,6 @@ namespace ROLAP.Parser.Models.Expressions
 {
     public interface IExpression
     {
-        IExpressionValue Execute();
+        IExpressionValue Eval();
     }
 } 

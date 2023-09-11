@@ -10,13 +10,13 @@ namespace ROLAP.Parser.Models.Expressions
 {
     internal class MemberExpression : IExpression
     {
-        private readonly DimensionMemberValue _value;
-        public MemberExpression(DimensionMemberValue value)
+        private readonly CubeRequestAxisMember _value;
+        public MemberExpression(CubeRequestAxisMember value)
         {
             _value = value;
         }
 
-        IExpressionValue IExpression.Execute()
+        public IExpressionValue Eval()
         {
             return _value;
         }
