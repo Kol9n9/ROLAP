@@ -10,12 +10,11 @@
 // ****************************************************************************/
 // #endregion Copyright
 
-using ROLAP.Parser.Models.CubeRequest;
-using ROLAP.Parser.Models.ExpressionValues;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser.Models.Expressions;
 
-public class AxisExpression : IExpression
+internal class AxisExpression : IExpression
 {
     private IExpression _expression;
     private int _axisNumber;
@@ -25,8 +24,12 @@ public class AxisExpression : IExpression
         _axisNumber = axisNumber;
         _expression = expression;
     }
-    public IExpressionValue Eval()
+    public ICubeQueryNode Eval()
     {
-        return new CubeRequestAxis(_axisNumber, Helpers.MapToSet(_expression.Eval()));
+        return new CubeQueryAxis()
+        {
+            AxisNumber = _axisNumber,
+            Set = Helpers.MapToSet(_expression.Eval())
+        };
     }
 }

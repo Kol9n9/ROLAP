@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Parser
 {
-    public class Lexer
+    internal class Lexer
     {
         private readonly Dictionary<string, TokenType> _operators = new Dictionary<string, TokenType>()
         {

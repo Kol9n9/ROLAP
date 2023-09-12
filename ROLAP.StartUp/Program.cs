@@ -15,7 +15,7 @@ public class Program
         string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
 
 
-        var result = new Parser(new Lexer(mdx).Tokenize()).Parse();
+        var result = new Parser(mdx).Parse();
         Console.WriteLine(result);
     }
 }

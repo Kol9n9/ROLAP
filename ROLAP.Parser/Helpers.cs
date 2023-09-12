@@ -10,60 +10,63 @@
 // ****************************************************************************/
 // #endregion Copyright
 
-using ROLAP.Parser.Models.CubeRequest;
-using ROLAP.Parser.Models.ExpressionValues;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser;
 
 public static class Helpers
 {
-    public static CubeRequestAxisSet MapToSet(IExpressionValue value)
+    public static CubeQuerySet MapToSet(ICubeQueryNode value)
     {
-        if (value is CubeRequestAxisMember member)
+        if (value is CubeQueryMember member)
         {
-            return
-                new CubeRequestAxisSet(
-                    new List<CubeRequestAxisTuple>()
+            return new CubeQuerySet()
+            {
+                Tuples = new List<CubeQueryTuple>()
+                {
+                    new CubeQueryTuple()
                     {
-                        new CubeRequestAxisTuple(new List<CubeRequestAxisMember>()
+                        Members= new List<CubeQueryMember>()
                         {
-                            {
-                                member
-                            }
-                        })
-                    });
+                            member
+                        }
+                    }
+                }
+            };
         }
-        if (value is CubeRequestAxisTuple tuple)
+        if (value is CubeQueryTuple tuple)
         {
-            return
-                new CubeRequestAxisSet(
-                    new List<CubeRequestAxisTuple>()
-                    {
-                        tuple
-                    });
+            return new CubeQuerySet()
+            {
+                Tuples = new List<CubeQueryTuple>()
+                {
+                    tuple
+                }
+            };
         }
-        if (value is CubeRequestAxisSet set)
+        if (value is CubeQuerySet set)
         {
             return set;
         }
         return null;
     }
-    public static CubeRequestAxisTuple MapToTuple(IExpressionValue value)
+    public static CubeQueryTuple MapToTuple(ICubeQueryNode value)
     {
-        if (value is CubeRequestAxisMember member)
+        if (value is CubeQueryMember member)
         {
-            return new CubeRequestAxisTuple(new List<CubeRequestAxisMember>()
+            return new CubeQueryTuple()
             {
+                Members = new List<CubeQueryMember>()
                 {
                     member
                 }
-            });
+            };
         }
-        if (value is CubeRequestAxisTuple tuple)
+        if (value is CubeQueryTuple tuple)
         {
             return tuple;
         }
-        if (value is CubeRequestAxisSet set)
+        if (value is CubeQuerySet set)
         {
             throw new Exception("Unable cast Set to Tuple");
         }

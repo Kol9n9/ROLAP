@@ -1,6 +1,6 @@
 ﻿namespace ROLAP.Common.Model.Enums
 {
-    public enum CubeMemberType
+    public enum CubeMemberTypeOld
     {
         Unknown = -1,
         Dimension = 0,

@@ -1,6 +1,4 @@
-﻿using ROLAP.Parser.Models.CubeRequest;
-using ROLAP.Parser.Models.Expressions;
-using ROLAP.Parser.Models.ExpressionValues;
+﻿using ROLAP.Parser.Models.Expressions;
 using ROLAP.Parser.Models.Token;
 using System;
 using System.Collections.Generic;
@@ -8,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ROLAP.Parser.Models.Statements;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser
 {
@@ -16,20 +15,18 @@ namespace ROLAP.Parser
         private readonly Token _eof = new Token(TokenType.EOF, "");
         private readonly List<Token> _tokens = new List<Token>();
         private int _pos;
-        public Parser(List<Token> tokens)
+        public Parser(string input)
         {
-            _tokens = tokens;
+            _tokens = new Lexer(input).Tokenize();
             _pos = 0;
         }
 
-        public IStatement Parse()
+        public CubeQuery Parse()
         {
             var current = Get(0);
             if (Match(TokenType.SELECT))
             {
-                var res = SelectStatement();
-                res.Execute();
-                return null;
+                return SelectStatement().Execute();
             }
             else
             {
@@ -177,14 +174,18 @@ namespace ROLAP.Parser
             {
                 string dimensionName = GetIdentifier();
                 if (dimensionName[0] == '&') throw new Exception("Dimension name start with \"&\".");
-                List<string> names = new List<string>();
+                List<string> names = new List<string>() { dimensionName};
                 while (Get(0).Type == TokenType.DOT)
                 {
                     Match(TokenType.DOT);
                     names.Add(GetIdentifier());
                 }
                 if (names.Count == 0) throw new Exception("Hierarchy is empty");
-                return new MemberExpression(new CubeRequestAxisMember(dimensionName,names));
+                return new MemberExpression(new Common.Model.Models.CubeQueryMember()
+                {
+                    Type = Common.Model.Models.CubeMemberType.Unknown,
+                    Names = names
+                });
             }
             throw new Exception("Unknown expression");
         }
@@ -207,123 +208,6 @@ namespace ROLAP.Parser
             return identifier;
         }
         
-        // public IExpression Parse()
-        // {
-        //     var res = FunctionExpression();
-        //     res.Eval();
-        //     return res;
-        // }
-        //
-        // private IExpression FunctionExpression()
-        // {
-        //     if (Get(0).Type == TokenType.WORD && Get(1).Type == TokenType.LPAREN)
-        //     {
-        //         string functionName = Get(0).Value;
-        //         Match(TokenType.WORD);
-        //         
-        //         //Match(TokenType.LPAREN);
-        //         List<IExpression> _expressions = new List<IExpression>();
-        //         _expressions.Add(SetExpression());
-        //         while (Get(0).Type == TokenType.COMMA)
-        //         {
-        //             Match(TokenType.COMMA);
-        //             _expressions.Add(SetExpression());
-        //         }
-        //         
-        //         //Match(TokenType.RPAREN);
-        //
-        //         return new SetFunctionExpression(functionName, _expressions);
-        //     }
-        //     else
-        //     {
-        //         return SetExpression();
-        //     }
-        // }
-        //
-        // private IExpression SetExpression()
-        // {
-        //     List<IExpression> res = new List<IExpression>();
-        //     if (Get(0).Type == TokenType.LPAREN)
-        //     {
-        //         Match(TokenType.LPAREN);
-        //         res.Add(TupleExpression());
-        //         while(Get(0).Type == TokenType.COMMA)
-        //         {
-        //             Match(TokenType.COMMA);
-        //             res.Add(TupleExpression());
-        //         }
-        //         Match(TokenType.RPAREN);
-        //     }
-        //     else
-        //     {
-        //         res.Add(TupleExpression());
-        //     }
-        //
-        //     return new SetExpression(res);
-        // }
-        //
-        // private IExpression TupleExpression()
-        // {
-        //     List<IExpression> res = new List<IExpression>(); 
-        //     if (Get(0).Type == TokenType.LBRACE)
-        //     {
-        //         Match(TokenType.LBRACE);
-        //         res.Add(MemberExpression());
-        //         while(Get(0).Type == TokenType.COMMA)
-        //         {
-        //             Match(TokenType.COMMA);
-        //             res.Add(MemberExpression());
-        //         }
-        //         Match(TokenType.RBRACE);
-        //     }
-        //     else
-        //     {
-        //         res.Add(MemberExpression());
-        //     }
-        //
-        //     return new TupleExpression(res);
-        // }
-        //
-        // private IExpression MemberExpression()
-        // {
-        //     if (Get(0).Type == TokenType.LBRACKET)
-        //     {
-        //         string dimensionName = GetIdentifier();
-        //         if (dimensionName[0] == '&') throw new Exception("Dimension name start with \"&\".");
-        //         List<string> names = new List<string>();
-        //         while (Get(0).Type == TokenType.DOT)
-        //         {
-        //             Match(TokenType.DOT);
-        //             names.Add(GetIdentifier());
-        //         }
-        //         if (names.Count == 0) throw new Exception("Hierarchy is empty");
-        //         return new MemberExpression(new Models.ExpressionValues.MemberValue(new CubeRequestAxisMember(dimensionName,names)));
-        //     }
-        //     throw new Exception("Unknown expression");
-        // }
-        //
-        // private string GetIdentifier()
-        // {
-        //     var current = Get(0);
-        //     bool isKey = false;
-        //     if(current.Type != TokenType.LBRACKET && current.Type != TokenType.AMPERSAND) throw new Exception($"Expected \"[\" or \"&\" but gived: {Get(0).Value}");
-        //     if(current.Type == TokenType.AMPERSAND)
-        //     {
-        //         Match(TokenType.AMPERSAND);
-        //         isKey = true;
-        //     }
-        //     Match(TokenType.LBRACKET);
-        //     string identifier = Get(0).Value;
-        //     if (isKey) identifier = "&" + identifier;
-        //     Match(TokenType.WORD);
-        //     Match(TokenType.RBRACKET);
-        //     return identifier;
-        // }
-
-        /// <summary>
-        /// Проверяет текущий токен на ожидаемый тип
-        /// </summary>
-        /// <param name="type"></param>
         private bool Match(TokenType type)
         {
             Token token = Get(0);

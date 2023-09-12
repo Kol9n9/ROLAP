@@ -1,14 +1,8 @@
-﻿using ROLAP.Parser.Models.ExpressionValues;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ROLAP.Parser.Models.CubeRequest;
+﻿using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser.Models.Expressions
 {
-    public class SetFunctionExpression : IExpression
+    internal class SetFunctionExpression : IExpression
     {
         private readonly string _name;
         private readonly List<IExpression> _arguments;
@@ -18,7 +12,7 @@ namespace ROLAP.Parser.Models.Expressions
             _arguments = arguments;
         }
 
-        public IExpressionValue Eval()
+        public ICubeQueryNode Eval()
         {
             switch(_name.ToLower()) {
                 case "crossjoin": return CrossJoin();
@@ -26,26 +20,29 @@ namespace ROLAP.Parser.Models.Expressions
             }
             // Return new Set
         }
-        private IExpressionValue CrossJoin()
+        private ICubeQueryNode CrossJoin()
         {
             var set1 = Helpers.MapToSet(_arguments[0].Eval());
             var set2 = Helpers.MapToSet(_arguments[1].Eval());
             
             
-            List<CubeRequestAxisTuple> tuples = new List<CubeRequestAxisTuple>();
+            List<CubeQueryTuple> tuples = new List<CubeQueryTuple>();
             
             foreach (var tuple1 in set1.Tuples)
             {
                 foreach (var tuple2 in set2.Tuples)
                 {
-                    var tuple = new CubeRequestAxisTuple(new List<CubeRequestAxisMember>());
+                    var tuple = new CubeQueryTuple();
                     tuple.Members.AddRange(tuple1.Members);
                     tuple.Members.AddRange(tuple2.Members);
                     tuples.Add(tuple);
                 }
             }
-            
-            return new CubeRequestAxisSet(tuples);
+
+            return new CubeQuerySet
+            {
+                Tuples = tuples
+            };
         }
     }
 }

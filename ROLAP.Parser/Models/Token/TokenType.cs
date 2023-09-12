@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Parser.Models.Token
 {
-    public enum TokenType
+    internal enum TokenType
     {
         EOF = -1,
 

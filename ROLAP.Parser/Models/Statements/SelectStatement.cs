@@ -10,12 +10,12 @@
 // ****************************************************************************/
 // #endregion Copyright
 
-using ROLAP.Parser.Models.CubeRequest;
+using ROLAP.Common.Model.Models;
 using ROLAP.Parser.Models.Expressions;
 
 namespace ROLAP.Parser.Models.Statements;
 
-public class SelectStatement : IStatement
+internal class SelectStatement : IStatement
 {
     private List<IExpression> _expressions;
     private string _cubeName;
@@ -25,12 +25,18 @@ public class SelectStatement : IStatement
         _cubeName = cubeName;
         _expressions = expressions;
     }
-    public void Execute()
+    public CubeQuery Execute()
     {
-        List<CubeRequestAxis> axes = new List<CubeRequestAxis>();
+        List<CubeQueryAxis> axes = new List<CubeQueryAxis>();
         foreach (var expression in _expressions)
         {
-            axes.Add((CubeRequestAxis)expression.Eval());
+            axes.Add((CubeQueryAxis)expression.Eval());
         }
+        return new CubeQuery
+        {
+            Axes = axes,
+            CubeName = _cubeName,
+            Type = CubeQueryType.Select
+        };
     }
 }

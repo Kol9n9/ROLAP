@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ROLAP.Parser.Models.Token
 {
-    public class Token
+    internal class Token
     {
         public TokenType Type { get; }
         public string Value { get; }

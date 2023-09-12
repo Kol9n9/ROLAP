@@ -1,22 +1,16 @@
-﻿using ROLAP.Parser.Models.CubeRequest;
-using ROLAP.Parser.Models.ExpressionValues;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser.Models.Expressions
 {
     internal class MemberExpression : IExpression
     {
-        private readonly CubeRequestAxisMember _value;
-        public MemberExpression(CubeRequestAxisMember value)
+        private readonly CubeQueryMember _value;
+        public MemberExpression(CubeQueryMember value)
         {
             _value = value;
         }
 
-        public IExpressionValue Eval()
+        public ICubeQueryNode Eval()
         {
             return _value;
         }

@@ -1,4 +1,5 @@
 ﻿using ROLAP.Common.Model.Enums;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Model.Model.CubeModel
 {

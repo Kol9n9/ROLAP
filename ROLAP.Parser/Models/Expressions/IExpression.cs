@@ -1,14 +1,9 @@
-﻿using ROLAP.Parser.Models.ExpressionValues;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser.Models.Expressions
 {
-    public interface IExpression
+    internal interface IExpression
     {
-        IExpressionValue Eval();
+        ICubeQueryNode Eval();
     }
 } 

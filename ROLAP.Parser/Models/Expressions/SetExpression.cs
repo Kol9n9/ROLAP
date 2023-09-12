@@ -10,12 +10,11 @@
 // ****************************************************************************/
 // #endregion Copyright
 
-using ROLAP.Parser.Models.CubeRequest;
-using ROLAP.Parser.Models.ExpressionValues;
+using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser.Models.Expressions;
 
-public class SetExpression : IExpression
+internal class SetExpression : IExpression
 {
     private List<IExpression> _expressions;
 
@@ -23,13 +22,16 @@ public class SetExpression : IExpression
     {
         _expressions = expressions;
     }
-    public IExpressionValue Eval()
+    public ICubeQueryNode Eval()
     {
-        List<CubeRequestAxisTuple> values = new List<CubeRequestAxisTuple>();
+        List<CubeQueryTuple> values = new List<CubeQueryTuple>();
         foreach (var expression in _expressions)
         {
             values.Add(Helpers.MapToTuple(expression.Eval()));
         }
-        return new CubeRequestAxisSet(values);
+        return new CubeQuerySet()
+        {
+            Tuples = values
+        };
     }
 }
