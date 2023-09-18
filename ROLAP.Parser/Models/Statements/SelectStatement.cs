@@ -10,6 +10,7 @@
 // ****************************************************************************/
 // #endregion Copyright
 
+using ROLAP.Common.Model.Interfaces;
 using ROLAP.Common.Model.Models;
 using ROLAP.Parser.Models.Expressions;
 
@@ -25,12 +26,13 @@ internal class SelectStatement : IStatement
         _cubeName = cubeName;
         _expressions = expressions;
     }
-    public CubeQuery Execute()
+    public CubeQuery Execute(IMappingCubeConfiguration mappingCubeConfiguration)
     {
+        var cubeMeta = mappingCubeConfiguration.GetCubeMeta(_cubeName);
         List<CubeQueryAxis> axes = new List<CubeQueryAxis>();
         foreach (var expression in _expressions)
         {
-            axes.Add((CubeQueryAxis)expression.Eval());
+            axes.Add((CubeQueryAxis)expression.Eval(cubeMeta));
         }
         return new CubeQuery
         {

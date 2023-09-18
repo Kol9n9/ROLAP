@@ -22,12 +22,12 @@ internal class TupleExpression : IExpression
     {
         _expressions = expressions;
     }
-    public ICubeQueryNode Eval()
+    public ICubeQueryNode Eval(CubeMeta cubeMeta)
     {
         List<CubeQueryMember> values = new List<CubeQueryMember>();
         foreach (var expression in _expressions)
         {
-            values.Add((CubeQueryMember)expression.Eval());
+            values.Add((CubeQueryMember)expression.Eval(cubeMeta));
         }
         return new CubeQueryTuple()
         {

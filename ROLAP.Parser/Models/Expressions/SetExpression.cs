@@ -22,13 +22,15 @@ internal class SetExpression : IExpression
     {
         _expressions = expressions;
     }
-    public ICubeQueryNode Eval()
+    public ICubeQueryNode Eval(CubeMeta cubeMeta)
     {
         List<CubeQueryTuple> values = new List<CubeQueryTuple>();
         foreach (var expression in _expressions)
         {
-            values.Add(Helpers.MapToTuple(expression.Eval()));
+            values.Add(Helpers.MapToTuple(expression.Eval(cubeMeta)));
         }
+
+        values.RemoveAll(x => x == null);
         return new CubeQuerySet()
         {
             Tuples = values

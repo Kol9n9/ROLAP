@@ -198,5 +198,10 @@ namespace ROLAP.TestLocalRepository
         {
             return TestValues.Where(w => dimensionIds.Any(x => x.All(y => w.Dimensions.Contains(y)) && (!measureIds.Any() || measureIds.Any(m => m == w.MeasureId)))).ToList();
         }
+
+        public CubeMeta GetCubeMeta(CubeConfiguration configuration)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

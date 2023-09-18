@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ROLAP.Common.Model.Models
+﻿namespace ROLAP.Common.Model.Models
 {
     public class CubeConfiguration
     {
@@ -36,7 +30,8 @@ namespace ROLAP.Common.Model.Models
         public string Schema { get; set; }
         public string Table { get; set; }
         public string Id { get; set; }
-        public ConnectionWithDimensionConfiguration ConnectionWithDimension { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
     public class ConnectionWithDimensionConfiguration
     {

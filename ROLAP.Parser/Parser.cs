@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ROLAP.Common.Model.Interfaces;
 using ROLAP.Parser.Models.Statements;
 using ROLAP.Common.Model.Models;
 
@@ -21,12 +22,18 @@ namespace ROLAP.Parser
             _pos = 0;
         }
 
-        public CubeQuery Parse()
+        public CubeQuery GetCubeQuery(IMappingCubeConfiguration mappingCubeConfiguration)
+        {
+            var statement = Parse();
+            return statement.Execute(mappingCubeConfiguration);
+        }
+        
+        private IStatement Parse()
         {
             var current = Get(0);
             if (Match(TokenType.SELECT))
             {
-                return SelectStatement().Execute();
+                return SelectStatement();
             }
             else
             {
@@ -37,7 +44,7 @@ namespace ROLAP.Parser
         private IStatement SelectStatement()
         {
             List<IExpression> expressions = new List<IExpression>();
-            expressions.Add(AxisExpression());
+            expressions.Add(AxisExpression()); 
             while (Match(TokenType.COMMA))
             {
                 expressions.Add(AxisExpression());
@@ -183,7 +190,6 @@ namespace ROLAP.Parser
                 if (names.Count == 0) throw new Exception("Hierarchy is empty");
                 return new MemberExpression(new Common.Model.Models.CubeQueryMember()
                 {
-                    Type = Common.Model.Models.CubeMemberType.Unknown,
                     Names = names
                 });
             }

@@ -14,7 +14,7 @@ using ROLAP.Common.Model.Models;
 
 namespace ROLAP.Parser;
 
-public static class Helpers
+internal static class Helpers
 {
     public static CubeQuerySet MapToSet(ICubeQueryNode value)
     {

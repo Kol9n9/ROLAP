@@ -12,19 +12,21 @@ namespace ROLAP.Parser.Models.Expressions
             _arguments = arguments;
         }
 
-        public ICubeQueryNode Eval()
+        public ICubeQueryNode Eval(CubeMeta cubeMeta)
         {
             switch(_name.ToLower()) {
-                case "crossjoin": return CrossJoin();
+                case "crossjoin": return CrossJoin(cubeMeta);
                 default: return null;
             }
             // Return new Set
         }
-        private ICubeQueryNode CrossJoin()
+        private ICubeQueryNode CrossJoin(CubeMeta cubeMeta)
         {
-            var set1 = Helpers.MapToSet(_arguments[0].Eval());
-            var set2 = Helpers.MapToSet(_arguments[1].Eval());
-            
+            var set1 = Helpers.MapToSet(_arguments[0].Eval(cubeMeta));
+            var set2 = Helpers.MapToSet(_arguments[1].Eval(cubeMeta));
+
+            if (set1 == null) set1 = new CubeQuerySet();
+            if (set2 == null) set2 = new CubeQuerySet();
             
             List<CubeQueryTuple> tuples = new List<CubeQueryTuple>();
             

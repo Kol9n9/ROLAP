@@ -4,6 +4,6 @@ namespace ROLAP.Parser.Models.Expressions
 {
     internal interface IExpression
     {
-        ICubeQueryNode Eval();
+        ICubeQueryNode Eval(CubeMeta cubeMeta);
     }
 } 

@@ -24,12 +24,14 @@ internal class AxisExpression : IExpression
         _axisNumber = axisNumber;
         _expression = expression;
     }
-    public ICubeQueryNode Eval()
+    public ICubeQueryNode Eval(CubeMeta cubeMeta)
     {
+        var set = Helpers.MapToSet(_expression.Eval(cubeMeta));
+        if (set == null) set = new CubeQuerySet();
         return new CubeQueryAxis()
         {
             AxisNumber = _axisNumber,
-            Set = Helpers.MapToSet(_expression.Eval())
+            Set = set
         };
     }
 }

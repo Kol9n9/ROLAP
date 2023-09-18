@@ -56,9 +56,24 @@ namespace ROLAP.Parser
                 else if (Char.IsLetter(current)) tokens.Add(TokenizeWord());
                 else Next();
             }
+
+            FixSomeWord(tokens);
             return tokens;
         }
 
+        private void FixSomeWord(List<Token> tokens)
+        {
+            for (int i = 1; i < tokens.Count; i++)
+            {
+                if (tokens[i - 1].Type == TokenType.WORD && tokens[i].Type == TokenType.WORD)
+                {
+                    tokens[i - 1].Value += " " + tokens[i].Value;
+                    tokens.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+        
         private Token TokenizeNumber()
         {
             string buffer = "";
