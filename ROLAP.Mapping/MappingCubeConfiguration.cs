@@ -22,36 +22,9 @@ namespace ROLAP.Mapping
                         new MeasureConfiguration
                         {
                             Name = "Количество абитуриентов",
-                            Dimensions = new List<DimensionConfiguration>
-                            {
-                                new DimensionConfiguration
-                                {
-                                    Name = "Университет",
-                                    TableValues = new TableValuesConfiguration
-                                    {
-                                        ConnectionField = "UniversityId",
-                                        Name = "Name",
-                                        Key = "Id",
-                                        Schema = "ROLAP",
-                                        Table = "University"
-                                    }
-                                },
-                                new DimensionConfiguration
-                                {
-                                    Name = "Специальность",
-                                    TableValues = new TableValuesConfiguration
-                                    {
-                                        ConnectionField = "SpecialtyId",
-                                        Name = "Name",
-                                        Key = "Id",
-                                        Schema = "ROLAP",
-                                        Table = "Specialty"
-                                    }
-                                }
-                            },
                             MeasureValue = new MeasureValueConfiguration
                             {
-                                Id = "",
+                                Id = "NumberOfApplicants",
                                 Name = "Количество аббитуриентов",
                                 Table = "NumberOfApplicants",
                                 Schema = "ROLAP",
@@ -59,7 +32,34 @@ namespace ROLAP.Mapping
                             }
                         }
                     }
-                }
+                },
+                Dimensions = new List<DimensionConfiguration>
+                {
+                    new DimensionConfiguration
+                    {
+                        Name = "Университет",
+                        TableValues = new TableValuesConfiguration
+                        {
+                            ConnectionField = "UniversityId",
+                            Name = "Name",
+                            Key = "Id",
+                            Schema = "ROLAP",
+                            Table = "University"
+                        }
+                    },
+                    new DimensionConfiguration
+                    {
+                        Name = "Специальность",
+                        TableValues = new TableValuesConfiguration
+                        {
+                            ConnectionField = "SpecialtyId",
+                            Name = "Name",
+                            Key = "Id",
+                            Schema = "ROLAP",
+                            Table = "Specialty"
+                        }
+                    }
+                },
             };
         }
 

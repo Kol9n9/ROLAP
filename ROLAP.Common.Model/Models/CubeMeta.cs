@@ -15,12 +15,12 @@ namespace ROLAP.Common.Model.Models;
 public class CubeMeta
 {
     public List<CubeMetaMeasure> Measures { get; set; }
+    public List<CubeMetaDimension> Dimensions { get; set; }
 }
 
 public class CubeMetaMeasure
 {
     public CubeMetaItem Measure { get; set; }
-    public List<CubeMetaDimension> Dimensions { get; set; }
 }
 
 public class CubeMetaDimension

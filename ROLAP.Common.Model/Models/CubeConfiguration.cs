@@ -4,13 +4,12 @@
     {
         public string Name { get; set; }
         public List<MeasureConfiguration> Measures { get; set; }
+        public List<DimensionConfiguration> Dimensions { get; set; }
     }
     public class MeasureConfiguration
     {
         public string Name { get; set; }
-        public Guid Key { get; set; }
-        public List<DimensionConfiguration> Dimensions { get; set; }
-        public TableDimensionConfiguration TableDimension { get; set; } 
+        public Guid Key { get; set; } 
         public MeasureValueConfiguration MeasureValue { get; set; }
     }
     public class DimensionConfiguration

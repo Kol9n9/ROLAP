@@ -9,64 +9,61 @@ namespace ROLAP.Repository.Postgre;
 
 public class PostgreRepository : IRepository
 {
-    public List<CubeDimension> GetDimensions(List<Guid> dimensionIds)
-    {
-        throw new NotImplementedException();
-    }
+    //public List<CubeDimension> GetDimensions(List<Guid> dimensionIds)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    public List<CubeMeasure> GetMeasures(List<Guid> measuresIds)
-    {
-        throw new NotImplementedException();
-    }
+    //public List<CubeMeasure> GetMeasures(List<Guid> measuresIds)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    public List<CubeValue> GetValues(List<List<Guid>> dimensionIds, List<Guid> measureIds)
-    {
-        throw new NotImplementedException();
-    }
+    //public List<CubeValue> GetValues(List<List<Guid>> dimensionIds, List<Guid> measureIds)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     public CubeMeta GetCubeMeta(CubeConfiguration configuration)
     {
         CubeMeta meta = new CubeMeta
         {
-            Measures = new List<CubeMetaMeasure>()
+            Measures = new List<CubeMetaMeasure>(),
+            Dimensions= new List<CubeMetaDimension>(),
         };
 
         foreach (var measure in configuration.Measures)
         {
-            CubeMetaMeasure metaMeasure = new CubeMetaMeasure
-            {
+            meta.Measures.Add(new CubeMetaMeasure {
                 Measure = new CubeMetaItem
                 {
-                    Key = "",
+                    Key = measure.MeasureValue.Id,
                     Schema = measure.MeasureValue.Schema,
                     Table = measure.MeasureValue.Table,
-                    Name = measure.MeasureValue.Name
-                },
-                Dimensions = new List<CubeMetaDimension>()
-            };
-            foreach (var measureDimension in measure.Dimensions)
-            {
-                CubeMetaDimension dimension = new CubeMetaDimension
-                {
-                    Dimension = new CubeMetaItem
-                    {
-                        Key = measureDimension.Key.ToString(),
-                        Name = measureDimension.Name,
-                        ConnectionField = measureDimension.TableValues.ConnectionField
-                    },
-                    Values = new List<CubeMetaItem>()
-                };
+                    Name = measure.MeasureValue.Name,
+                    ValueField = measure.MeasureValue.Value
 
-                if (measureDimension.TableValues != null)
-                {
-                    dimension.Values.AddRange(Helper.GetMetaItems(measureDimension.TableValues.Schema,measureDimension.TableValues.Table,measureDimension.TableValues.Key,measureDimension.TableValues.Name));
                 }
-                    
-                metaMeasure.Dimensions.Add(dimension);
-            }
-            meta.Measures.Add(metaMeasure);
+            });
         }
-
+        foreach (var measureDimension in configuration.Dimensions)
+        {
+            CubeMetaDimension dimension = new CubeMetaDimension
+            {
+                Dimension = new CubeMetaItem
+                {
+                    Key = measureDimension.Key.ToString(),
+                    Name = measureDimension.Name,
+                    ConnectionField = measureDimension.TableValues.ConnectionField
+                },
+                Values = new List<CubeMetaItem>()
+            };
+            if (measureDimension.TableValues != null)
+            {
+                dimension.Values.AddRange(Helper.GetMetaItems(measureDimension.TableValues.Schema,measureDimension.TableValues.Table,measureDimension.TableValues.Key,measureDimension.TableValues.Name));
+            }
+            meta.Dimensions.Add(dimension);
+        }
         return meta;
     }
 }

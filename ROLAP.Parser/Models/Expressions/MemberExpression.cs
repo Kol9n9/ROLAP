@@ -1,4 +1,5 @@
 ﻿using ROLAP.Common.Model.Models;
+using System.Runtime.CompilerServices;
 
 namespace ROLAP.Parser.Models.Expressions
 {
@@ -18,7 +19,7 @@ namespace ROLAP.Parser.Models.Expressions
 
                 var measure = cubeMeta.Measures.FirstOrDefault(x =>
                     measureName[0] == '&'
-                        ? x.Measure.Key == measureName.Skip(1).ToString()
+                        ? x.Measure.Key == new String(measureName.Skip(1).ToArray())
                         : x.Measure.Name == measureName);
                 if (measure == null) return null;
                 _value.Names[1] = measure.Measure.Key;
@@ -29,17 +30,13 @@ namespace ROLAP.Parser.Models.Expressions
                 string dimensionGroupName = _value.Names[0];
                 string dimensionName = _value.Names[1];
 
-                var dimension = cubeMeta.Measures.FirstOrDefault(x =>
-                    x.Dimensions.FirstOrDefault(
-                        y => y.Dimension.Name == dimensionGroupName && y.Values.FirstOrDefault(z =>
-                            dimensionName[0] == '&' ? z.Key == dimensionName.Skip(1).ToString() : z.Name == dimensionName) != null)
-                    != null);
+                var dimension = cubeMeta.Dimensions.FirstOrDefault(x => x.Dimension.Name == dimensionGroupName && x.Values.FirstOrDefault(y =>
+                    dimensionName[0] == '&' ? y.Key == new String(dimensionName.Skip(1).ToArray()) : y.Name == dimensionName
+                ) != null);
                 if (dimension == null) return null;
 
-                _value.Names[1] = dimension.Dimensions.FirstOrDefault(x => x.Dimension.Name == dimensionGroupName)
-                    .Values.FirstOrDefault(x =>
-                        dimensionName[0] == '&' ? x.Key == dimensionName.Skip(1).ToString() : x.Name == dimensionName).Key;
-                
+                _value.Names[1] = dimension.Values.FirstOrDefault(x =>
+                        dimensionName[0] == '&' ? x.Key == new String(dimensionName.Skip(1).ToArray()) : x.Name == dimensionName).Key;
                 
                 _value.Type = CubeMemberType.Dimension;
             }
