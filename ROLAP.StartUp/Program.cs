@@ -12,10 +12,13 @@ public class Program
             "FROM [Adventure_Cube]";
 
         string mdx2 =
-            "SELECT {[Университет].[ТГУ],[Университет].[ТПУ]} ON 0, [Специальность].[Прикладная информатика] ON 1 FROM [Adventure_Cube]";
+            "SELECT {[Университет].[ТГУ],[Университет].[ТПУ],[Measure].&[NumberOfApplicants]} ON 0, [Специальность].[Прикладная информатика] ON 1 FROM [Adventure_Cube]";
+        
+        string mdx3 =
+            "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0, [Специальность].[Прикладная информатика] ON 1 FROM [Adventure_Cube]";
         
         CubeProcess process = new CubeProcess();
-        process.Process(mdx2);
+        process.Process(mdx3);
 
         string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
 

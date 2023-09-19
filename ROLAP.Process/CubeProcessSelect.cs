@@ -40,9 +40,22 @@ namespace ROLAP.Process
         private CubeAxis GenerateAxis(CubeQueryAxis axis)
         {
             CubeAxis resultAxis = new CubeAxis();
-            List<List<string>> dimensionsIds = MergeDimensions(axis.Set.Tuples.Select(x => x.Members.Where(y => y.Type == CubeMemberType.Dimension)).SelectMany(x => x).Select(x => x.Names).ToList());
-
-            var cubeDimensions = GetCubeDimensions(dimensionsIds);        
+           
+            foreach (var tuple in axis.Set.Tuples)
+            {
+                var cubeMetaItems = GetCubeDimension(tuple);
+                CubeTuple newTuple = new CubeTuple();
+                foreach (var cubeMetaItem in cubeMetaItems)
+                {
+                    newTuple.Members.Add(new CubeMember
+                    {
+                        Name = cubeMetaItem.Name
+                    });
+                }
+                resultAxis.Tuples.Add(newTuple);
+            }
+            
+            
             //foreach (var tuple in axis.Tuples)
             //{
             //    CubeAxisTuple cubeTuple = new CubeAxisTuple();
@@ -63,6 +76,7 @@ namespace ROLAP.Process
             //}
             return resultAxis;
         }
+        
         //private List<CubeValue> GetValues(List<CubeAxis> cubeAxes)
         //{
         //    List<List<Guid>> dimensionTuplesIds = new List<List<Guid>>();
@@ -168,14 +182,43 @@ namespace ROLAP.Process
         //        FormattedValue = result.ToString()
         //    };
         //}
+        
+        private List<CubeMetaItem> GetCubeDimension(CubeQueryTuple tuple)
+        {
+            List<CubeMetaItem> items = new List<CubeMetaItem>(); 
+            foreach (var member in tuple.Members)
+            {
+                switch (member.Type)
+                {
+                    case CubeMemberType.Dimension:
+                    {
+                        var dimensionGroup =
+                            _cubeMeta.Dimensions.FirstOrDefault(x => x.Dimension.Name == member.Names[0]);
+                        if(dimensionGroup == null) continue;
+                        var dimension = dimensionGroup.Values.FirstOrDefault(x => x.Key == member.Names[1]);
+                        if(dimension == null) continue;
 
+                        items.Add(dimensionGroup.Dimension);
+                        items.Add(dimension);
+                        break;
+                    }
+                    case CubeMemberType.Measure:
+                    {
+                        var measure = _cubeMeta.Measures.FirstOrDefault(x => x.Measure.Key == member.Names[1]);
+                        if(measure == null) continue;
+                        items.Add(measure.Measure);
+                        break;
+                    }
+                }
+            }
+
+            return items;
+        }
 
         private List<CubeMetaDimension> GetCubeDimensions(List<List<string>> dimensionIds)
         {
             List<CubeMetaDimension> cubeDimensions = new List <CubeMetaDimension>();
 
-           
-            
             foreach (var dimensionId in dimensionIds)
             {
                 foreach (var cubeDimension in _cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]))
@@ -195,15 +238,6 @@ namespace ROLAP.Process
                     dimension.Values.AddRange(cubeDimension.Values.Where(x => x.Key == dimensionId[1]));
                     cubeDimensions.Add(dimension);
                 }
-                // //List<CubeMetaDimension> cubeDimension = new List<CubeMetaDimension>();
-                // //cubeDimension.AddRange(_cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]).ToList());
-                // var cubeDimension = new List<CubeMetaDimension>(.Select(x => x).ToList());
-                // foreach (var item in cubeDimension)
-                // {
-                //     var values = item.Values.Where(x => x.Key == dimensionId[1]).ToList();
-                //     item.Values = new List<CubeMetaItem>(values);
-                // }
-                // cubeDimensions.AddRange(cubeDimension);
             }
             return cubeDimensions;
         }
