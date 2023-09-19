@@ -24,8 +24,8 @@ namespace ROLAP.Process
         {
             Cube cube = new Cube();
             cube.Axes = GenerateAxes(_cubeQuery);
-            //var values = GetValues(cube.Axes);
-            //cube.Values = SetAxesValues(values, cube.Axes);
+            var values = GetValues(_cubeQuery);
+            SetAxesValues(_cubeQuery.Axes, values);
             return null;
         }
         private List<CubeAxis> GenerateAxes(CubeQuery request)
@@ -55,120 +55,112 @@ namespace ROLAP.Process
                 resultAxis.Tuples.Add(newTuple);
             }
             
-            
-            //foreach (var tuple in axis.Tuples)
-            //{
-            //    CubeAxisTuple cubeTuple = new CubeAxisTuple();
-            //    foreach (var member in tuple.Members)
-            //    {
-            //        var cubeDimension = cubeDimensions.FirstOrDefault(x => x.Id == member.Id);
-            //        if(cubeDimension == null)
-            //        {
-            //            throw new Exception("Измерение не найдено");
-            //        }
-            //        cubeTuple.AddMember(new CubeAxisMember() { 
-            //            Id = member.Id,
-            //            Name = cubeDimension.Name,
-            //            Type = member.Type
-            //        });
-            //    }
-            //    resultAxis.AddTuple(cubeTuple);
-            //}
             return resultAxis;
         }
         
-        //private List<CubeValue> GetValues(List<CubeAxis> cubeAxes)
-        //{
-        //    List<List<Guid>> dimensionTuplesIds = new List<List<Guid>>();
-        //    List<Guid> measureIds = new List<Guid>();
-        //    foreach (var cubeAxis in cubeAxes)
-        //    {
-        //        foreach(var tuple in cubeAxis.Tuples)
-        //        {
-        //            List<Guid> dimensionIds = new List<Guid>();
-        //            foreach (var member in tuple.Members)
-        //            {
-        //                if(member.Type == CubeMemberType.Dimension)
-        //                {
-        //                     dimensionIds.Add(member.Id);
-        //                } 
-        //                else if(member.Type == CubeMemberType.Measure)
-        //                {
-        //                    measureIds.Add(member.Id);
-        //                }
-        //            }
-        //            dimensionTuplesIds.Add(dimensionIds);
-        //        }
-        //    }
-        //    return repository.GetValues(dimensionTuplesIds, measureIds);
-        //}
-        //private List<AggregateValue> SetAxesValues(List<CubeValue> values, List<CubeAxis> axes, List<CubeAxisTuple> prevAxisTuples = null)
-        //{
-        //    if (axes.Count == 1)
-        //    {
-        //        return SetAxisValues(values, axes[0].Tuples, prevAxisTuples);
-        //    }
-        //    List<AggregateValue> resultValues = new List<AggregateValue>();
-        //    foreach (var tuple in axes[axes.Count - 1].Tuples)
-        //    {
-        //        List<CubeAxisTuple> prevTuples = new List<CubeAxisTuple>();
-        //        if(prevAxisTuples != null)
-        //        {
-        //            prevTuples.AddRange(prevAxisTuples);
-        //        }
-        //        prevTuples.Add(tuple);
-        //        resultValues.AddRange(SetAxesValues(values,axes.Take(axes.Count - 1).ToList(), prevTuples));
-        //    }
-        //    return resultValues;
-        //}
+        private List<object> GetValues(CubeQuery cubeAxes)
+        {
+            List<CubeMetaItem> dimensions = new List<CubeMetaItem>();
+            List<CubeMetaItem> measures = new List<CubeMetaItem>();
+            foreach (var axis in cubeAxes.Axes) 
+            {
+                foreach (var tuple in axis.Set.Tuples)
+                {
+                    foreach (var member in tuple.Members)
+                    {
+                        switch (member.Type)
+                        {
+                            case CubeMemberType.Dimension:
+                            {
+                                var dimensionGroup =
+                                    _cubeMeta.Dimensions.FirstOrDefault(x => x.Dimension.Name == member.Names[0]);
+                                if(dimensionGroup == null) continue;
+                                var dimension = dimensionGroup.Values.FirstOrDefault(x => x.Key == member.Names[1]);
+                                if(dimension == null) continue;
+                                dimensions.Add(dimension);
+                                break;
+                            }
+                            case CubeMemberType.Measure:
+                            {
+                                var measure =
+                                    _cubeMeta.Measures.FirstOrDefault(x => x.Measure.Key == member.Names[1]);
+                                if(measure == null) continue;
+                                measures.Add(measure.Measure);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return _repository.GetValues(measures,dimensions);
+        }
+        private List<object> SetAxesValues(List<CubeQueryAxis> cubeAxis, List<object> values, List<CubeQueryTuple> prevAxisTuples = null)
+        {
+            if (cubeAxis.Count == 1)
+            {
+                return SetAxisValues(cubeAxis[0].Set.Tuples, values, prevAxisTuples);
+            }
+            List<object> resultValues = new List<object>();
+            foreach (var tuple in cubeAxis[cubeAxis.Count - 1].Set.Tuples)
+            {
+                List<CubeQueryTuple> prevTuples = new List<CubeQueryTuple>();
+                if(prevAxisTuples != null)
+                {
+                    prevTuples.AddRange(prevAxisTuples);
+                }
+                prevTuples.Add(tuple);
+                resultValues.AddRange(SetAxesValues(cubeAxis.Take(cubeAxis.Count - 1).ToList(), values, prevTuples));
+            }
+            return resultValues;
+        }
 
-        //private List<AggregateValue> SetAxisValues(List<CubeValue> values, List<CubeAxisTuple> currentAxisTuples, List<CubeAxisTuple> prevAxisTuples = null)
-        //{
-        //    List<AggregateValue> resultCubeValues= new List<AggregateValue>();
-
-        //    List<Guid> prevTuplesDimensions = new List<Guid>();
-        //    List<Guid> prevTuplesMeasures = new List<Guid>();
-
-        //    if(prevAxisTuples!= null)
-        //    {
-        //        foreach (var prevTuple in prevAxisTuples)
-        //        {
-        //            foreach (var member in prevTuple.Members)
-        //            {
-        //                if (member.Type == CubeMemberType.Dimension)
-        //                {
-        //                    prevTuplesDimensions.Add(member.Id);
-        //                }
-        //                else if (member.Type == CubeMemberType.Measure)
-        //                {
-        //                    prevTuplesMeasures.Add(member.Id);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    foreach(var tuple in currentAxisTuples)
-        //    {
-        //        List<Guid> dimensionIds = new List<Guid>();
-        //        List<Guid> measureIds = new List<Guid>();
-        //        foreach (var member in tuple.Members)
-        //        {
-        //            if(member.Type == CubeMemberType.Dimension)
-        //            {
-        //                dimensionIds.Add(member.Id);
-        //            } 
-        //            else if(member.Type == CubeMemberType.Measure)
-        //            {
-        //                measureIds.Add(member.Id);
-        //            }
-        //        }
-        //        dimensionIds.AddRange(prevTuplesDimensions);
-        //        measureIds.AddRange(prevTuplesMeasures);
-        //        var filteredValues = values.Where(v => dimensionIds.All(d => v.Dimensions.Contains(d)) && (!measureIds.Any() || measureIds.All(m => v.MeasureId == m))).ToList();
-        //        resultCubeValues.Add(AggregateValues(filteredValues));
-        //    }
-        //    return resultCubeValues;
-        //}
+        private List<object> SetAxisValues(List<CubeQueryTuple> currentAxisTuples, List<object> values, List<CubeQueryTuple> prevAxisTuples = null)
+        {
+            List<object> resultCubeValues= new List<object>();
+            //
+            // List<Guid> prevTuplesDimensions = new List<Guid>();
+            // List<Guid> prevTuplesMeasures = new List<Guid>();
+            //
+            // if(prevAxisTuples!= null)
+            // {
+            //     foreach (var prevTuple in prevAxisTuples)
+            //     {
+            //         foreach (var member in prevTuple.Members)
+            //         {
+            //             if (member.Type == CubeMemberType.Dimension)
+            //             {
+            //                 prevTuplesDimensions.Add(member.Id);
+            //             }
+            //             else if (member.Type == CubeMemberType.Measure)
+            //             {
+            //                 prevTuplesMeasures.Add(member.Id);
+            //             }
+            //         }
+            //     }
+            // }
+            //
+            // foreach(var tuple in currentAxisTuples)
+            // {
+            //     List<Guid> dimensionIds = new List<Guid>();
+            //     List<Guid> measureIds = new List<Guid>();
+            //     foreach (var member in tuple.Members)
+            //     {
+            //         if(member.Type == CubeMemberType.Dimension)
+            //         {
+            //             dimensionIds.Add(member.Id);
+            //         } 
+            //         else if(member.Type == CubeMemberType.Measure)
+            //         {
+            //             measureIds.Add(member.Id);
+            //         }
+            //     }
+            //     dimensionIds.AddRange(prevTuplesDimensions);
+            //     measureIds.AddRange(prevTuplesMeasures);
+            //     var filteredValues = values.Where(v => dimensionIds.All(d => v.Dimensions.Contains(d)) && (!measureIds.Any() || measureIds.All(m => v.MeasureId == m))).ToList();
+            //     resultCubeValues.Add(AggregateValues(filteredValues));
+            // }
+            return resultCubeValues;
+        }
         //private AggregateValue AggregateValues(List<CubeValue> values)
         //{
         //    decimal result = 0;
@@ -197,7 +189,7 @@ namespace ROLAP.Process
                         if(dimensionGroup == null) continue;
                         var dimension = dimensionGroup.Values.FirstOrDefault(x => x.Key == member.Names[1]);
                         if(dimension == null) continue;
-
+                        
                         items.Add(dimensionGroup.Dimension);
                         items.Add(dimension);
                         break;
@@ -213,47 +205,6 @@ namespace ROLAP.Process
             }
 
             return items;
-        }
-
-        private List<CubeMetaDimension> GetCubeDimensions(List<List<string>> dimensionIds)
-        {
-            List<CubeMetaDimension> cubeDimensions = new List <CubeMetaDimension>();
-
-            foreach (var dimensionId in dimensionIds)
-            {
-                foreach (var cubeDimension in _cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]))
-                {
-                    CubeMetaDimension dimension = new CubeMetaDimension
-                    {
-                        Dimension = new CubeMetaItem
-                        {
-                            ConnectionField = cubeDimension.Dimension.ConnectionField,
-                            Key = cubeDimension.Dimension.Key,
-                            Name = cubeDimension.Dimension.Name,
-                            Schema = cubeDimension.Dimension.Schema,
-                            Table = cubeDimension.Dimension.Table,
-                        },
-                        Values = new List<CubeMetaItem>()
-                    };
-                    dimension.Values.AddRange(cubeDimension.Values.Where(x => x.Key == dimensionId[1]));
-                    cubeDimensions.Add(dimension);
-                }
-            }
-            return cubeDimensions;
-        }
-        private List<List<string>> MergeDimensions(List<List<string>> dimensions)
-        {
-            return dimensions;
-            var result = new List<List<string>>();
-            for(int i = 0; i < dimensions.Count; i++)
-            {
-                var dimension = dimensions[i];
-                var otherDimensions = dimensions.Where(x => x[0] == dimension[0]).ToList();
-                dimension.AddRange(otherDimensions.Select(x => x[1]));
-                dimensions.RemoveAll(x => x[0] == dimension[0]);
-            }
-
-            return result;
         }
     }
 }

@@ -9,20 +9,20 @@ namespace ROLAP.Repository.Postgre;
 
 public class PostgreRepository : IRepository
 {
-    //public List<CubeDimension> GetDimensions(List<Guid> dimensionIds)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    public List<object> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
+    {
+        var dimensionFields = dimensions.Select(x => new Tuple<string, string>(x.ConnectionField, x.Key)).ToList();
+        List<object> results = new List<object>();
+        foreach (var measure in measures)
+        {
+            if (!string.IsNullOrWhiteSpace(measure.Table))
+            {
+                results.AddRange(Helper.GetValues(measure.Schema, measure.Table, measure.ValueField, dimensionFields));
+            }
+        }
 
-    //public List<CubeMeasure> GetMeasures(List<Guid> measuresIds)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
-    //public List<CubeValue> GetValues(List<List<Guid>> dimensionIds, List<Guid> measureIds)
-    //{
-    //    throw new NotImplementedException();
-    //}
+        return results;
+    }
 
     public CubeMeta GetCubeMeta(CubeConfiguration configuration)
     {
@@ -53,14 +53,13 @@ public class PostgreRepository : IRepository
                 Dimension = new CubeMetaItem
                 {
                     Key = measureDimension.Key.ToString(),
-                    Name = measureDimension.Name,
-                    ConnectionField = measureDimension.TableValues.ConnectionField
+                    Name = measureDimension.Name
                 },
                 Values = new List<CubeMetaItem>()
             };
             if (measureDimension.TableValues != null)
             {
-                dimension.Values.AddRange(Helper.GetMetaItems(measureDimension.TableValues.Schema,measureDimension.TableValues.Table,measureDimension.TableValues.Key,measureDimension.TableValues.Name));
+                dimension.Values.AddRange(Helper.GetMetaItems(measureDimension.TableValues.Schema,measureDimension.TableValues.Table,measureDimension.TableValues.Key,measureDimension.TableValues.Name,measureDimension.TableValues.ConnectionField));
             }
             meta.Dimensions.Add(dimension);
         }
