@@ -175,17 +175,35 @@ namespace ROLAP.Process
             List<CubeMetaDimension> cubeDimensions = new List <CubeMetaDimension>();
 
            
+            
             foreach (var dimensionId in dimensionIds)
             {
-                //List<CubeMetaDimension> cubeDimension = new List<CubeMetaDimension>();
-                //cubeDimension.AddRange(_cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]).ToList());
-                var cubeDimension = new List<CubeMetaDimension>(_cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]).Select(x => x).ToList());
-                foreach (var item in cubeDimension)
+                foreach (var cubeDimension in _cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]))
                 {
-                    var values = item.Values.Where(x => x.Key == dimensionId[1]).ToList();
-                    item.Values = new List<CubeMetaItem>(values);
+                    CubeMetaDimension dimension = new CubeMetaDimension
+                    {
+                        Dimension = new CubeMetaItem
+                        {
+                            ConnectionField = cubeDimension.Dimension.ConnectionField,
+                            Key = cubeDimension.Dimension.Key,
+                            Name = cubeDimension.Dimension.Name,
+                            Schema = cubeDimension.Dimension.Schema,
+                            Table = cubeDimension.Dimension.Table,
+                        },
+                        Values = new List<CubeMetaItem>()
+                    };
+                    dimension.Values.AddRange(cubeDimension.Values.Where(x => x.Key == dimensionId[1]));
+                    cubeDimensions.Add(dimension);
                 }
-                cubeDimensions.AddRange(cubeDimension);
+                // //List<CubeMetaDimension> cubeDimension = new List<CubeMetaDimension>();
+                // //cubeDimension.AddRange(_cubeMeta.Dimensions.Where(x => x.Dimension.Name == dimensionId[0]).ToList());
+                // var cubeDimension = new List<CubeMetaDimension>(.Select(x => x).ToList());
+                // foreach (var item in cubeDimension)
+                // {
+                //     var values = item.Values.Where(x => x.Key == dimensionId[1]).ToList();
+                //     item.Values = new List<CubeMetaItem>(values);
+                // }
+                // cubeDimensions.AddRange(cubeDimension);
             }
             return cubeDimensions;
         }
