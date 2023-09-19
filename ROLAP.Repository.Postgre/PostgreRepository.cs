@@ -9,15 +9,21 @@ namespace ROLAP.Repository.Postgre;
 
 public class PostgreRepository : IRepository
 {
-    public List<object> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
+    public List<CubeQueryValue> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
     {
         var dimensionFields = dimensions.Select(x => new Tuple<string, string>(x.ConnectionField, x.Key)).ToList();
-        List<object> results = new List<object>();
+        List<CubeQueryValue> results = new List<CubeQueryValue>();
         foreach (var measure in measures)
         {
             if (!string.IsNullOrWhiteSpace(measure.Table))
             {
-                results.AddRange(Helper.GetValues(measure.Schema, measure.Table, measure.ValueField, dimensionFields));
+                results.AddRange(Helper.GetValues(measure.Schema, measure.Table, measure.ValueField, dimensionFields)
+                    .Select(x => new CubeQueryValue
+                    {
+                        Value = x,
+                        Dimensions = new List<CubeMetaItem>(dimensions),
+                        Measure = measure
+                    }));
             }
         }
 

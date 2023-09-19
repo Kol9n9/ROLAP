@@ -199,7 +199,7 @@ namespace ROLAP.TestLocalRepository
         //    return TestValues.Where(w => dimensionIds.Any(x => x.All(y => w.Dimensions.Contains(y)) && (!measureIds.Any() || measureIds.Any(m => m == w.MeasureId)))).ToList();
         //}
 
-        public List<object> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
+        public List<CubeQueryValue> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
         {
             throw new NotImplementedException();
         }

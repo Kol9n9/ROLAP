@@ -15,7 +15,7 @@ public class Program
             "SELECT {[Университет].[ТГУ],[Университет].[ТПУ],[Measure].&[NumberOfApplicants]} ON 0, [Специальность].[Прикладная информатика] ON 1 FROM [Adventure_Cube]";
         
         string mdx3 =
-            "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0, [Специальность].[Прикладная информатика] ON 1 FROM [Adventure_Cube]";
+            "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0 FROM [Adventure_Cube]";
         
         CubeProcess process = new CubeProcess();
         process.Process(mdx3);

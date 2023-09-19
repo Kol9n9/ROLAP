@@ -73,6 +73,13 @@ namespace ROLAP.Common.Model.Models
         public List<string> Names { get; set; }
     }
 
+    public class CubeQueryValue
+    {
+        public object Value { get; set; }
+        public List<CubeMetaItem> Dimensions { get; set; }
+        public CubeMetaItem Measure { get; set; }
+    }
+    
     public enum CubeMemberType
     {
         Unknown = -1,

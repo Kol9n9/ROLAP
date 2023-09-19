@@ -21,7 +21,7 @@ namespace ROLAP.Process.Models
     }
     internal class CubeValue
     {
-        public decimal Value { get; set; }
+        public double Value { get; set; }
         public string FmtValue { get; set; }
     }
 }
