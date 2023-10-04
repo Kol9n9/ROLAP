@@ -18,7 +18,7 @@ namespace ROLAP.Repository.Postgre;
 
 public static class Helper
 {
-    public static List<CubeMetaItem> GetMetaItems(string schema, string table, string idField, string nameField, string connectionField)
+    public static List<CubeMetaItem> GetDimensionValuesFromOneTableMetaItems(string schema, string table, string idField, string nameField, string connectionField)
     {
         List<CubeMetaItem> results = new List<CubeMetaItem>();
         using (ApplicationDbContext db = new ApplicationDbContext())
@@ -49,6 +49,61 @@ public static class Helper
         return results;
     }
 
+    public static List<Tuple<string,string>> GetDimensions(string schema, string table, string idField, string nameField)
+    {
+        List<Tuple<string, string>> results = new List<Tuple<string, string>>();
+
+        using (ApplicationDbContext db = new ApplicationDbContext())
+        {
+            using (var command = db.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM \"{schema}\".\"{table}\"";
+                command.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var res = command.ExecuteReader())
+                {
+                    while (res.Read())
+                    {
+                        var idOrdinal = res.GetOrdinal(idField);
+                        var nameOrdinal = res.GetOrdinal(nameField);
+                        results.Add(new Tuple<string, string>(res.GetValue(idOrdinal).ToString(), res.GetValue(nameOrdinal).ToString()));
+                    }
+                }
+            }
+        }
+
+        return results;
+    }
+    public static List<CubeMetaItem> GetDimensionValuesFromTableMetaItems(string schema, string table, string idField, string nameField, string dimensionConnectionField, string dimensionId)
+    {
+        List<CubeMetaItem> results = new List<CubeMetaItem>();
+        using (ApplicationDbContext db = new ApplicationDbContext())
+        {
+            using (var command = db.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM \"{schema}\".\"{table}\"  WHERE \"{dimensionConnectionField}\"='{dimensionId}'";
+                command.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var res = command.ExecuteReader())
+                {
+                    while (res.Read())
+                    {
+                        var idOrdinal = res.GetOrdinal(idField);
+                        var nameOrdinal = res.GetOrdinal(nameField);
+                        results.Add(new CubeMetaItem
+                        {
+                            Key = res.GetValue(idOrdinal).ToString(),
+                            Name = res.GetValue(nameOrdinal).ToString(),
+                            Schema = schema,
+                            Table = table,
+                        });
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
     public static List<object> GetValues(string measureSchema, string measureTable, string measureValueField, List<Tuple<string, string>> dimensionFields)
     {
         List<object> results = new List<object>();
@@ -64,7 +119,7 @@ public static class Helper
                     sql += $" \"{dimensionFields[0].Item1}\"='{dimensionFields[0].Item2}'";
                     foreach (var dimensionField in dimensionFields.Skip(1))
                     {
-                        sql += $" AND \"{dimensionField.Item1}\"='{dimensionField.Item2}'";
+                        sql += $" OR \"{dimensionField.Item1}\"='{dimensionField.Item2}'";
                     }
                 }
 

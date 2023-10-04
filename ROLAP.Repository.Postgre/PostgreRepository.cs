@@ -47,27 +47,52 @@ public class PostgreRepository : IRepository
                     Schema = measure.MeasureValue.Schema,
                     Table = measure.MeasureValue.Table,
                     Name = measure.MeasureValue.Name,
-                    ValueField = measure.MeasureValue.Value
+                    ValueField = measure.MeasureValue.Value,
+                    Dimensions = measure.DimensionNames
 
                 }
             });
         }
         foreach (var measureDimension in configuration.Dimensions)
         {
-            CubeMetaDimension dimension = new CubeMetaDimension
+            if(measureDimension is OneTableOneDimensions oneDimension)
             {
-                Dimension = new CubeMetaItem
+                CubeMetaDimension metaDimension = new CubeMetaDimension
                 {
-                    Key = measureDimension.Key.ToString(),
-                    Name = measureDimension.Name
-                },
-                Values = new List<CubeMetaItem>()
-            };
-            if (measureDimension.TableValues != null)
+                    Dimension = new CubeMetaItem
+                    {
+                        Key = oneDimension.Key.ToString(),
+                        Name = oneDimension.Name
+                    },
+                    Values = new List<CubeMetaItem>()
+                };
+                if (measureDimension.TableValues != null)
+                {
+                    metaDimension.Values.AddRange(Helper.GetDimensionValuesFromOneTableMetaItems(measureDimension.TableValues.Schema, measureDimension.TableValues.Table, measureDimension.TableValues.Key, measureDimension.TableValues.Name, measureDimension.TableValues.ValueConnectionField));
+                }
+                meta.Dimensions.Add(metaDimension);
+            } 
+            else if (measureDimension is OneTableManyDimensions manyDimensions)
             {
-                dimension.Values.AddRange(Helper.GetMetaItems(measureDimension.TableValues.Schema,measureDimension.TableValues.Table,measureDimension.TableValues.Key,measureDimension.TableValues.Name,measureDimension.TableValues.ConnectionField));
+                foreach(var dimension in Helper.GetDimensions(manyDimensions.Schema, manyDimensions.Table, manyDimensions.Id, manyDimensions.Name))
+                {
+                    CubeMetaDimension metaDimension = new CubeMetaDimension
+                    {
+                        Dimension = new CubeMetaItem
+                        {
+                            Key = dimension.Item1,
+                            Name = dimension.Item2
+                        },
+                        Values = new List<CubeMetaItem>()
+                    };
+                    if(manyDimensions.TableValues != null)
+                    {
+                        metaDimension.Values.AddRange(Helper.GetDimensionValuesFromTableMetaItems(manyDimensions.TableValues.Schema, manyDimensions.TableValues.Table, manyDimensions.TableValues.Key, manyDimensions.TableValues.Name, manyDimensions.TableValues.DimensionConnectionField, metaDimension.Dimension.Key));
+                    }
+                    meta.Dimensions.Add(metaDimension);
+                }
             }
-            meta.Dimensions.Add(dimension);
+            
         }
         return meta;
     }

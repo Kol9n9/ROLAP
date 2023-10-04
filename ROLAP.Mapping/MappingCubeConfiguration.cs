@@ -29,34 +29,57 @@ namespace ROLAP.Mapping
                                 Table = "NumberOfApplicants",
                                 Schema = "ROLAP",
                                 Value = "Value"
+                            },
+                            DimensionNames = new List<string>
+                            {
+                                "University"
+                              
                             }
                         }
                     }
                 },
-                Dimensions = new List<DimensionConfiguration>
+                Dimensions = new List<DimensionConfigurationBase>
                 {
-                    new DimensionConfiguration
+                    new OneTableOneDimensions
                     {
+                        Key = "University",
                         Name = "Университет",
                         TableValues = new TableValuesConfiguration
                         {
-                            ConnectionField = "UniversityId",
+                            ValueConnectionField = "UniversityId",
                             Name = "Name",
                             Key = "Id",
                             Schema = "ROLAP",
                             Table = "University"
                         }
                     },
-                    new DimensionConfiguration
+                    new OneTableOneDimensions
                     {
+                        Key = "Specialty",
                         Name = "Специальность",
                         TableValues = new TableValuesConfiguration
                         {
-                            ConnectionField = "SpecialtyId",
+                            ValueConnectionField = "SpecialtyId",
                             Name = "Name",
                             Key = "Id",
                             Schema = "ROLAP",
                             Table = "Specialty"
+                        }
+                    },
+                    new OneTableManyDimensions
+                    {
+                        Key = "Dimension",
+                        Name = "Name",
+                        Id = "Id",
+                        Schema = "ROLAP",
+                        Table = "DimensionGroups",
+                        TableValues = new TableValuesConfiguration
+                        {
+                            Name= "Name",
+                            Key = "Id",
+                            Schema = "ROLAP",
+                            Table = "Dimensions",
+                            DimensionConnectionField = "MeasureGroupId"
                         }
                     }
                 },

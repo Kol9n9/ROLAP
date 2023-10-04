@@ -97,16 +97,16 @@ namespace ROLAP.Process
                 return SetAxisValues(cubeAxis[0].Set.Tuples, values, prevAxisTuples);
             }
             List<CubeValue> resultValues = new List<CubeValue>();
+            List<CubeQueryTuple> prevTuples = new List<CubeQueryTuple>();
+            if (prevAxisTuples != null)
+            {
+                prevTuples.AddRange(prevAxisTuples);
+            }
             foreach (var tuple in cubeAxis[cubeAxis.Count - 1].Set.Tuples)
             {
-                List<CubeQueryTuple> prevTuples = new List<CubeQueryTuple>();
-                if(prevAxisTuples != null)
-                {
-                    prevTuples.AddRange(prevAxisTuples);
-                }
                 prevTuples.Add(tuple);
-                resultValues.AddRange(SetAxesValues(cubeAxis.Take(cubeAxis.Count - 1).ToList(), values, prevTuples));
             }
+            resultValues.AddRange(SetAxesValues(cubeAxis.Take(cubeAxis.Count - 1).ToList(), values, prevTuples));
             return resultValues;
         }
 

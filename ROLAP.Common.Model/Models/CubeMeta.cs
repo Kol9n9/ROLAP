@@ -37,4 +37,5 @@ public class CubeMetaItem
     public string Table { get; set; }
     public string ConnectionField { get; set; }
     public string ValueField { get; set; }
+    public List<string> Dimensions { get; set; }
 }

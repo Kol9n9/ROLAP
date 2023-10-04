@@ -18,7 +18,7 @@ public class Program
             "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0 FROM [Adventure_Cube]";
         
         CubeProcess process = new CubeProcess();
-        process.Process(mdx3);
+        process.Process(mdx2);
 
         string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
 

@@ -4,20 +4,32 @@
     {
         public string Name { get; set; }
         public List<MeasureConfiguration> Measures { get; set; }
-        public List<DimensionConfiguration> Dimensions { get; set; }
+        public List<DimensionConfigurationBase> Dimensions { get; set; }
     }
     public class MeasureConfiguration
     {
         public string Name { get; set; }
         public Guid Key { get; set; } 
         public MeasureValueConfiguration MeasureValue { get; set; }
+        public List<string> DimensionNames { get; set; }
     }
-    public class DimensionConfiguration
+    public abstract class DimensionConfigurationBase
     {
-        public string Name { get; set; }
-        public Guid Key { get; set; }
+        public string Key { get; set; }
         public List<DimensionValueConfiguration> Values { get; set; }
         public TableValuesConfiguration TableValues { get; set; }
+    }
+    public class OneTableOneDimensions : DimensionConfigurationBase
+    { 
+        public string Name { get; set; }
+    }
+    public class OneTableManyDimensions : DimensionConfigurationBase
+    {
+        public string Schema { get; set; }
+        public string Table { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
     public class DimensionValueConfiguration
     {
@@ -53,6 +65,7 @@
         public string Key { get; set; }
         public string Schema { get; set; }
         public string Table { get; set; }
-        public string ConnectionField { get; set; }
+        public string ValueConnectionField { get; set; }
+        public string DimensionConnectionField { get; set; }
     }
 }
