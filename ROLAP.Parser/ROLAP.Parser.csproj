@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ROLAP.Common.Model\ROLAP.Common.Model.csproj" />
+    <ProjectReference Include="..\ROLAP.CubeConfiguration\ROLAP.CubeConfiguration.csproj" />
   </ItemGroup>
 
 </Project>

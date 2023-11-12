@@ -22,10 +22,10 @@ namespace ROLAP.Parser
             _pos = 0;
         }
 
-        public CubeQuery GetCubeQuery(IMappingCubeConfiguration mappingCubeConfiguration)
+        public CubeQuery GetCubeQuery(IRepository repository)
         {
             var statement = Parse();
-            return statement.Execute(mappingCubeConfiguration);
+            return statement.Execute(repository);
         }
         
         private IStatement Parse()

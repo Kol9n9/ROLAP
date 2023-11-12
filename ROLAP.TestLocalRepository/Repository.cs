@@ -1,5 +1,6 @@
 ﻿using ROLAP.Common.Model.Interfaces;
 using ROLAP.Common.Model.Models;
+using ROLAP.Common.Model.Models.Meta;
 
 namespace ROLAP.TestLocalRepository
 {
@@ -199,12 +200,13 @@ namespace ROLAP.TestLocalRepository
         //    return TestValues.Where(w => dimensionIds.Any(x => x.All(y => w.Dimensions.Contains(y)) && (!measureIds.Any() || measureIds.Any(m => m == w.MeasureId)))).ToList();
         //}
 
-        public List<CubeQueryValue> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
+        public List<object> GetValues(string schemaName, string tableName, string valueField, List<Tuple<string, string>>? dimensions, string? connectionField = null,
+            string? connectionFieldValue = null)
         {
             throw new NotImplementedException();
         }
 
-        public CubeMeta GetCubeMeta(CubeConfiguration configuration)
+        public List<CubeMetaData> LoadMetaData(string schemaName, string tableName, string idField, string keyField, string nameField, string? connectionField = null, string? connectionFieldValue = null)
         {
             throw new NotImplementedException();
         }

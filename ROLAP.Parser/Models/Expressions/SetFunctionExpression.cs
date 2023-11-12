@@ -1,4 +1,5 @@
 ﻿using ROLAP.Common.Model.Models;
+using ROLAP.Common.Model.Models.Meta;
 
 namespace ROLAP.Parser.Models.Expressions
 {
@@ -12,7 +13,7 @@ namespace ROLAP.Parser.Models.Expressions
             _arguments = arguments;
         }
 
-        public ICubeQueryNode Eval(CubeMeta cubeMeta)
+        public ICubeQueryNode Eval(List<ICubeMeta> cubeMeta)
         {
             switch(_name.ToLower()) {
                 case "crossjoin": return CrossJoin(cubeMeta);
@@ -20,7 +21,7 @@ namespace ROLAP.Parser.Models.Expressions
             }
             // Return new Set
         }
-        private ICubeQueryNode CrossJoin(CubeMeta cubeMeta)
+        private ICubeQueryNode CrossJoin(List<ICubeMeta> cubeMeta)
         {
             var set1 = Helpers.MapToSet(_arguments[0].Eval(cubeMeta));
             var set2 = Helpers.MapToSet(_arguments[1].Eval(cubeMeta));

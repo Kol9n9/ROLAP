@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ROLAP.Common.Model.Models.Meta;
 
 namespace ROLAP.Common.Model.Models
 {
@@ -76,8 +77,9 @@ namespace ROLAP.Common.Model.Models
     public class CubeQueryValue
     {
         public object Value { get; set; }
-        public List<CubeMetaItem> Dimensions { get; set; }
-        public CubeMetaItem Measure { get; set; }
+        public List<ICubeMeta> MetaInfo { get; set; }
+        //public List<CubeMetaItem2> Dimensions { get; set; }
+        //public CubeMetaItem2 Measure { get; set; }
     }
     
     public enum CubeMemberType

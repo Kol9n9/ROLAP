@@ -4,96 +4,96 @@ using System.Data.Entity.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using ROLAP.Common.Model.Interfaces;
 using ROLAP.Common.Model.Models;
+using ROLAP.Common.Model.Models.Meta;
 
 namespace ROLAP.Repository.Postgre;
 
 public class PostgreRepository : IRepository
 {
-    public List<CubeQueryValue> GetValues(List<CubeMetaItem> measures, List<CubeMetaItem> dimensions)
+    public List<object> GetValues(string schemaName, string tableName, string valueField, List<Tuple<string,string>>? dimensions, string? connectionField = null, string? connectionFieldValue = null)
     {
-        var dimensionFields = dimensions.Select(x => new Tuple<string, string>(x.ConnectionField, x.Key)).ToList();
-        List<CubeQueryValue> results = new List<CubeQueryValue>();
-        foreach (var measure in measures)
+        List<object> values = new List<object>();
+        using (ApplicationDbContext db = new ApplicationDbContext())
         {
-            if (!string.IsNullOrWhiteSpace(measure.Table))
+            using (var command = db.Database.GetDbConnection().CreateCommand())
             {
-                results.AddRange(Helper.GetValues(measure.Schema, measure.Table, measure.ValueField, dimensionFields)
-                    .Select(x => new CubeQueryValue
+                bool isConnectionField = false;
+                var query = $"SELECT \"{valueField}\" FROM \"{schemaName}\".\"{tableName}\"";
+                if (!string.IsNullOrWhiteSpace(connectionField))
+                {
+                    if (string.IsNullOrWhiteSpace(connectionFieldValue))
+                        throw new ArgumentNullException(nameof(connectionFieldValue));
+
+                    query += $" WHERE \"{connectionField}\"='{connectionFieldValue}'";
+                    isConnectionField = true;
+                }
+
+                if (dimensions != null && dimensions.Any())
+                {
+                    if (!isConnectionField)
                     {
-                        Value = x,
-                        Dimensions = new List<CubeMetaItem>(dimensions),
-                        Measure = measure
-                    }));
+                        query += " WHERE";
+                    }
+                    else
+                    {
+                        query += " AND";
+                    }
+
+                    query += $"\"{dimensions[0].Item1}\"='{dimensions[0].Item2}'";
+                    foreach (var dimension in dimensions.Skip(1))
+                    {
+                        query += $" AND \"{dimension.Item1}\"='{dimension.Item2}'";
+                    }
+                }
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var res = command.ExecuteReader())
+                {
+                    while (res.Read())
+                    {
+                        values.Add(res.GetValue(0));
+                    }
+                }
+            }
+        }
+        return values;
+    }
+
+    public List<CubeMetaData> LoadMetaData(string schemaName, string tableName, string idField, string keyField, string nameField, string? connectionField = null, string? connectionFieldValue = null)
+    {
+        List<CubeMetaData> results = new List<CubeMetaData>();
+        using (ApplicationDbContext db = new ApplicationDbContext())
+        {
+            using (var command = db.Database.GetDbConnection().CreateCommand())
+            {
+                var query = $"SELECT * FROM \"{schemaName}\".\"{tableName}\"";
+                if (!string.IsNullOrWhiteSpace(connectionField))
+                {
+                    if (string.IsNullOrWhiteSpace(connectionFieldValue))
+                        throw new ArgumentNullException(nameof(connectionFieldValue));
+
+                    query += $" WHERE \"{connectionField}\"='{connectionFieldValue}'";
+                }
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var res = command.ExecuteReader())
+                {
+                    while (res.Read())
+                    {
+                        var idOrdinal = res.GetOrdinal(idField);
+                        var nameOrdinal = res.GetOrdinal(nameField);
+                        results.Add(new CubeMetaData
+                        {
+                            Id = res.GetValue(idOrdinal)?.ToString(),
+                            Name = res.GetValue(nameOrdinal)?.ToString()
+                        });
+                    }
+                }
             }
         }
 
         return results;
-    }
-
-    public CubeMeta GetCubeMeta(CubeConfiguration configuration)
-    {
-        CubeMeta meta = new CubeMeta
-        {
-            Measures = new List<CubeMetaMeasure>(),
-            Dimensions= new List<CubeMetaDimension>(),
-        };
-
-        foreach (var measure in configuration.Measures)
-        {
-            meta.Measures.Add(new CubeMetaMeasure {
-                Measure = new CubeMetaItem
-                {
-                    Key = measure.MeasureValue.Id,
-                    Schema = measure.MeasureValue.Schema,
-                    Table = measure.MeasureValue.Table,
-                    Name = measure.MeasureValue.Name,
-                    ValueField = measure.MeasureValue.Value,
-                    Dimensions = measure.DimensionNames
-
-                }
-            });
-        }
-        foreach (var measureDimension in configuration.Dimensions)
-        {
-            if(measureDimension is OneTableOneDimensions oneDimension)
-            {
-                CubeMetaDimension metaDimension = new CubeMetaDimension
-                {
-                    Dimension = new CubeMetaItem
-                    {
-                        Key = oneDimension.Key.ToString(),
-                        Name = oneDimension.Name
-                    },
-                    Values = new List<CubeMetaItem>()
-                };
-                if (measureDimension.TableValues != null)
-                {
-                    metaDimension.Values.AddRange(Helper.GetDimensionValuesFromOneTableMetaItems(measureDimension.TableValues.Schema, measureDimension.TableValues.Table, measureDimension.TableValues.Key, measureDimension.TableValues.Name, measureDimension.TableValues.ValueConnectionField));
-                }
-                meta.Dimensions.Add(metaDimension);
-            } 
-            else if (measureDimension is OneTableManyDimensions manyDimensions)
-            {
-                foreach(var dimension in Helper.GetDimensions(manyDimensions.Schema, manyDimensions.Table, manyDimensions.Id, manyDimensions.Name))
-                {
-                    CubeMetaDimension metaDimension = new CubeMetaDimension
-                    {
-                        Dimension = new CubeMetaItem
-                        {
-                            Key = dimension.Item1,
-                            Name = dimension.Item2
-                        },
-                        Values = new List<CubeMetaItem>()
-                    };
-                    if(manyDimensions.TableValues != null)
-                    {
-                        metaDimension.Values.AddRange(Helper.GetDimensionValuesFromTableMetaItems(manyDimensions.TableValues.Schema, manyDimensions.TableValues.Table, manyDimensions.TableValues.Key, manyDimensions.TableValues.Name, manyDimensions.TableValues.DimensionConnectionField, metaDimension.Dimension.Key));
-                    }
-                    meta.Dimensions.Add(metaDimension);
-                }
-            }
-            
-        }
-        return meta;
     }
 }

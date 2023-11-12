@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ROLAP.Mapping\ROLAP.Mapping.csproj" />
+    <ProjectReference Include="..\ROLAP.CubeConfiguration\ROLAP.CubeConfiguration.csproj" />
     <ProjectReference Include="..\ROLAP.Process\ROLAP.Process.csproj" />
     <ProjectReference Include="..\ROLAP.Repository.Postgre\ROLAP.Repository.Postgre.csproj" />
   </ItemGroup>

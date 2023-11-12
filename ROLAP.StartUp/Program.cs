@@ -1,4 +1,4 @@
-﻿using ROLAP.Mapping;
+﻿using ROLAP.CubeConfiguration;
 using ROLAP.Parser;
 using ROLAP.Process;
 using ROLAP.Repository.Postgre;
@@ -16,6 +16,8 @@ public class Program
         
         string mdx3 =
             "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0 FROM [Adventure_Cube]";
+        
+        //MapperCubeConfiguration.GetCubeConfiguration(new PostgreRepository());
         
         CubeProcess process = new CubeProcess();
         process.Process(mdx2);

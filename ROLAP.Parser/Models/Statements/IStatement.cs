@@ -10,6 +10,6 @@ namespace ROLAP.Parser.Models.Statements
 {
     internal interface IStatement
     {
-        CubeQuery Execute(IMappingCubeConfiguration mappingCubeConfiguration);
+        CubeQuery Execute(IRepository repository);
     }
 }

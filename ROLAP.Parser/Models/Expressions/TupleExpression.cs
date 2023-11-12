@@ -11,6 +11,7 @@
 // #endregion Copyright
 
 using ROLAP.Common.Model.Models;
+using ROLAP.Common.Model.Models.Meta;
 
 namespace ROLAP.Parser.Models.Expressions;
 
@@ -22,7 +23,7 @@ internal class TupleExpression : IExpression
     {
         _expressions = expressions;
     }
-    public ICubeQueryNode Eval(CubeMeta cubeMeta)
+    public ICubeQueryNode Eval(List<ICubeMeta> cubeMeta)
     {
         List<CubeQueryMember> values = new List<CubeQueryMember>();
         foreach (var expression in _expressions)
