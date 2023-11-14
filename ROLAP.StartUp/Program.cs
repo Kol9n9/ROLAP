@@ -18,11 +18,13 @@ public class Program
             "SELECT CrossJoin([Университет].[ТГУ],[Measure].&[NumberOfApplicants]) ON 0 FROM [Adventure_Cube]";
         
         //MapperCubeConfiguration.GetCubeConfiguration(new PostgreRepository());
+
+        string mdx4 = "SELECT CrossJoin([Measure].[Доход],{[Факты и прогнозы].[План],[Факты и прогнозы].[Факт]}) ON 0, {[ОКВЭД].[Тест],[ОКВЭД].[Проверка]} ON 1 FROM [Adventure_Cube]";
         
         CubeProcess process = new CubeProcess();
-        process.Process(mdx2);
+        process.Process(mdx4);
 
-        string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
+    //    string mdy = "CrossJoin({[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]},{[University].[Tomsk].&[62E2E142-8A00-45AB-B8EA-A4CB277EB63F]})";
 
 
         //var result = new Parser(mdx).Parse();

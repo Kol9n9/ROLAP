@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using ROLAP.Common.Model.Models.Meta;
+using ROLAP.Process.Helpers;
 using ROLAP.Values;
 
 namespace ROLAP.Process
@@ -16,17 +17,17 @@ namespace ROLAP.Process
     {
         private readonly IRepository _repository;
         private readonly CubeQuery _cubeQuery;
-        private readonly List<CubeMeasureMeta> _cubeMeasureMeta;
-        private readonly List<CubeDimensionMeta> _cubeDimensionMeta;
+        private readonly List<ICubeMeta> _cubeMetas;
         public CubeProcessSelect(IRepository repository, CubeQuery cubeQuery, List<ICubeMeta> cubeMeta) {
             _repository = repository;
             _cubeQuery = cubeQuery;
-            _cubeMeasureMeta = cubeMeta.Where(x => x is CubeMeasureMeta).Cast<CubeMeasureMeta>().ToList();
-            _cubeDimensionMeta = cubeMeta.Where(x => x is CubeDimensionMeta).Cast<CubeDimensionMeta>().ToList();
+            _cubeMetas = cubeMeta;
         }
         public Cube Process()
         {
             Cube cube = new Cube();
+            var axesMeta = CubeHelper.GetCubeQueryMetas(_cubeMetas,_cubeQuery);
+            CubeHelper.GenerateQuery(axesMeta);
             cube.Axes = GenerateAxes(_cubeQuery);
             var values = GetValues(_cubeQuery);
             //cube.Values = SetAxesValues(_cubeQuery.Axes, values);
