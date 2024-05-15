@@ -1,0 +1,16 @@
+﻿{
+    Dimensions: [
+        {
+            Source: {
+                Type: "STATIC",
+                Data: [
+                    {
+                        Key: "1",
+                        Name: "Страна",
+                        Values: []
+                    }
+                ]
+            }   
+        }
+    ]
+}

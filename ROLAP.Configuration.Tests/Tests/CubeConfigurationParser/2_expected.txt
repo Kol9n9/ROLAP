@@ -1,0 +1,10 @@
+﻿{
+    Dimensions: [
+        {   
+            Key: "1",
+            Name: "Страна",
+            Values: []
+        }
+    ],
+    Measures: []
+}

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ROLAP.Configuration.Models\ROLAP.Configuration.Models.csproj" />
+      <ProjectReference Include="..\ROLAP.Parser\ROLAP.Parser.csproj" />
+    </ItemGroup>
+
+</Project>
