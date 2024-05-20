@@ -19,17 +19,15 @@ string mdx4 = "SELECT CrossJoin([Measure].[Доход],{[Факты и прог�
 
 string mdx5 = "SELECT {[Университет].[ТГУ]} ON 1 FROM [Adventure_Cube]";
 
+string mdx6 = "SELECT [Measure].[Прибыль] ON 0 FROM [Ade]";
 
-var res1 = QueryParser.Parse(mdx);
-Console.Clear();
-var res2 = QueryParser.Parse(mdx2);
-Console.Clear();
-var res3 = QueryParser.Parse(mdx3);
-Console.Clear();
-var res4 = QueryParser.Parse(mdx4);
-Console.Clear();
-var res5 = QueryParser.Parse(mdx5);
-
+string mdx7 = "SELECT CrossJoin([ОКВЭД].[01 Растениеводство и животноводство],{[Measure].[Прибыль],[Measure].[Расход]}) ON 0 FROM [asd]";
 
 IProcessor processor = new Processor(new CubeConfigurationStore(new CubeConfigurationLoader()));
-processor.ProcessQuery("");
+//processor.ProcessQuery(mdx);
+// processor.ProcessQuery(mdx2);
+// processor.ProcessQuery(mdx3);
+// processor.ProcessQuery(mdx4);
+// processor.ProcessQuery(mdx5);
+
+processor.ProcessQuery(mdx7);

@@ -1,4 +1,5 @@
-﻿using ROLAP.Common.Model;
+﻿using System.Collections;
+using ROLAP.Common.Model;
 using ROLAP.Configuration.Loaders.Base;
 using ROLAP.Configuration.Models.Models;
 
@@ -6,21 +7,18 @@ namespace ROLAP.Configuration.Loaders.Static;
 
 public class StaticCubeMeasureValueLoader 
 {
-    public MeasureValue Load(IEnumerable<Dimension> dimensions, StaticCubeMeasureValueOptions options, CubeMeasureValueLoader baseLoader)
+    public MeasureValue? Load(IEnumerable<Dimension> allDimensions, IEnumerable<Dimension> filterDimensions, StaticCubeMeasureValueOptions options, CubeMeasureValueLoader baseLoader)
     {
-        foreach (var dimension in options.Dimensions)
-        {
-            FindDimension(dimensions, dimension.Key);
-        }
-        return new MeasureValue
+        var value = new MeasureValue
         {
             Id = options.Id,
             Value = options.Value,
             Dimensions = options.Dimensions.Select(x =>
             {
-                return FindDimension(dimensions, x.Key);
+                return FindDimension(allDimensions, x.Key);
             })
         };
+        return IsValueInDimensions(value, filterDimensions) ? value : null;
     }
 
     private Dimension FindDimension(IEnumerable<Dimension> dimensions, string key)
@@ -60,5 +58,26 @@ public class StaticCubeMeasureValueLoader
         }
         
         return parts;
+    }
+    
+    private bool IsValueInDimensions(MeasureValue value, IEnumerable<Dimension> dimensions)
+    {
+        if (!dimensions.Any()) return true;
+
+        foreach (var dimension in dimensions)
+        {
+            Dimension? currentDimension = dimension;
+            Dimension? currentMeasureDimension = value.Dimensions.FirstOrDefault(x => x.Key == dimension.Key);
+            do
+            {
+                if (currentMeasureDimension is null) return false;
+
+                currentDimension = currentDimension.Values[0];
+                currentMeasureDimension = currentMeasureDimension.Values.FirstOrDefault(x => x.Key == dimension.Key);
+
+            } while (currentDimension is not null);
+        }
+
+        return true;
     }
 }

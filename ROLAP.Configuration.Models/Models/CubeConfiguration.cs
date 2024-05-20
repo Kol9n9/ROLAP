@@ -1,4 +1,6 @@
-﻿namespace ROLAP.Configuration.Models.Models;
+﻿using ROLAP.Common.Interfaces;
+
+namespace ROLAP.Configuration.Models.Models;
 
 public class CubeConfiguration
 {

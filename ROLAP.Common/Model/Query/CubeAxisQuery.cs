@@ -2,7 +2,7 @@
 
 namespace ROLAP.Common.Model.Query;
 
-public class CubeAxisQuery
+public class CubeAxisQuery : ICubeQueryItem
 {
     public ICubeQueryItem Member { get; }
     public int Number { get; }
@@ -11,5 +11,11 @@ public class CubeAxisQuery
     {
         Member = member;
         Number = number;
+    }
+
+    public ICubeQueryItem Execute(Cube cube)
+    {
+        var newMember = Member.Execute(cube);
+        return new CubeAxisQuery(newMember,Number);
     }
 }

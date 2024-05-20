@@ -19,7 +19,7 @@ public class CubeMeasureValueLoader : IValuesLoader
         _options = options;
     }
     
-    private IEnumerable<MeasureValue> Load(IEnumerable<CubeMeasureValueOptions> options)
+    private IEnumerable<MeasureValue> Load(IEnumerable<CubeMeasureValueOptions> options,IEnumerable<Dimension> dimensions)
     {
         List<MeasureValue> values = new List<MeasureValue>();
 
@@ -30,7 +30,8 @@ public class CubeMeasureValueLoader : IValuesLoader
                 case SourceType.Static:
                 {
                     if (option is not StaticCubeMeasureValueOptions staticOptions) throw new InvalidCastException($"Ожидаемый тип настроек должен быть {nameof(StaticCubeMeasureValueOptions)}");
-                    values.Add(_staticLoader.Load(_dimensions, staticOptions,this));
+                    var value = _staticLoader.Load(_dimensions, dimensions, staticOptions, this);
+                    if(value is not null) values.Add(value);
                     break;
                 }
             }
@@ -39,9 +40,9 @@ public class CubeMeasureValueLoader : IValuesLoader
         return values;
     }
 
-    public IEnumerable<MeasureValue> Load()
+    public IEnumerable<MeasureValue> Load(IEnumerable<Dimension> dimensions)
     {
         if (_options is null) throw new ArgumentNullException(nameof(_options));
-        return Load(_options);
+        return Load(_options,dimensions);
     }
 }

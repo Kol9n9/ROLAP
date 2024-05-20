@@ -9,4 +9,16 @@ public class CubeSetQuery : ICubeQueryItem
     {
         Members = members;
     }
+
+    public ICubeQueryItem Execute(Cube cube)
+    {
+        List<ICubeQueryItem> items = new List<ICubeQueryItem>();
+
+        foreach (var member in Members)
+        {
+            items.Add(member.Execute(cube));
+        }
+
+        return new CubeSetQuery(items);
+    }
 }

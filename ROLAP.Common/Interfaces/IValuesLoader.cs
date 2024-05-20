@@ -4,5 +4,5 @@ namespace ROLAP.Common.Interfaces;
 
 public interface IValuesLoader
 {
-    IEnumerable<MeasureValue> Load();
+    IEnumerable<MeasureValue> Load(IEnumerable<Dimension> dimensions);
 }

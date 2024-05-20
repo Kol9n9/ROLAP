@@ -5,6 +5,7 @@
 /// </summary>
 public class Cube
 {
+
     /// <summary>
     /// Измерения
     /// </summary>
@@ -15,6 +16,13 @@ public class Cube
     /// </summary>
     public List<Measure> Measures { get; private set; } = new List<Measure>();
 
+
+    public Cube(List<Dimension> dimensions, List<Measure> measures)
+    {
+        Dimensions = dimensions;
+        Measures = measures;
+    }
+    
     /// <summary>
     /// Добавить измерение
     /// </summary>

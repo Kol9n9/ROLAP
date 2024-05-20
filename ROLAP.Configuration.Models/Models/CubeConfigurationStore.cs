@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
+using ROLAP.Common.Model;
 using ROLAP.Configuration.Models.Interfaces;
 
 namespace ROLAP.Configuration.Models.Models;
 
 public class CubeConfigurationStore : ICubeConfigurationStore
 {
-    private ConcurrentDictionary<string, CubeConfiguration> _store =
-        new ConcurrentDictionary<string, CubeConfiguration>();
+    private ConcurrentDictionary<string, Cube> _store =
+        new ConcurrentDictionary<string, Cube>();
 
     private readonly ICubeConfigurationLoader _configurationLoader;
 
@@ -15,7 +16,7 @@ public class CubeConfigurationStore : ICubeConfigurationStore
         _configurationLoader = loader;
     }
     
-    public CubeConfiguration GetByName(string name)
+    public Cube GetByName(string name)
     {
         if (_store.TryGetValue(name, out var res))
         {

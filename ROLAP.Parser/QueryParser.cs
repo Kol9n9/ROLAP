@@ -166,8 +166,8 @@ public static class QueryParser
 
     private static ICubeQueryItem GetMember()
     {
-        var name = GetHierarchy();
-        return new CubeMemberQuery(name);
+        var hierarchy = GetHierarchy();
+        return new CubeMemberQuery(hierarchy);
     }
 
     private static bool MatchToken(TokenType type) => _lexer.GetTokenType() == type;
@@ -183,20 +183,19 @@ public static class QueryParser
         return GetHierarchyIdentifier();
     }
 
-    private static string GetHierarchy()
+    private static string[] GetHierarchy()
     {
-        StringBuilder builder = new StringBuilder();
-
-        builder.Append(GetHierarchyIdentifier());
+        List<string> hierarchies = new List<string>();
         
+        hierarchies.Add(GetHierarchyIdentifier());
+
         while (MatchToken(TokenType.Dot))
         {
             ThrowIfNextTokenFailed();
-            builder.Append(" - ");
-            builder.Append(GetHierarchyIdentifier());
+            hierarchies.Add(GetHierarchyIdentifier());
         }
 
-        return builder.ToString();
+        return hierarchies.ToArray();
     }
 
     private static string GetHierarchyIdentifier()
@@ -209,15 +208,21 @@ public static class QueryParser
 
         ThrowIfTokenTypeNotValid(TokenType.LBracket);
         ThrowIfNextTokenFailed();
-        ThrowIfTokenTypeNotValid(TokenType.Identifier);
-        
-        if (!TryGetIdentifier(GetToken(), out var name))
+
+        string name = "";
+
+
+        if (MatchToken(TokenType.Identifier) || MatchToken(TokenType.Number))
         {
-            throw new Exception("Не указано название иерархии");
+            if (!TryGetIdentifier(GetToken(), out name))
+            {
+                throw new Exception("Не указано название иерархии");
+            }
         }
+
         ThrowIfNextTokenFailed();
 
-        while (MatchToken(TokenType.Identifier))
+        while (MatchToken(TokenType.Identifier) || MatchToken(TokenType.Number))
         {
             if (TryGetIdentifier(GetToken(), out var name2))
             {
@@ -232,8 +237,7 @@ public static class QueryParser
         
         return name;
     }
-    
-    
+
     
     private static bool TryGetInt(Token token, out int value)
     {
@@ -245,8 +249,6 @@ public static class QueryParser
     private static bool TryGetIdentifier(Token token, out string value)
     {
         value = String.Empty;
-        if (!MatchToken(TokenType.Identifier)) return false;
-        if (token.Type != TokenType.Identifier) return false;
         value = token.Value;
         if (string.IsNullOrWhiteSpace(value)) return false;
         return true;

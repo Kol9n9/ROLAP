@@ -1,8 +1,8 @@
-﻿using ROLAP.Configuration.Models.Models;
+﻿using ROLAP.Common.Model;
 
 namespace ROLAP.Configuration.Models.Interfaces;
 
 public interface ICubeConfigurationStore
 {
-    CubeConfiguration GetByName(string name);
+    Cube GetByName(string name);
 }
