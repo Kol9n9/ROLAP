@@ -2,9 +2,9 @@
 
 public class CubeResultTuple
 {
-    public IEnumerable<ICubeItem> Members { get; }
+    public IEnumerable<CubeItem> Members { get; }
 
-    public CubeResultTuple(IEnumerable<ICubeItem> members)
+    public CubeResultTuple(IEnumerable<CubeItem> members)
     {
         Members = members;
     }
