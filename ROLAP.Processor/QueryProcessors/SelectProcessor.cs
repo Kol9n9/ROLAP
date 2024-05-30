@@ -14,15 +14,16 @@ public class SelectProcessor
     {
         _store = store;
     }
-    public void ExecuteQuery(CubeQuery query)
+    public CubeResult ExecuteQuery(CubeQuery query)
     {
         var cube = _store.GetByName(query.CubeName);
         IEnumerable<CubeResultTuple> tupleItems = ProcessAxes(query.Axes, cube);
-        //var values = LoadValues(sets.SelectMany(x => x.Tuples).ToList());
+        var values = LoadValues(tupleItems);
 
-        var sets = ConvertTupleItems(tupleItems,false);
-        
-        CubeResult res = new CubeResult(sets);
+        var sets = ConvertTupleItems(tupleItems);
+        var aggregatedValues = FillSetsValues(values, sets);
+        CubeResult res = new CubeResult(sets,aggregatedValues);
+        return res;
     }
     
     
@@ -91,8 +92,8 @@ public class SelectProcessor
     {
         var measure = cube.Measures.FirstOrDefault(x => x.Name == name);
         if (measure is null) return null;
-        var cubeItem = new CubeItem("Показатель", CubeItemType.Measure);
-        cubeItem.Values.Add(new CubeItem(measure.Name,CubeItemType.Measure));
+        var cubeItem = new MeasureCubeItem("Показатель", string.Empty,null);
+        cubeItem.Values.Add(new MeasureCubeItem(measure.Name, measure.Key, measure.ValuesLoader));
         return cubeItem;
     }
 
@@ -112,11 +113,11 @@ public class SelectProcessor
             if (current is null) return null;
             if (result is null)
             {
-                result = temp = new CubeItem(current.Name, CubeItemType.Dimension);
+                result = temp = new CubeItem(current.Name, current.Key, CubeItemType.Dimension);
             }
             else
             {
-                temp.Values.Add(new CubeItem(current.Name, CubeItemType.Dimension));
+                temp.Values.Add(new CubeItem(current.Name, current.Key, CubeItemType.Dimension));
                 temp = temp.Values[0];
             }
             dimensions = current.Values;
@@ -166,19 +167,23 @@ public class SelectProcessor
 
     #region LoadValues
 
-    // private IEnumerable<MeasureValue> LoadValues(List<CubeResultTuple> cubeTuples)
-    // {
-    //     List<MeasureValue> values = new List<MeasureValue>();
-    //     foreach (var cubeTuple in cubeTuples)
-    //     {
-    //         Measure? measure = (Measure)cubeTuple.Members.FirstOrDefault(x => x is Measure);
-    //         if(measure is null) continue;
-    //         var dimensions = cubeTuple.Members.Where(x => x is Dimension).Cast<Dimension>();
-    //         values.AddRange(measure.ValuesLoader.Load(dimensions));
-    //     }
-    //
-    //     return values;
-    // }
+    private IEnumerable<MeasureValue> LoadValues(IEnumerable<CubeResultTuple> tupleItems)
+    {
+        List<MeasureValue> values = new List<MeasureValue>();
+
+        var measures =
+            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>();
+
+        var dimensions =
+            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x);
+
+        foreach (var measure in measures)
+        {
+            values.AddRange(measure.LoadValues(dimensions));
+        }
+       
+        return values;
+    }
     
     #endregion
 
@@ -217,7 +222,7 @@ public class SelectProcessor
     }
     
     
-    private List<CubeResultTuple> Merge(List<CubeResultTuple> tuples1, List<CubeResultTuple> tuples2)
+    private List<CubeResultTuple> Merge(IEnumerable<CubeResultTuple> tuples1, IEnumerable<CubeResultTuple> tuples2)
     {
         List<CubeResultTuple> res = new List<CubeResultTuple>();
 
@@ -262,4 +267,68 @@ public class SelectProcessor
     }
 
     #endregion
+
+
+    private IEnumerable<MeasureValue> FillSetsValues(IEnumerable<MeasureValue> values, IEnumerable<CubeResultSet> sets, IEnumerable<CubeResultTuple> prevTuples = null)
+    {
+        List<MeasureValue> resValues = new List<MeasureValue>();
+
+        if (sets.Count() == 1)
+        {
+            List<CubeResultTuple> tuples = Merge(prevTuples,sets.FirstOrDefault().Tuples);
+            resValues = FillTupleValues(values, tuples).ToList();
+        }
+        else
+        {
+            var lastSet = sets.LastOrDefault();
+            List<CubeResultTuple> tuples = new List<CubeResultTuple>();
+            foreach (var tuple in lastSet.Tuples)
+            {
+                var copyTuples = new List<CubeResultTuple> { tuple };
+                if (prevTuples is not null)
+                {
+                    copyTuples = Merge(prevTuples, copyTuples);
+                }
+                resValues.AddRange(FillSetsValues(values,sets.Take(sets.Count()-1),copyTuples));
+            }
+        }
+
+        return resValues;
+    }
+
+    private IEnumerable<MeasureValue> FillTupleValues(IEnumerable<MeasureValue> values,
+        IEnumerable<CubeResultTuple> tuples)
+    {
+        List<MeasureValue> resValues = new List<MeasureValue>();
+        
+        foreach (var tuple in tuples)
+        {
+            List<MeasureValue> tupleValues = new List<MeasureValue>();
+            foreach (var value in values)
+            {
+                if(IsValueAggregatated(value,tuple.Members)) tupleValues.Add(value);
+            }
+            resValues.Add(AggregatedValues(tupleValues));
+        }
+
+        return resValues;
+    }
+
+    private bool IsValueAggregatated(MeasureValue value, IEnumerable<CubeItem> members)
+    {
+        var measure = members.Where(x => x.Type == CubeItemType.Measure).FirstOrDefault().Values
+            .FirstOrDefault();
+        if (measure is not null && value.MeasureKey != measure.Key) return false;
+        var dimensions = members.Where(x => x.Type == CubeItemType.Dimension);
+        return CubeItemHelper.IsValueInDimensions(value, dimensions);
+    }
+
+    private MeasureValue AggregatedValues(IEnumerable<MeasureValue> values)
+    {
+        var first = values.FirstOrDefault();
+        return first ?? new MeasureValue()
+        {
+            Value = "-"
+        };
+    }
 }

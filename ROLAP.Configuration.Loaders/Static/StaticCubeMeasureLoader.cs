@@ -8,7 +8,7 @@ internal class StaticCubeMeasureLoader
 {
     public Measure Load(StaticCubeMeasureOptions options, CubeMeasureLoader baseLoader, IEnumerable<Dimension> dimensions)
     {
-        Measure measure = new Measure(options.Key, options.Name, new CubeMeasureValueLoader(dimensions, options.Values));
+        Measure measure = new Measure(options.Key, options.Name, new CubeMeasureValueLoader(dimensions, options.Values, options.Key));
         return measure;
     }
 }

@@ -22,6 +22,8 @@ string mdx5 = "SELECT {[Университет].[ТГУ]} ON 1 FROM [Adventure_C
 string mdx6 = "SELECT [Measure].[Прибыль] ON 0 FROM [Ade]";
 
 string mdx7 = "SELECT CrossJoin([ОКВЭД].[01 Растениеводство и животноводство],{[Measure].[Прибыль],[Measure].[Расход]}) ON 0 FROM [asd]";
+string mdx8 =
+    "SELECT CROSSJOIN({[Страна].[Россия],[Страна].[Казахстан]},{[Measure].[Прибыль],[Measure].[Расход]}) ON 0, {[ОКВЭД].[01 Растениеводство и животноводство],[ОКВЭД].[06 Добыча сырой нефти и природного газа]} ON 1 FROM [asd]";
 
 IProcessor processor = new Processor(new CubeConfigurationStore(new CubeConfigurationLoader()));
 //processor.ProcessQuery(mdx);
@@ -29,5 +31,5 @@ IProcessor processor = new Processor(new CubeConfigurationStore(new CubeConfigur
 // processor.ProcessQuery(mdx3);
 // processor.ProcessQuery(mdx4);
 // processor.ProcessQuery(mdx5);
-
-processor.ProcessQuery(mdx7);
+ 
+processor.ProcessQuery(mdx8);

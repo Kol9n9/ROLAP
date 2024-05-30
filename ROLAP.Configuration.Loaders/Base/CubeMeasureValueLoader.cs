@@ -12,14 +12,16 @@ public class CubeMeasureValueLoader : IValuesLoader
     private StaticCubeMeasureValueLoader _staticLoader = new StaticCubeMeasureValueLoader();
     private readonly IEnumerable<CubeMeasureValueOptions> _options;
     private readonly IEnumerable<Dimension> _dimensions;
+    private readonly string _measureKey;
 
-    public CubeMeasureValueLoader(IEnumerable<Dimension> dimensions, IEnumerable<CubeMeasureValueOptions> options)
+    public CubeMeasureValueLoader(IEnumerable<Dimension> dimensions, IEnumerable<CubeMeasureValueOptions> options, string measureKey)
     {
         _dimensions = dimensions;
         _options = options;
+        _measureKey = measureKey;
     }
     
-    private IEnumerable<MeasureValue> Load(IEnumerable<CubeMeasureValueOptions> options,IEnumerable<Dimension> dimensions)
+    private IEnumerable<MeasureValue> Load(IEnumerable<CubeMeasureValueOptions> options,IEnumerable<CubeItem> dimensions)
     {
         List<MeasureValue> values = new List<MeasureValue>();
 
@@ -31,7 +33,11 @@ public class CubeMeasureValueLoader : IValuesLoader
                 {
                     if (option is not StaticCubeMeasureValueOptions staticOptions) throw new InvalidCastException($"Ожидаемый тип настроек должен быть {nameof(StaticCubeMeasureValueOptions)}");
                     var value = _staticLoader.Load(_dimensions, dimensions, staticOptions, this);
-                    if(value is not null) values.Add(value);
+                    if(value is not null)
+                    {
+                        value.MeasureKey = _measureKey;
+                        values.Add(value);
+                    }
                     break;
                 }
             }
@@ -40,7 +46,7 @@ public class CubeMeasureValueLoader : IValuesLoader
         return values;
     }
 
-    public IEnumerable<MeasureValue> Load(IEnumerable<Dimension> dimensions)
+    public IEnumerable<MeasureValue> Load(IEnumerable<CubeItem> dimensions)
     {
         if (_options is null) throw new ArgumentNullException(nameof(_options));
         return Load(_options,dimensions);

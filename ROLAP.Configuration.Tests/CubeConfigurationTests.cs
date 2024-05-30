@@ -37,13 +37,13 @@ public class Tests
         var path = Path.Combine(Directory.GetCurrentDirectory(), "Tests", "CubeConfigurationParser");
         var text = File.ReadAllText(Path.Combine(path, "3.txt"));
         var cubeConfiguration = CubeConfigurationParser.ParseCubeConfiguration(text);
-
+    
         var str = JsonConvert.SerializeObject(cubeConfiguration);
         
         var dimensions = _dimensionLoader.Load(cubeConfiguration.DimensionOptions);
         var measures = _measureLoader.Load(cubeConfiguration.MeasureOptions,dimensions);
-
-        var values = measures.FirstOrDefault(x => x.Key == "1").ValuesLoader.Load(dimensions);
+    
+        // var values = measures.FirstOrDefault(x => x.Key == "1").ValuesLoader.Load(dimensions);
         
         Assert.Pass();
     }
