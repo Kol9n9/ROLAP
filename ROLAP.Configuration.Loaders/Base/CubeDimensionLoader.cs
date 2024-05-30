@@ -6,12 +6,12 @@ using ROLAP.Configuration.Models.Models;
 
 namespace ROLAP.Configuration.Loaders.Base;
 
-public class CubeDimensionLoader : ICubeItemLoader<Dimension,CubeDimensionOptions>
+public class CubeDimensionLoader : ICubeItemLoader<CubeItem,CubeDimensionOptions>
 {
     private readonly StaticCubeDimensionLoader _staticLoader = new StaticCubeDimensionLoader();
-    public IEnumerable<Dimension> Load(IEnumerable<CubeDimensionOptions> options)
+    public IEnumerable<CubeItem> Load(IEnumerable<CubeDimensionOptions> options)
     {
-        List<Dimension> dimensions = new List<Dimension>();
+        List<CubeItem> dimensions = new List<CubeItem>();
         foreach (var option in options)
         {
             switch (option.GetSourceType())

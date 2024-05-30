@@ -9,7 +9,7 @@ namespace ROLAP.Configuration.Loaders.Static;
 
 public class StaticCubeMeasureValueLoader 
 {
-    public MeasureValue? Load(IEnumerable<Dimension> allDimensions, IEnumerable<CubeItem> filterDimensions, StaticCubeMeasureValueOptions options, CubeMeasureValueLoader baseLoader)
+    public MeasureValue? Load(IEnumerable<CubeItem> allDimensions, IEnumerable<CubeItem> filterDimensions, StaticCubeMeasureValueOptions options, CubeMeasureValueLoader baseLoader)
     {
         var value = new MeasureValue
         {
@@ -23,7 +23,7 @@ public class StaticCubeMeasureValueLoader
         return CubeItemHelper.IsValueInDimensions(value, filterDimensions) ? value : null;
     }
 
-    private CubeItem FindDimension(IEnumerable<Dimension> dimensions, string key)
+    private CubeItem FindDimension(IEnumerable<CubeItem> dimensions, string key)
     {
         var parts = GetParts(key);
         List<CubeItem> innerDimensions = new List<CubeItem>();

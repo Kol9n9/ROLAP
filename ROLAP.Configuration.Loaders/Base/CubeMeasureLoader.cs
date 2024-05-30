@@ -9,9 +9,9 @@ public class CubeMeasureLoader
 {
     private readonly StaticCubeMeasureLoader _staticLoader = new StaticCubeMeasureLoader();
     
-    public IEnumerable<Measure> Load(IEnumerable<CubeMeasureOptions> options, IEnumerable<Dimension> dimensions)
+    public IEnumerable<CubeItem> Load(IEnumerable<CubeMeasureOptions> options, IEnumerable<CubeItem> dimensions)
     {
-        List<Measure> measures = new List<Measure>();
+        List<CubeItem> measures = new List<CubeItem>();
         foreach (var option in options)
         {
             switch (option.GetSourceType())

@@ -6,9 +6,9 @@ namespace ROLAP.Configuration.Loaders.Static;
 
 internal class StaticCubeMeasureLoader
 {
-    public Measure Load(StaticCubeMeasureOptions options, CubeMeasureLoader baseLoader, IEnumerable<Dimension> dimensions)
+    public CubeItem Load(StaticCubeMeasureOptions options, CubeMeasureLoader baseLoader, IEnumerable<CubeItem> dimensions)
     {
-        Measure measure = new Measure(options.Key, options.Name, new CubeMeasureValueLoader(dimensions, options.Values, options.Key));
+        MeasureCubeItem measure = new MeasureCubeItem(options.Name, options.Key, new CubeMeasureValueLoader(dimensions, options.Values, options.Key));
         return measure;
     }
 }

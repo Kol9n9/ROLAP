@@ -18,7 +18,7 @@ public class CubeItem
         GroupName = groupName;
     }
 
-    public CubeItem Clone(bool withValues = true)
+    public virtual CubeItem Clone(bool withValues = true)
     {
         List<CubeItem> values = withValues ? Values.Select(x => x.Clone()).ToList() : new List<CubeItem>();
         var cubeItem = new CubeItem(Name, Key, Type, GroupName);

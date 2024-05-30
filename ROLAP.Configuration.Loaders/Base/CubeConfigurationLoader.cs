@@ -1,6 +1,5 @@
 ﻿using ROLAP.Common.Model;
 using ROLAP.Configuration.Models.Interfaces;
-using ROLAP.Configuration.Models.Models;
 using ROLAP.Parser;
 
 namespace ROLAP.Configuration.Loaders.Base;

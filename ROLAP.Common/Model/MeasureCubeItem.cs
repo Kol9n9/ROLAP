@@ -16,4 +16,12 @@ public class MeasureCubeItem : CubeItem
         if (_loader is null) throw new ArgumentNullException(nameof(_loader));
         return _loader.Load(dimensions);
     }
+
+    public override CubeItem Clone(bool withValues = true)
+    {
+        var measure = new MeasureCubeItem(Name, Key, _loader);
+        var values = withValues ? Values.Select(x => x.Clone()) : new List<CubeItem>();
+        measure.Values.AddRange(values);
+        return measure;
+    }
 }

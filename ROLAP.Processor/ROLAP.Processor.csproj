@@ -11,8 +11,4 @@
       <ProjectReference Include="..\ROLAP.Parser\ROLAP.Parser.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
 </Project>

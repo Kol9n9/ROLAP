@@ -11,10 +11,10 @@ public class CubeMeasureValueLoader : IValuesLoader
 
     private StaticCubeMeasureValueLoader _staticLoader = new StaticCubeMeasureValueLoader();
     private readonly IEnumerable<CubeMeasureValueOptions> _options;
-    private readonly IEnumerable<Dimension> _dimensions;
+    private readonly IEnumerable<CubeItem> _dimensions;
     private readonly string _measureKey;
 
-    public CubeMeasureValueLoader(IEnumerable<Dimension> dimensions, IEnumerable<CubeMeasureValueOptions> options, string measureKey)
+    public CubeMeasureValueLoader(IEnumerable<CubeItem> dimensions, IEnumerable<CubeMeasureValueOptions> options, string measureKey)
     {
         _dimensions = dimensions;
         _options = options;

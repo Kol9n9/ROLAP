@@ -93,7 +93,7 @@ public class SelectProcessor
         var measure = cube.Measures.FirstOrDefault(x => x.Name == name);
         if (measure is null) return null;
         var cubeItem = new MeasureCubeItem("Показатель", string.Empty,null);
-        cubeItem.Values.Add(new MeasureCubeItem(measure.Name, measure.Key, measure.ValuesLoader));
+        cubeItem.Values.Add(measure.Clone());
         return cubeItem;
     }
 
@@ -103,8 +103,8 @@ public class SelectProcessor
         
         CubeItem? result = null;
         CubeItem? temp = null;
-        List<Dimension>? dimensions = cube.Dimensions;
-        Dimension? current = null;
+        List<CubeItem>? dimensions = cube.Dimensions.ToList();
+        CubeItem? current = null;
 
         do
         {
