@@ -9,7 +9,7 @@ public class CubeConfigurationLoader : ICubeConfigurationLoader
     private CubeDimensionLoader _dimensionLoader = new CubeDimensionLoader();
     private CubeMeasureLoader _measureLoader = new CubeMeasureLoader();
     
-    public Cube Load(string name)
+    public ConfigurationCube Load(string name)
     {
         var path = Path.Combine(Directory.GetCurrentDirectory());
         var text = File.ReadAllText(Path.Combine(path, "3.txt"));
@@ -19,6 +19,6 @@ public class CubeConfigurationLoader : ICubeConfigurationLoader
         var dimensions = _dimensionLoader.Load(configuration.DimensionOptions).ToList();
         var measures = _measureLoader.Load(configuration.MeasureOptions, dimensions).ToList();
 
-        return new Cube(dimensions, measures);
+        return new ConfigurationCube(dimensions, measures);
     }
 }

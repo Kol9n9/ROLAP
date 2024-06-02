@@ -4,5 +4,5 @@ namespace ROLAP.Configuration.Models.Interfaces;
 
 public interface ICubeConfigurationStore
 {
-    Cube GetByName(string name);
+    ConfigurationCube GetByName(string name);
 }

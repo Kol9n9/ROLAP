@@ -5,5 +5,5 @@ namespace ROLAP.Configuration.Models.Interfaces;
 
 public interface ICubeConfigurationLoader
 {
-    Cube Load(string name);
+    ConfigurationCube Load(string name);
 }

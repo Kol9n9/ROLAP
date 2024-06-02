@@ -6,13 +6,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Configuration.Models"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Common", "ROLAP.Common\ROLAP.Common.csproj", "{1ACCDF79-3DD7-4E84-A1EB-3C2A581B233B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Configuration.Tests", "ROLAP.Configuration.Tests\ROLAP.Configuration.Tests.csproj", "{A1015CE7-5F91-444D-978C-A0DFB33F50AD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Parser", "ROLAP.Parser\ROLAP.Parser.csproj", "{8438BAAB-43C4-4611-AE59-6337C3CDA495}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Configuration.Loaders", "ROLAP.Configuration.Loaders\ROLAP.Configuration.Loaders.csproj", "{E26CAB8C-6BC3-4910-8BD5-7632EBF934BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Processor", "ROLAP.Processor\ROLAP.Processor.csproj", "{D9D45621-8579-44BF-BD58-E1F1DB0CBC0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Process", "ROLAP.Process\ROLAP.Process.csproj", "{D9D45621-8579-44BF-BD58-E1F1DB0CBC0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.QueryProcessor", "ROLAP.QueryProcessor\ROLAP.QueryProcessor.csproj", "{103F6697-B188-4806-95B1-D26B7014D6DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +32,6 @@ Global
 		{1ACCDF79-3DD7-4E84-A1EB-3C2A581B233B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ACCDF79-3DD7-4E84-A1EB-3C2A581B233B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ACCDF79-3DD7-4E84-A1EB-3C2A581B233B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1015CE7-5F91-444D-978C-A0DFB33F50AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1015CE7-5F91-444D-978C-A0DFB33F50AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1015CE7-5F91-444D-978C-A0DFB33F50AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1015CE7-5F91-444D-978C-A0DFB33F50AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8438BAAB-43C4-4611-AE59-6337C3CDA495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8438BAAB-43C4-4611-AE59-6337C3CDA495}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8438BAAB-43C4-4611-AE59-6337C3CDA495}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,5 +44,9 @@ Global
 		{D9D45621-8579-44BF-BD58-E1F1DB0CBC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9D45621-8579-44BF-BD58-E1F1DB0CBC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9D45621-8579-44BF-BD58-E1F1DB0CBC0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{103F6697-B188-4806-95B1-D26B7014D6DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{103F6697-B188-4806-95B1-D26B7014D6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{103F6697-B188-4806-95B1-D26B7014D6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{103F6697-B188-4806-95B1-D26B7014D6DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
