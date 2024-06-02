@@ -1,4 +1,4 @@
-﻿namespace ROLAP.Parser.Enums;
+﻿namespace ROLAP.Configuration.Parser;
 
 internal enum SourceLoaderType
 {

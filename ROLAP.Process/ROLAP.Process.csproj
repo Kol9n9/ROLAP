@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ROLAP.Configuration.Models\ROLAP.Configuration.Models.csproj" />
-      <ProjectReference Include="..\ROLAP.Parser\ROLAP.Parser.csproj" />
       <ProjectReference Include="..\ROLAP.QueryProcessor\ROLAP.QueryProcessor.csproj" />
     </ItemGroup>
 

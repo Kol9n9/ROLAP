@@ -2,9 +2,8 @@
 using ROLAP.Common.Helpers;
 using ROLAP.Configuration.Models.Enums;
 using ROLAP.Configuration.Models.Models;
-using ROLAP.Parser.Enums;
 
-namespace ROLAP.Parser;
+namespace ROLAP.Configuration.Parser;
 
 public static class CubeConfigurationParser
 {

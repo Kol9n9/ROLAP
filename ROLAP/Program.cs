@@ -1,6 +1,5 @@
 ﻿using ROLAP.Configuration.Loaders.Base;
 using ROLAP.Configuration.Models.Models;
-using ROLAP.Parser;
 using ROLAP.Process;
 using ROLAP.Process.Interfaces;
 using ROLAP.QueryProcessor;

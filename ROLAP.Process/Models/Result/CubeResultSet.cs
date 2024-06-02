@@ -8,4 +8,4 @@ internal class CubeResultSet
     {
         Tuples = tuples;
     }
-}
+} 

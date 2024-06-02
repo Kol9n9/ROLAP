@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using ROLAP.Common.Enums;
 using ROLAP.Common.Interfaces;
 using ROLAP.Configuration.Models.Interfaces;
-using ROLAP.Parser;
 using ROLAP.Process.Interfaces;
 using ROLAP.Process.Models.Result;
 using ROLAP.Process.QueryProcessors;
