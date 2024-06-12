@@ -91,5 +91,10 @@ internal enum TokenType
     /// <summary>
     /// From
     /// </summary>
-    FROM
+    FROM,
+    
+    /// <summary>
+    /// Where
+    /// </summary>
+    WHERE
 }

@@ -29,7 +29,10 @@ public class QueryProcessor : IQueryProcessor
         var cubeName = queryModel.CubeName;
         var cubeConf = _store.GetByName(cubeName);
         var tuples = ProcessAxes(queryModel.Axes, cubeConf);
-        return new CubeQuery(queryModel.QueryType, tuples);
+        var whereTuples = ProcessAxes(queryModel.Where, cubeConf);
+        if (whereTuples.Any(x => x.Members.Any(y => y.Values.Count() > 1)))
+            throw new Exception("В Where для измерений / мер можно указывать только одно значение");
+        return new CubeQuery(queryModel.QueryType, tuples, whereTuples);
     }
     
     

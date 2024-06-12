@@ -40,7 +40,17 @@ internal static class QueryParser
         ThrowIfTokenTypeNotValid(TokenType.FROM);
         ThrowIfNextTokenFailed();
 
-        return new QueryModel(QueryType.Select, axes, GetCubeName());
+        string cubeName = GetCubeName();
+
+        List<AxisItem> where = new List<AxisItem>();
+        if (MatchToken(TokenType.WHERE))
+        {
+            ThrowIfNextTokenFailed();
+            where.Add(WhereAxisQuery());
+        }
+        
+        ThrowIfTokenTypeNotValid(TokenType.EOF);
+        return new QueryModel(cubeName,QueryType.Select, axes, where);
     }
 
     private static AxisItem AxisQuery()
@@ -71,6 +81,12 @@ internal static class QueryParser
         return new AxisItem(member, number);
     }
 
+    private static AxisItem WhereAxisQuery()
+    {
+        var item = SetQuery();
+        return new AxisItem(item, -1);
+    }
+    
     private static IQueryItem SetQuery()
     {
         if (MatchToken(TokenType.LBrace))

@@ -10,7 +10,7 @@ internal class SelectProcessor
     internal CubeResult ExecuteQuery(CubeQuery query)
     {
         IEnumerable<CubeItemTuple> setItems = query.Sets;
-        var values = LoadValues(setItems);
+        var values = LoadValues(setItems, query.Where);
 
         var sets = ConvertTupleItems(setItems);
         var aggregatedValues = FillSetsValues(values, sets);
@@ -20,16 +20,19 @@ internal class SelectProcessor
     
     #region LoadValues
 
-    private IEnumerable<MeasureValue> LoadValues(IEnumerable<CubeItemTuple> tupleItems)
+    private IEnumerable<MeasureValue> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
     {
         List<MeasureValue> values = new List<MeasureValue>();
 
         var measures =
-            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>();
+            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>().ToList();
 
         var dimensions =
-            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x);
+            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x).ToList();
 
+        measures.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>().ToList());
+        dimensions.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x).ToList());
+        
         foreach (var measure in measures)
         {
             values.AddRange(measure.LoadValues(dimensions));
@@ -166,7 +169,7 @@ internal class SelectProcessor
 
     private bool IsValueAggregatated(MeasureValue value, IEnumerable<CubeItem> members)
     {
-        var measure = members.Where(x => x.Type == CubeItemType.Measure).FirstOrDefault().Values
+        var measure = members.FirstOrDefault(x => x.Type == CubeItemType.Measure)?.Values
             .FirstOrDefault();
         if (measure is not null && value.MeasureKey != measure.Key) return false;
         var dimensions = members.Where(x => x.Type == CubeItemType.Dimension);

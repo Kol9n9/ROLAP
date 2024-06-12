@@ -28,6 +28,7 @@ internal class Lexer
         {"select",TokenType.SELECT},
         {"on",TokenType.ON},
         {"from",TokenType.FROM},
+        {"where", TokenType.WHERE},
     };
 
     private static readonly char[] DelimiterSymbols = new char[] { ' ' };

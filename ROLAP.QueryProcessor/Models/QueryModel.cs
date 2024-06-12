@@ -9,12 +9,15 @@ internal class QueryModel
     
     public IEnumerable<AxisItem> Axes { get; }
 
+    public IEnumerable<AxisItem> Where { get; }
+
     public string CubeName { get; }
 
-    public QueryModel(QueryType type, IEnumerable<AxisItem> axes, string cubeName)
+    public QueryModel(string cubeName, QueryType type, IEnumerable<AxisItem> axes, IEnumerable<AxisItem> where)
     {
+        CubeName = cubeName;
         QueryType = type;
         Axes = axes;
-        CubeName = cubeName;
+        Where = where;
     }
 }
