@@ -1,12 +1,12 @@
-﻿using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Interfaces;
 
 namespace ROLAP.Process.Models.Result;
 
 internal class CubeResultTuple
 {
-    public IEnumerable<CubeItem> Members { get; }
+    public IEnumerable<ICubeItem> Members { get; }
 
-    public CubeResultTuple(IEnumerable<CubeItem> members)
+    public CubeResultTuple(IEnumerable<ICubeItem> members)
     {
         Members = members;
     }

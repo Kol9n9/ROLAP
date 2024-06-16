@@ -1,4 +1,4 @@
-﻿using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.QueryProcessor.Helpers;
 using ROLAP.QueryProcessor.Interfaces;
 using ROLAP.QueryProcessor.Models.Items;
@@ -11,13 +11,13 @@ internal class CrossJoinFunc : FunctionItem
     {
     }
 
-    protected override IQueryItem Run(ConfigurationCube configurationCube, IEnumerable<IQueryItem> args)
+    protected override IQueryItem Run(CubeConfiguration configurationCube, IEnumerable<IQueryItem> args)
     {
         return Union(configurationCube,  args.ToList());
     }
 
 
-    private SetItem Union(ConfigurationCube configurationCube, List<IQueryItem> args)
+    private SetItem Union(CubeConfiguration configurationCube, List<IQueryItem> args)
     {
         var set1 = MappingHelper.ToSet(args[0].Execute(configurationCube));
         var set2 = MappingHelper.ToSet(args[1].Execute(configurationCube));

@@ -8,8 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ROLAP.Configuration\ROLAP.Configuration.csproj" />
       <ProjectReference Include="..\ROLAP.Process\ROLAP.Process.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="ExampleCubeConf\example1.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

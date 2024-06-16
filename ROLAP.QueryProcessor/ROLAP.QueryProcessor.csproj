@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ROLAP.Common\ROLAP.Common.csproj" />
-      <ProjectReference Include="..\ROLAP.Configuration.Models\ROLAP.Configuration.Models.csproj" />
+      <ProjectReference Include="..\ROLAP.Configuration\ROLAP.Configuration.csproj" />
+      <ProjectReference Include="..\ROLAP.Core.Models\ROLAP.Core.Models.csproj" />
     </ItemGroup>
 
 </Project>

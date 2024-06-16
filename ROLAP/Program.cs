@@ -1,5 +1,4 @@
-﻿using ROLAP.Configuration.Loaders.Base;
-using ROLAP.Configuration.Models.Models;
+﻿using ROLAP.Configuration;
 using ROLAP.Process;
 using ROLAP.Process.Interfaces;
 using ROLAP.QueryProcessor;
@@ -23,9 +22,11 @@ string mdx6 = "SELECT [Measure].[Прибыль] ON 0 FROM [Ade]";
 
 string mdx7 = "SELECT CrossJoin([ОКВЭД].[01 Растениеводство и животноводство],{[Measure].[Прибыль],[Measure].[Расход]}) ON 0 FROM [asd]";
 string mdx8 =
-    "SELECT CROSSJOIN({[Страна].[Россия],[Страна].[Казахстан]},{[Measure].[Прибыль],[Measure].[Расход]}) ON 0, {[ОКВЭД].[01 Растениеводство и животноводство],[ОКВЭД].[06 Добыча сырой нефти и природного газа]} ON 1 FROM [asd]";
+    "SELECT CROSSJOIN({[Страна].[Россия],[Страна].[Казахстан]},{[Measure].[Прибыль],[Measure].[Расход]}) ON 0, {[ОКВЭД].[01 Растениеводство и животноводство],[ОКВЭД].[06 Добыча сырой нефти и природного газа]} ON 1 FROM [example1]";
+string mdx9 =
+    "SELECT {[Страна].[Россия],[Страна].[Казахстан]} ON 0, {[ОКВЭД].[01 Растениеводство и животноводство],[ОКВЭД].[06 Добыча сырой нефти и природного газа]} ON 1 FROM [example1] WHERE {[Measure].[Прибыль],[Measure].[Расход]}";
 
-IProcessor processor = new Processor(new QueryProcessor(new CubeConfigurationStore(new CubeConfigurationLoader())));
+IProcessor processor = new Processor(new QueryProcessor(ConfigurationExtensions.GetConfigurationStore()));
 //processor.ProcessQuery(mdx);
 // processor.ProcessQuery(mdx2);
 // processor.ProcessQuery(mdx3);

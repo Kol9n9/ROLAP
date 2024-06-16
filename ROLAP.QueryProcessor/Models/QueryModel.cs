@@ -1,4 +1,4 @@
-﻿using ROLAP.Common.Enums;
+﻿using ROLAP.Core.Models.Enums;
 using ROLAP.QueryProcessor.Models.Items;
 
 namespace ROLAP.QueryProcessor.Models;

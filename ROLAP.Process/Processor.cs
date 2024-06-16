@@ -1,8 +1,6 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
-using ROLAP.Common.Enums;
-using ROLAP.Common.Interfaces;
-using ROLAP.Configuration.Models.Interfaces;
+using ROLAP.Core.Models.Enums;
 using ROLAP.Process.Interfaces;
 using ROLAP.Process.Models.Result;
 using ROLAP.Process.QueryProcessors;
@@ -12,9 +10,9 @@ namespace ROLAP.Process;
 public class Processor : IProcessor
 {
     private SelectProcessor _selectProcessor;
-    private IQueryProcessor _queryProcessor;
+    private QueryProcessor.QueryProcessor _queryProcessor;
 
-    public Processor(IQueryProcessor queryProcessor)
+    public Processor(QueryProcessor.QueryProcessor queryProcessor)
     {
         _queryProcessor = queryProcessor;
         _selectProcessor = new SelectProcessor();

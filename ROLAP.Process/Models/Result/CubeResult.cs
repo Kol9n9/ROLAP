@@ -1,4 +1,4 @@
-﻿using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Model.CubeItem;
 
 namespace ROLAP.Process.Models.Result;
 
@@ -8,8 +8,8 @@ namespace ROLAP.Process.Models.Result;
 internal class CubeResult
 {
     public IEnumerable<CubeResultSet> Axes { get; }
-    public IEnumerable<MeasureValue> Values { get; }
-    public CubeResult(IEnumerable<CubeResultSet> axes, IEnumerable<MeasureValue> values)
+    public IEnumerable<ValueCubeItem> Values { get; }
+    public CubeResult(IEnumerable<CubeResultSet> axes, IEnumerable<ValueCubeItem> values)
     {
         Values = values;
         Axes = axes;

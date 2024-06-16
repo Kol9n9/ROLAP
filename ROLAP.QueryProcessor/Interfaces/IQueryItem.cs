@@ -1,8 +1,8 @@
-﻿using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Model.CubeItem;
 
 namespace ROLAP.QueryProcessor.Interfaces;
 
 internal interface IQueryItem
 {
-    IQueryItem Execute(ConfigurationCube configurationCube);
+    IQueryItem Execute(CubeConfiguration configurationCube);
 }

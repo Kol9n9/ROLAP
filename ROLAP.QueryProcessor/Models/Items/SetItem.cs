@@ -1,4 +1,4 @@
-﻿using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.QueryProcessor.Interfaces;
 
 namespace ROLAP.QueryProcessor.Models.Items;
@@ -11,7 +11,7 @@ internal class SetItem : IQueryItem
         Members = members;
     }
 
-    public IQueryItem Execute(ConfigurationCube configurationCube)
+    public IQueryItem Execute(CubeConfiguration configurationCube)
     {
         List<IQueryItem> items = new List<IQueryItem>();
 

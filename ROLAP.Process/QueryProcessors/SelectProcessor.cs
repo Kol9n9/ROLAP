@@ -1,6 +1,8 @@
-﻿using ROLAP.Common.Enums;
-using ROLAP.Common.Helpers;
-using ROLAP.Common.Model;
+﻿using ROLAP.Core.Models.Helpers;
+using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Model.CubeItem;
+using ROLAP.Core.Models.Model.Query;
+using ROLAP.Loaders.Helpers;
 using ROLAP.Process.Models.Result;
 
 namespace ROLAP.Process.QueryProcessors;
@@ -20,22 +22,24 @@ internal class SelectProcessor
     
     #region LoadValues
 
-    private IEnumerable<MeasureValue> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
+    private IEnumerable<ValueCubeItem> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
     {
-        List<MeasureValue> values = new List<MeasureValue>();
+        List<ValueCubeItem> values = new List<ValueCubeItem>();
 
         var measures =
-            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>().ToList();
+            tupleItems.Select(x => x.Members.Where(x => x is MeasureGroupCubeItem)).SelectMany(x => x.SelectMany(y => y.GetValues())).Cast<MeasureCubeItem>().ToList();
 
         var dimensions =
-            tupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x).ToList();
+            tupleItems.Select(x => x.Members.Where(x => x is DimensionCubeItem)).SelectMany(x => x).Cast<DimensionCubeItem>().ToList();
 
-        measures.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Measure)).SelectMany(x => x.SelectMany(y => y.Values)).Cast<MeasureCubeItem>().ToList());
-        dimensions.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x.Type == CubeItemType.Dimension)).SelectMany(x => x).ToList());
-        
+        measures.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x is MeasureGroupCubeItem)).SelectMany(x => x.SelectMany(y => y.GetValues())).Cast<MeasureCubeItem>().ToList());
+        dimensions.AddRange(whereTupleItems.Select(x => x.Members.Where(x => x is DimensionCubeItem)).SelectMany(x => x).Cast<DimensionCubeItem>().ToList());
+
+        ILoadOptions optionsList = LoadOptionsHelper.GetValueOptionsByDimension(dimensions);
+
         foreach (var measure in measures)
         {
-            values.AddRange(measure.LoadValues(dimensions));
+            values.AddRange(measure.GetLoader().Load(new List<ILoadOptions>{optionsList}));
         }
        
         return values;
@@ -86,7 +90,7 @@ internal class SelectProcessor
         {
             foreach (var tuple2 in tuples2)
             {
-                List<CubeItem> items = new List<CubeItem>();
+                List<ICubeItem> items = new List<ICubeItem>();
                 foreach (var tupleMember in tuple1.Members)
                 {
                     items.Add(tupleMember.Clone());
@@ -104,27 +108,27 @@ internal class SelectProcessor
         return res;
     }
     
-    private List<CubeResultTuple> GetTuples(CubeItem cubeItem, bool isAggregate = true)
+    private List<CubeResultTuple> GetTuples(ICubeItem cubeItem, bool isAggregate = true)
     {
         List<CubeResultTuple> res = new List<CubeResultTuple>();
 
         if (isAggregate)
         {
-            res.Add(new CubeResultTuple(new List<CubeItem>{cubeItem.Clone(false)}));
+            res.Add(new CubeResultTuple(new List<ICubeItem>{cubeItem.Clone(false)}));
         }
 
-        foreach (var value in cubeItem.Values)
+        foreach (var value in cubeItem.GetValues())
         {
             var copy = cubeItem.Clone(false);
-            copy.Values.Add(value.Clone(false));
-            res.Add(new CubeResultTuple(new List<CubeItem>{copy}));
+            copy.AddValue(value.Clone(false));
+            res.Add(new CubeResultTuple(new List<ICubeItem>{copy}));
         }
         return res;
     }
 
-    private IEnumerable<MeasureValue> FillSetsValues(IEnumerable<MeasureValue> values, IEnumerable<CubeResultSet> sets, IEnumerable<CubeResultTuple> prevTuples = null)
+    private IEnumerable<ValueCubeItem> FillSetsValues(IEnumerable<ValueCubeItem> values, IEnumerable<CubeResultSet> sets, IEnumerable<CubeResultTuple> prevTuples = null)
     {
-        List<MeasureValue> resValues = new List<MeasureValue>();
+        List<ValueCubeItem> resValues = new List<ValueCubeItem>();
 
         if (sets.Count() == 1)
         {
@@ -149,14 +153,14 @@ internal class SelectProcessor
         return resValues;
     }
 
-    private IEnumerable<MeasureValue> FillTupleValues(IEnumerable<MeasureValue> values,
+    private IEnumerable<ValueCubeItem> FillTupleValues(IEnumerable<ValueCubeItem> values,
         IEnumerable<CubeResultTuple> tuples)
     {
-        List<MeasureValue> resValues = new List<MeasureValue>();
+        List<ValueCubeItem> resValues = new List<ValueCubeItem>();
         
         foreach (var tuple in tuples)
         {
-            List<MeasureValue> tupleValues = new List<MeasureValue>();
+            List<ValueCubeItem> tupleValues = new List<ValueCubeItem>();
             foreach (var value in values)
             {
                 if(IsValueAggregatated(value,tuple.Members)) tupleValues.Add(value);
@@ -167,22 +171,19 @@ internal class SelectProcessor
         return resValues;
     }
 
-    private bool IsValueAggregatated(MeasureValue value, IEnumerable<CubeItem> members)
+    private bool IsValueAggregatated(ValueCubeItem value, IEnumerable<ICubeItem> members)
     {
-        var measure = members.FirstOrDefault(x => x.Type == CubeItemType.Measure)?.Values
+        var measure = (MeasureCubeItem)members.FirstOrDefault(x => x is MeasureGroupCubeItem)?.GetValues()
             .FirstOrDefault();
-        if (measure is not null && value.MeasureKey != measure.Key) return false;
-        var dimensions = members.Where(x => x.Type == CubeItemType.Dimension);
+        if (measure is not null && value.Measure.NameEqual(measure.Key)) return false;
+        var dimensions = members.Where(x => x is DimensionCubeItem).Cast<DimensionCubeItem>();
         return CubeItemHelper.IsValueInDimensions(value, dimensions);
     }
 
-    private MeasureValue AggregatedValues(IEnumerable<MeasureValue> values)
+    private ValueCubeItem AggregatedValues(IEnumerable<ValueCubeItem> values)
     {
         var first = values.FirstOrDefault();
-        return first ?? new MeasureValue()
-        {
-            Value = "-"
-        };
+        return first ?? new ValueCubeItem("", "-", null, null);
     }
     
     #endregion

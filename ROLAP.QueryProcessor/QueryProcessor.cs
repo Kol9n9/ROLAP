@@ -1,7 +1,7 @@
-﻿using ROLAP.Common.Enums;
-using ROLAP.Common.Interfaces;
-using ROLAP.Common.Model;
-using ROLAP.Configuration.Models.Interfaces;
+﻿using ROLAP.Configuration.Interfaces;
+using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Model.CubeItem;
+using ROLAP.Core.Models.Model.Query;
 using ROLAP.QueryProcessor.Helpers;
 using ROLAP.QueryProcessor.Models;
 using ROLAP.QueryProcessor.Models.Items;
@@ -9,11 +9,11 @@ using ROLAP.QueryProcessor.Parser;
 
 namespace ROLAP.QueryProcessor;
 
-public class QueryProcessor : IQueryProcessor
+public class QueryProcessor
 {
-    private readonly ICubeConfigurationStore _store;
+    private readonly IConfigurationStore _store;
 
-    public QueryProcessor(ICubeConfigurationStore store)
+    public QueryProcessor(IConfigurationStore store)
     {
         _store = store;
     }
@@ -27,11 +27,11 @@ public class QueryProcessor : IQueryProcessor
     private CubeQuery PrepareQueryModel(QueryModel queryModel)
     {
         var cubeName = queryModel.CubeName;
-        var cubeConf = _store.GetByName(cubeName);
+        var cubeConf = _store.GetConfiguration(cubeName);
         var tuples = ProcessAxes(queryModel.Axes, cubeConf);
         var whereTuples = ProcessAxes(queryModel.Where, cubeConf);
-        if (whereTuples.Any(x => x.Members.Any(y => y.Values.Count() > 1)))
-            throw new Exception("В Where для измерений / мер можно указывать только одно значение");
+        // if (whereTuples.Any(x => x.Members.Any(y => y.Values.Count() > 1)))
+        //     throw new Exception("В Where для измерений / мер можно указывать только одно значение");
         return new CubeQuery(queryModel.QueryType, tuples, whereTuples);
     }
     
@@ -39,7 +39,7 @@ public class QueryProcessor : IQueryProcessor
     
     #region ProcessQueryModel
     
-    private IEnumerable<CubeItemTuple> ProcessAxes(IEnumerable<AxisItem> axesQuery,ConfigurationCube configurationCube)
+    private IEnumerable<CubeItemTuple> ProcessAxes(IEnumerable<AxisItem> axesQuery, CubeConfiguration configurationCube)
     {
         List<CubeItemTuple> tuples = new List<CubeItemTuple>();
 
@@ -52,11 +52,11 @@ public class QueryProcessor : IQueryProcessor
     }
 
 
-    private CubeItemTuple ProcessAxisQuery(AxisItem? axisQuery, ConfigurationCube configurationCube)
+    private CubeItemTuple ProcessAxisQuery(AxisItem? axisQuery, CubeConfiguration configurationCube)
     {
         if (axisQuery is null) throw new ArgumentNullException(nameof(axisQuery));
 
-        List<CubeItem> items = new List<CubeItem>();
+        List<ICubeItem> items = new List<ICubeItem>();
         
         var set = MappingHelper.ToSet(axisQuery.Member);
         
@@ -69,7 +69,7 @@ public class QueryProcessor : IQueryProcessor
         return new CubeItemTuple(items);
     }
 
-    private void ProcessQueryTuple(TupleItem? tupleQuery, ConfigurationCube configurationCube, ref List<CubeItem> cubeItems)
+    private void ProcessQueryTuple(TupleItem? tupleQuery, CubeConfiguration configurationCube, ref List<ICubeItem> cubeItems)
     {
         if (tupleQuery is null) throw new ArgumentNullException(nameof(tupleQuery));
 
@@ -83,7 +83,7 @@ public class QueryProcessor : IQueryProcessor
         }
     }
 
-    private CubeItem? ProcessMember(MemberItem? memberQuery, ConfigurationCube configurationCube)
+    private ICubeItem? ProcessMember(MemberItem? memberQuery, CubeConfiguration configurationCube)
     {
         if (memberQuery is null) throw new ArgumentNullException(nameof(memberQuery));
         if (memberQuery.Hierarchy[0].ToLower() == "measure")
@@ -96,47 +96,47 @@ public class QueryProcessor : IQueryProcessor
         }
     }
 
-    private CubeItem? FindMeasure(ConfigurationCube configurationCube, string name)
+    private ICubeItem? FindMeasure(CubeConfiguration configurationCube, string name)
     {
-        var measure = configurationCube.Measures.FirstOrDefault(x => x.Name == name);
+        var measure = configurationCube.Measures.FirstOrDefault(x => x.NameEqual(name));
         if (measure is null) return null;
-        var cubeItem = new MeasureCubeItem("Показатель", string.Empty,null);
-        cubeItem.Values.Add(measure.Clone());
-        return cubeItem;
+        List<MeasureCubeItem> measureCubeItems = new List<MeasureCubeItem> { measure.Clone<MeasureCubeItem>() };
+        return new MeasureGroupCubeItem("Показатель",measureCubeItems);
     }
 
-    private CubeItem? FindDimension(ConfigurationCube configurationCube, string[] hierarchy)
+    private ICubeItem? FindDimension(CubeConfiguration configurationCube, string[] hierarchy)
     {
         int i = 0;
         
-        CubeItem? result = null;
-        CubeItem? temp = null;
-        List<CubeItem>? dimensions = configurationCube.Dimensions.ToList();
-        CubeItem? current = null;
-
+        ICubeItem? result = null;
+        ICubeItem? temp = null;
+        IEnumerable<DimensionCubeItem> dimensions = configurationCube.Dimensions;
+        DimensionCubeItem? current = null;
+        
         do
         {
             if (!dimensions.Any()) return null;
-            current = dimensions.FirstOrDefault(x => x.Name == hierarchy[i]);
+            current = (DimensionCubeItem)dimensions.FirstOrDefault(x => x.NameEqual(hierarchy[i]));
             if (current is null) return null;
             if (result is null)
             {
-                result = temp = new CubeItem(current.Name, current.Key, CubeItemType.Dimension);
+                result = temp = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
             }
             else
             {
-                temp.Values.Add(new CubeItem(current.Name, current.Key, CubeItemType.Dimension));
-                temp = temp.Values[0];
+                var newVal = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
+                temp.AddValue(newVal);
+                temp = newVal;
             }
             dimensions = current.Values;
             
         } while (++i < hierarchy.Length);
-
-
+        
+        
         return result;
     }
 
-    private void MergeCubeItem(CubeItem cubeItem, List<CubeItem> cubeItems)
+    private void MergeCubeItem(ICubeItem cubeItem, List<ICubeItem> cubeItems)
     {
         if (!cubeItems.Any())
         {
@@ -144,17 +144,17 @@ public class QueryProcessor : IQueryProcessor
             return;
         }
 
-        CubeItem? prevFind = null;
-        List<CubeItem>? temp = cubeItems;
-        CubeItem? currentCubeItem = cubeItem;
+        ICubeItem? prevFind = null;
+        IEnumerable<ICubeItem>? temp = cubeItems;
+        ICubeItem? currentCubeItem = cubeItem;
         do
         {
-            var findedCubeItem = temp.FirstOrDefault(x => x.Name == currentCubeItem.Name);
+            var findedCubeItem = temp.FirstOrDefault(x => x.NameEqual(currentCubeItem.GetName()));
             if(findedCubeItem is null) break;
             prevFind = findedCubeItem;
-            currentCubeItem = cubeItem.Values[0];
-            temp = findedCubeItem.Values;
-        } while (cubeItem.Values.Any());
+            currentCubeItem = cubeItem.GetValues().FirstOrDefault();
+            temp = findedCubeItem.GetValues();
+        } while (cubeItem.GetValues().Any());
 
         if (prevFind is null)
         {
@@ -162,9 +162,9 @@ public class QueryProcessor : IQueryProcessor
         }
         else
         {
-            if (currentCubeItem.Name != prevFind.Name)
+            if (!currentCubeItem.NameEqual(prevFind.GetName()))
             {
-                prevFind.Values.Add(currentCubeItem);
+                prevFind.AddValue(currentCubeItem);
             }
         }
     }
