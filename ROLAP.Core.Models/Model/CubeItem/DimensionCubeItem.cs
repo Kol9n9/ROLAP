@@ -41,6 +41,8 @@ public class DimensionCubeItem : ICubeItem
         Values = Values.Append((DimensionCubeItem)item);
     }
 
+    public bool IsContainer() => true;
+
     public IEnumerable<ICubeItem> GetValues() => Values;
 
     public bool NameEqual(string name)

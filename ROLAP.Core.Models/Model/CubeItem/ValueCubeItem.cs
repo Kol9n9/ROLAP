@@ -42,6 +42,8 @@ public class ValueCubeItem : ICubeItem
         throw new NotSupportedException();
     }
 
+    public bool IsContainer() => false;
+
     public IEnumerable<ICubeItem> GetValues()
     {
         throw new NotSupportedException();

@@ -31,6 +31,9 @@ public interface ICubeItem
     T Clone<T>(bool withInnerValues = true) where T : ICubeItem;
 
     void AddValue(ICubeItem item);
+
+    bool IsContainer();
+    
     IEnumerable<ICubeItem> GetValues();
 
     bool NameEqual(string name);

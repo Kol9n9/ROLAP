@@ -5,7 +5,6 @@ namespace ROLAP.Core.Models.Model.CubeItem;
 
 public class MeasureCubeItem : ICubeItem
 {
-    //private IValuesLoader? _loader;
     public string Key { get; }
     public string Name { get; }
 
@@ -28,7 +27,7 @@ public class MeasureCubeItem : ICubeItem
 
     public ICubeItem Clone(bool withInnerValues = true)
     {
-        var item = new MeasureCubeItem(Name, Key);
+        var item = new MeasureCubeItem(Key,Name);
         item.SetLoader(_loader);
         return item;
     }
@@ -43,6 +42,8 @@ public class MeasureCubeItem : ICubeItem
     {
         throw new NotSupportedException();
     }
+
+    public bool IsContainer() => false;
 
     public IEnumerable<ICubeItem> GetValues()
     {

@@ -152,9 +152,13 @@ public class QueryProcessor
             var findedCubeItem = temp.FirstOrDefault(x => x.NameEqual(currentCubeItem.GetName()));
             if(findedCubeItem is null) break;
             prevFind = findedCubeItem;
-            currentCubeItem = cubeItem.GetValues().FirstOrDefault();
+            
+            currentCubeItem = currentCubeItem.GetValues().FirstOrDefault();
+            if(currentCubeItem is null || !currentCubeItem.IsContainer()) break;
+            
+            if(!findedCubeItem.IsContainer()) break;
             temp = findedCubeItem.GetValues();
-        } while (cubeItem.GetValues().Any());
+        } while (currentCubeItem.GetValues().Any());
 
         if (prevFind is null)
         {
@@ -162,7 +166,7 @@ public class QueryProcessor
         }
         else
         {
-            if (!currentCubeItem.NameEqual(prevFind.GetName()))
+            if (!prevFind.GetValues().Any(x => x.NameEqual(currentCubeItem.GetName())))
             {
                 prevFind.AddValue(currentCubeItem);
             }

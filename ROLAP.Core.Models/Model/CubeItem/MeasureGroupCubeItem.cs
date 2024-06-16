@@ -25,7 +25,8 @@ public class MeasureGroupCubeItem : ICubeItem
     
     public ICubeItem Clone(bool withInnerValues = true)
     {
-        throw new NotImplementedException();
+        return new MeasureGroupCubeItem(Name,
+            withInnerValues ? Values.Select(x => x.Clone(true)).Cast<MeasureCubeItem>() : new List<MeasureCubeItem>());
     }
 
     public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
@@ -38,6 +39,8 @@ public class MeasureGroupCubeItem : ICubeItem
     {
         Values = Values.Append((MeasureCubeItem)item);
     }
+
+    public bool IsContainer() => true;
 
     public IEnumerable<ICubeItem> GetValues() => Values;
 
