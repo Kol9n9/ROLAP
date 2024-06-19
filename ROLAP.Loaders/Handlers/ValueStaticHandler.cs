@@ -8,29 +8,27 @@ namespace ROLAP.Loaders.Handlers;
 
 internal class ValueStaticHandler : ILoaderHandler<ValueCubeItem,ValueStaticOptions>
 {
-    private readonly ILoader<DimensionContainer> _loader;
+    private readonly ILoader<DimensionContainer> _dimensionLoader;
     private readonly MeasureCubeItem _measureCubeItem;
     private readonly IEnumerable<ValueStaticOptions> _valueOptions;
 
-    public ValueStaticHandler(IEnumerable<ValueStaticOptions> valueOptions, ILoader<DimensionContainer> loader, MeasureCubeItem measureCubeItem)
+    public ValueStaticHandler(IEnumerable<ValueStaticOptions> valueOptions, ILoader<DimensionContainer> dimensionLoader, MeasureCubeItem measureCubeItem)
     {
         _valueOptions = valueOptions;
-        _loader = loader;
+        _dimensionLoader = dimensionLoader;
         _measureCubeItem = measureCubeItem;
     }
     public IEnumerable<ValueCubeItem> Load(ValueStaticOptions options)
     {
-        throw new NotImplementedException();
-        // var dimensions = _loader.Load(options.Dimensions);
-        // return FilterValues(dimensions);
+        var dimensions = _dimensionLoader.Load(options.Dimensions).GetValues<DimensionContainer>();
+        return FilterValues(dimensions);
     }
 
-    private IEnumerable<ValueCubeItem> FilterValues(IEnumerable<DimensionCubeItem> dimensions)
+    private IEnumerable<ValueCubeItem> FilterValues(IEnumerable<DimensionContainer> dimensions)
     {
-        throw new NotImplementedException();
-        // var items = _valueOptions
-        //     .Select(x => new ValueCubeItem(x.Id,x.Value,_measureCubeItem,_loader.Load(x.Dimensions)))
-        //     .Where(x => CubeItemHelper.IsValueInDimensions(x, dimensions));
-        // return items;
+        var items = _valueOptions
+            .Select(x => new ValueCubeItem(x.Id,x.Value,_measureCubeItem,_dimensionLoader.Load(x.Dimensions).GetValues<DimensionContainer>()))
+            .Where(x => CubeItemHelper.IsValueInContainers(x, dimensions));
+        return items;
     }
 }

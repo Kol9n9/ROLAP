@@ -1,35 +1,18 @@
+using ROLAP.Core.Models.Interfaces;
 using ROLAP.Core.Models.Model.CubeItem;
 
 namespace ROLAP.Core.Models.Helpers;
 
 public static class CubeItemHelper
 {
-    public static bool IsValueInDimensions(ValueCubeItem value, IEnumerable<DimensionCubeItem> dimensions)
+    public static bool IsValueInContainers(ValueCubeItem value, IEnumerable<IContainer> containers, bool fullMatches = false)
     {
-        foreach (var dimension in dimensions)
+        int matches = 0;
+        foreach (var valueDimension in value.Dimensions)
         {
-            var valueDimensions = value.Dimensions.ToList();
-            var currentDimension = dimension;
-
-            do
-            {
-                var valueDimension = valueDimensions.FirstOrDefault(x => x.Key == currentDimension.Key);
-                if (valueDimension is null)
-                {
-                    return false;
-                }
-
-                if (currentDimension.Values.Any())
-                {
-                    var val = valueDimension.Values.FirstOrDefault(x =>
-                        currentDimension.Values.FirstOrDefault(y => x.Key == y.Key) is not null);
-                    if (val is null) return false;
-                    currentDimension = currentDimension.Values.FirstOrDefault(x => x.Key == val.Key);
-                    valueDimensions = val.Values.ToList();
-                }
-            } while (currentDimension != null && currentDimension.Values.Any());
+            if (valueDimension.InContainers(containers)) matches++;
         }
 
-        return true;
+        return fullMatches ? value.Dimensions.Count() == matches : containers.Count() == matches;
     }
 }

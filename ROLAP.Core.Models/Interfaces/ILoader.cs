@@ -2,7 +2,7 @@
 
 namespace ROLAP.Core.Models.Interfaces;
 
-public interface ILoader<T> where T : ICubeItem
+public interface ILoader<T>
 {
     IContainer Load(IEnumerable<ILoadOptions> options);
 }

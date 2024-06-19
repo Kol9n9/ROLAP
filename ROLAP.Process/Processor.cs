@@ -3,19 +3,19 @@ using Newtonsoft.Json;
 using ROLAP.Core.Models.Enums;
 using ROLAP.Process.Interfaces;
 using ROLAP.Process.Models.Result;
-//using ROLAP.Process.QueryProcessors;
+using ROLAP.Process.QueryProcessors;
 
 namespace ROLAP.Process;
 
 public class Processor : IProcessor
 {
-    //private SelectProcessor _selectProcessor;
+    private SelectProcessor _selectProcessor;
     private QueryProcessor.QueryProcessor _queryProcessor;
 
     public Processor(QueryProcessor.QueryProcessor queryProcessor)
     {
         _queryProcessor = queryProcessor;
-       // _selectProcessor = new SelectProcessor();
+        _selectProcessor = new SelectProcessor();
     }
     public Task ProcessQuery(string query)
     {
@@ -23,9 +23,9 @@ public class Processor : IProcessor
         switch (cubeQuery.QueryType)
         {
             case QueryType.Select:
-            {
-               //var cube = _selectProcessor.ExecuteQuery(cubeQuery);
-              // WriteToFile(cube);
+            { 
+                var cube = _selectProcessor.ExecuteQuery(cubeQuery); 
+                WriteToFile(cube);
                 break;
             }
         }

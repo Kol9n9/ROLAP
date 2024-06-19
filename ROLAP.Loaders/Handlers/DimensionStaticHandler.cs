@@ -14,13 +14,13 @@ internal class DimensionStaticHandler : ILoaderHandler<DimensionContainer,Dimens
     }
     public IEnumerable<DimensionContainer> Load(DimensionStaticOptions options)
     {
-        DimensionContainer container = new DimensionContainer(options.Name);
+        DimensionContainer container = new DimensionContainer(new DimensionCubeItem(options.Key, options.Name));
         
         if (options.Values.Any())
         {
-            container.AddValue(_loader.Load(options.Values).GetValues());
+            container.AddValue(_loader.Load(options.Values).GetValues<DimensionContainer>());
         }
-        //DimensionCubeItem cubeItem = new DimensionCubeItem(options.Key, options.Name, values);
+        
         return new List<DimensionContainer> { container };
     }
 }

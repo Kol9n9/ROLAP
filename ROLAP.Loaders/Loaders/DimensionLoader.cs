@@ -17,7 +17,7 @@ internal class DimensionLoader : ILoader<DimensionContainer>
     public IContainer Load(IEnumerable<ILoadOptions> options)
     {
 
-        DimensionContainer container = new DimensionContainer("Измерения");
+        DimensionContainer container = new DimensionContainer(new DimensionCubeItem("-1","Измерения"));
         
         foreach (var option in options)
         {

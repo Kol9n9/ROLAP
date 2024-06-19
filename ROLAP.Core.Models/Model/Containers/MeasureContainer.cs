@@ -1,4 +1,3 @@
-using ROLAP.Core.Models.Enums;
 using ROLAP.Core.Models.Interfaces;
 using ROLAP.Core.Models.Model.CubeItem;
 
@@ -7,70 +6,77 @@ namespace ROLAP.Core.Models.Model.Containers;
 public class MeasureContainer : IContainer
 {
     private List<MeasureCubeItem> _values = new List<MeasureCubeItem>();
-    public CubeItemType GetItemType()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetName()
-    {
-        throw new NotImplementedException();
-    }
 
     public IEnumerable<IContainer> Merge(IEnumerable<IContainer> containers)
     {
-        if (!containers.Any())
+        var collection = containers.ToList();
+        
+        if (!collection.Any())
         {
             return new List<IContainer> { this };
         }
 
-        var typeContainer = containers.OfType<MeasureContainer>();
-        if (!typeContainer.Any())
+        var typeContainer = collection.OfType<MeasureContainer>();
+        var measureContainers = typeContainer as MeasureContainer[] ?? typeContainer.ToArray();
+        if (!measureContainers.Any())
         {
-            return new List<IContainer>(containers) { this };
+            return new List<IContainer>(collection) { this };
         }
 
         foreach (var value in _values)
         {
-            var findContainer = typeContainer.FirstOrDefault(x => x.FindByHierarchy(new string[]{"",value.GetName()}) != null);
+            var findContainer = measureContainers.FirstOrDefault(x => x.FindByHierarchy(new string[]{"",value.Name}) != null);
             if (findContainer is null)
             {
-                if (typeContainer.Count() == 1)
+                if (measureContainers.Length == 1)
                 {
-                    typeContainer.FirstOrDefault().AddValue(value);
+                    measureContainers.FirstOrDefault()?.AddValue(value);
                 }
                 else
                 {
                     var container = new MeasureContainer();
                     container.AddValue(value);
-                    containers = new List<IContainer>(containers) { container };
+                    collection = new List<IContainer>(collection) { container };
                     
                 }
             }
         }
 
-        return containers;
+        return collection;
     }
-
-    public ICubeItem Clone(bool withInnerValues = true)
+    
+    public bool InContainer(IContainer container)
     {
-        throw new NotImplementedException();
+        if (container is not MeasureContainer measureContainer) return false;
+        return _values.All(value => measureContainer._values.Exists(val => val.Key == value.Key));
     }
-
-    public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
+    
+    public bool InContainers(IEnumerable<IContainer> containers)
     {
-        throw new NotImplementedException();
+        return containers.Any(InContainer);
     }
 
-    public bool NameEqual(string name)
+    public void AddValue<T>(T item)
     {
-        throw new NotImplementedException();
+        var measure = item as MeasureCubeItem;
+        if (measure is null) throw new NotSupportedException();
+        _values.Add(measure);
     }
 
-    public void AddValue(ICubeItem item) => _values.Add((MeasureCubeItem)item);
-    public void AddValue(IEnumerable<ICubeItem> items) => _values.AddRange(items.Cast<MeasureCubeItem>());
+    public void AddValue<T>(IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            AddValue(item);
+        }
+    }
 
-    public IEnumerable<ICubeItem> GetValues() => _values;
+    public IEnumerable<T> GetValues<T>()
+    {
+        if (typeof(T) != typeof(MeasureCubeItem)) throw new NotSupportedException();
+        return _values.Cast<T>();
+    }
+
     public IContainer? FindByHierarchy(string[] hierarchy)
     {
         var measure = _values.FirstOrDefault(x => x.Name == hierarchy[1]);

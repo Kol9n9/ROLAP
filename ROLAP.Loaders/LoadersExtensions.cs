@@ -11,8 +11,8 @@ public static class LoadersExtensions
     
     public static CubeConfiguration LoadCubeConfiguration(string name)
     {
-        var cube = _loader.Load(new List<ILoadOptions> { new CubeStaticOptions(name) }).GetValues().FirstOrDefault();
+        var cube = _loader.Load(new List<ILoadOptions> { new CubeStaticOptions(name) }).GetValues<CubeConfiguration>().FirstOrDefault();
         if (cube is null) throw new Exception("Конфигурация куба не найдена");
-        return cube as CubeConfiguration;
+        return cube;
     }
 }

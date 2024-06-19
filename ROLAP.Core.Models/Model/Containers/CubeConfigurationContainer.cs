@@ -1,47 +1,48 @@
-using ROLAP.Core.Models.Enums;
 using ROLAP.Core.Models.Interfaces;
 using ROLAP.Core.Models.Model.CubeItem;
 
 namespace ROLAP.Core.Models.Model.Containers;
 
-public class CubeConfigurationContainer : ICubeItem, IContainer
+public class CubeConfigurationContainer : IContainer
 {
     private List<CubeConfiguration> _values = new List<CubeConfiguration>();
-    public CubeItemType GetItemType()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetName()
-    {
-        throw new NotImplementedException();
-    }
 
     public IEnumerable<IContainer> Merge(IEnumerable<IContainer> containers)
     {
         throw new NotImplementedException();
     }
 
-    public ICubeItem Clone(bool withInnerValues = true)
+    public bool InContainer(IContainer container)
     {
-        throw new NotImplementedException();
+        return false;
+    }
+    
+    public bool InContainers(IEnumerable<IContainer> containers)
+    {
+        return containers.Any(InContainer);
     }
 
-    public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
+    public void AddValue<T>(T item)
     {
-        throw new NotImplementedException();
+        var configuration = item as CubeConfiguration;
+        if (configuration is null) throw new NotSupportedException();
+        _values.Add(configuration);
     }
 
-    public bool NameEqual(string name)
+    public void AddValue<T>(IEnumerable<T> items)
     {
-        throw new NotImplementedException();
+        foreach (var item in items)
+        {
+            AddValue(item);
+        }
     }
 
-    public void AddValue(ICubeItem item) => _values.Add((CubeConfiguration)item);
+    public IEnumerable<T> GetValues<T>()
+    {
+        if (typeof(T) == typeof(CubeConfiguration)) return _values.Cast<T>();
+        throw new NotSupportedException();
+    }
 
-    public void AddValue(IEnumerable<ICubeItem> items) => _values.AddRange(items.Cast<CubeConfiguration>());
-
-    public IEnumerable<ICubeItem> GetValues() => _values;
     public IContainer FindByHierarchy(string[] hierarchy)
     {
         throw new NotImplementedException();

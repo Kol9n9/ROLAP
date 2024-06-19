@@ -85,92 +85,15 @@ public class QueryProcessor
     private IContainer? ProcessMember(MemberItem? memberQuery, CubeConfiguration configurationCube)
     {
         if (memberQuery is null) throw new ArgumentNullException(nameof(memberQuery));
-        if (memberQuery.Hierarchy[0].ToLower() == "measure")
-        {
-            return configurationCube.Measures.FindByHierarchy(memberQuery.Hierarchy);
-        }
-        else
-        {
-            return configurationCube.Dimensions.FindByHierarchy(memberQuery.Hierarchy);
-        }
+
+        IContainer container = IsMeasure(memberQuery.Hierarchy[0])
+            ? configurationCube.Measures
+            : configurationCube.Dimensions;
+
+        return container.FindByHierarchy(memberQuery.Hierarchy);
     }
 
-    // private ICubeItem? FindMeasure(CubeConfiguration configurationCube, string name)
-    // {
-    //     var measure = configurationCube.Measures.FirstOrDefault(x => x.NameEqual(name));
-    //     if (measure is null) return null;
-    //     List<MeasureCubeItem> measureCubeItems = new List<MeasureCubeItem> { measure.Clone<MeasureCubeItem>() };
-    //     return new MeasureGroupCubeItem("Показатель",measureCubeItems);
-    // }
-    //
-    // private ICubeItem? FindDimension(CubeConfiguration configurationCube, string[] hierarchy)
-    // {
-    //     int i = 0;
-    //     
-    //     ICubeItem? result = null;
-    //     ICubeItem? temp = null;
-    //     IEnumerable<DimensionCubeItem> dimensions = configurationCube.Dimensions;
-    //     DimensionCubeItem? current = null;
-    //     
-    //     do
-    //     {
-    //         if (!dimensions.Any()) return null;
-    //         current = (DimensionCubeItem)dimensions.FirstOrDefault(x => x.NameEqual(hierarchy[i]));
-    //         if (current is null) return null;
-    //         if (result is null)
-    //         {
-    //             result = temp = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
-    //         }
-    //         else
-    //         {
-    //             var newVal = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
-    //             temp.AddValue(newVal);
-    //             temp = newVal;
-    //         }
-    //         dimensions = current.Values;
-    //         
-    //     } while (++i < hierarchy.Length);
-    //     
-    //     
-    //     return result;
-    // }
+    private bool IsMeasure(string name) => name.ToLower() == "measure";
 
-    // private void MergeCubeItem(ICubeItem cubeItem, List<ICubeItem> cubeItems)
-    // {
-    //     if (!cubeItems.Any())
-    //     {
-    //         cubeItems.Add(cubeItem);
-    //         return;
-    //     }
-    //
-    //     ICubeItem? prevFind = null;
-    //     IEnumerable<ICubeItem>? temp = cubeItems;
-    //     ICubeItem? currentCubeItem = cubeItem;
-    //     do
-    //     {
-    //         var findedCubeItem = temp.FirstOrDefault(x => x.NameEqual(currentCubeItem.GetName()));
-    //         if(findedCubeItem is null) break;
-    //         prevFind = findedCubeItem;
-    //         
-    //         currentCubeItem = currentCubeItem.GetValues().FirstOrDefault();
-    //         if(currentCubeItem is null || !currentCubeItem.IsContainer()) break;
-    //         
-    //         if(!findedCubeItem.IsContainer()) break;
-    //         temp = findedCubeItem.GetValues();
-    //     } while (currentCubeItem.GetValues().Any());
-    //
-    //     if (prevFind is null)
-    //     {
-    //         cubeItems.Add(cubeItem);
-    //     }
-    //     else
-    //     {
-    //         if (!prevFind.GetValues().Any(x => x.NameEqual(currentCubeItem.GetName())))
-    //         {
-    //             prevFind.AddValue(currentCubeItem);
-    //         }
-    //     }
-    // }
-    
     #endregion
 }

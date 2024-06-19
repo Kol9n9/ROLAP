@@ -1,25 +1,18 @@
-using ROLAP.Core.Models.Enums;
 using ROLAP.Core.Models.Interfaces;
 using ROLAP.Core.Models.Model.CubeItem;
 
 namespace ROLAP.Core.Models.Model.Containers;
 
-public class DimensionContainer : ICubeItem, IContainer
+public class DimensionContainer : IContainer
 {
     private List<DimensionContainer> _values = new List<DimensionContainer>();
-    public string Name { get; }
+    public DimensionCubeItem Item { get; }
 
-    public DimensionContainer(string name)
+    public DimensionContainer(DimensionCubeItem dimensionCubeItem)
     {
-        Name = name;
+        Item = dimensionCubeItem;
     }
     
-    public CubeItemType GetItemType()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetName() => Name;
     public IEnumerable<IContainer> Merge(IEnumerable<IContainer> containers)
     {
         if (!containers.Any())
@@ -33,10 +26,10 @@ public class DimensionContainer : ICubeItem, IContainer
             return new List<IContainer>(containers) { this };
         }
 
-        var parentContainer = typeContainers.FirstOrDefault(x => x.Name == Name);
+        var parentContainer = typeContainers.FirstOrDefault(x => x.Item.Name == Item.Name);
         if (parentContainer is null)
         {
-            var container = new DimensionContainer(Name);
+            var container = new DimensionContainer(Item);
             foreach (var value in _values)
             {
                 container.AddValue(value);
@@ -46,7 +39,7 @@ public class DimensionContainer : ICubeItem, IContainer
         
         foreach (var value in _values)
         {
-            var findContainer = parentContainer._values.FirstOrDefault(x => x.Name == value.Name);
+            var findContainer = parentContainer._values.FirstOrDefault(x => x.Item.Name == value.Item.Name);
             if (findContainer is null)
             {
                 parentContainer.AddValue(value);
@@ -62,38 +55,72 @@ public class DimensionContainer : ICubeItem, IContainer
         return containers;
     }
 
-    public ICubeItem Clone(bool withInnerValues = true)
+    public bool InContainer(IContainer container)
     {
-        throw new NotImplementedException();
+        if (container is not DimensionContainer dimensionContainer) return false;
+
+        if (Item.Key != dimensionContainer.Item.Key) return false;
+        
+        return _values.All(value =>
+        {
+            return dimensionContainer._values.Exists(containerValue =>
+            {
+                var res = value.Item.Key == containerValue.Item.Key;
+                if (!res) return false;
+                if (value._values.Any())
+                {
+                    if (!containerValue._values.Any()) return false;
+                    return value._values.All(innerValue => containerValue._values.Any(innerValue.InContainer));
+                }
+
+                return true;
+            });
+        });
+    }
+    
+    public bool InContainers(IEnumerable<IContainer> containers)
+    {
+        return containers.Any(InContainer);
+    }
+    
+    public void AddValue<T>(T item)
+    {
+        var dimensionContainer = item as DimensionContainer;
+        if (dimensionContainer is null) throw new NotSupportedException();
+        _values.Add(dimensionContainer);
     }
 
-    public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
+    public void AddValue<T>(IEnumerable<T> items)
     {
-        throw new NotImplementedException();
+        foreach (var item in items)
+        {
+            AddValue(item);
+        }
     }
 
-    public bool NameEqual(string name) => Name.Equals(name);
+    public IEnumerable<T> GetValues<T>()
+    {
+        if (typeof(T) == typeof(DimensionContainer)) return _values.Cast<T>();
+        throw new NotSupportedException();
+    }
 
-    public void AddValue(ICubeItem item) => _values.Add((DimensionContainer)item);
-    public void AddValue(IEnumerable<ICubeItem> items) => _values.AddRange(items.Cast<DimensionContainer>());
-
-    public IEnumerable<ICubeItem> GetValues() => _values;
+    
     public IContainer? FindByHierarchy(string[] hierarchy)
     {
         IContainer result = null;
         DimensionContainer current = null;
         
-        IContainer? tmp = null;
+        DimensionContainer? tmp = null;
         IEnumerable<DimensionContainer> currents = _values;
         int index = 0;
         
         while (index < hierarchy.Length)
         {
-            tmp = currents.FirstOrDefault(x => x.Name == hierarchy[index]);
+            tmp = currents.FirstOrDefault(x => x.Item.Name == hierarchy[index]) as DimensionContainer;
             index++;
             if (tmp is null) return null;
-            currents = tmp.GetValues().Cast<DimensionContainer>();
-            var container = new DimensionContainer(tmp.GetName());
+            currents = tmp.GetValues<DimensionContainer>();
+            var container = new DimensionContainer(tmp.Item);
             
             if (result is null)
             {
@@ -107,39 +134,5 @@ public class DimensionContainer : ICubeItem, IContainer
         }
 
         return result;
-        
-        var dimensionContainer = _values.FirstOrDefault(x => x.Name == hierarchy[0]);
-        // private ICubeItem? FindDimension(CubeConfiguration configurationCube, string[] hierarchy)
-        // {
-        //     int i = 0;
-        //
-        //     ICubeItem? result = null;
-        //     ICubeItem? temp = null;
-        //     IEnumerable<DimensionCubeItem> dimensions = configurationCube.Dimensions;
-        //     DimensionCubeItem? current = null;
-        //
-        //     do
-        //     {
-        //         if (!dimensions.Any()) return null;
-        //         current = (DimensionCubeItem)dimensions.FirstOrDefault(x => x.NameEqual(hierarchy[i]));
-        //         if (current is null) return null;
-        //         if (result is null)
-        //         {
-        //             result = temp = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
-        //         }
-        //         else
-        //         {
-        //             var newVal = new DimensionCubeItem(current.Key, current.Name, new List<DimensionCubeItem>());
-        //             temp.AddValue(newVal);
-        //             temp = newVal;
-        //         }
-        //         dimensions = current.Values;
-        //     
-        //     } while (++i < hierarchy.Length);
-        //
-        //
-        //     return result;
-        // }
-        throw new NotImplementedException();
     }
 }

@@ -1,6 +1,4 @@
-﻿using ROLAP.Core.Models.Enums;
-using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.Containers;
+﻿using ROLAP.Core.Models.Interfaces;
 
 namespace ROLAP.Core.Models.Model.CubeItem;
 
@@ -21,17 +19,6 @@ public class CubeConfiguration : ICubeItem
         Dimensions = dimensions;
         Measures = measures;
     }
-    
-    public CubeItemType GetItemType() => CubeItemType.CubeConfiguration;
-    public string GetKey()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetName()
-    {
-        throw new NotImplementedException();
-    }
 
     public ICubeItem Clone(bool withInnerValues = true)
     {
@@ -42,19 +29,7 @@ public class CubeConfiguration : ICubeItem
     {
         throw new NotImplementedException();
     }
-
-    public void AddValue(ICubeItem item)
-    {
-        throw new NotSupportedException();
-    }
-
-    public bool IsContainer() => false;
-
-    public IEnumerable<ICubeItem> GetValues()
-    {
-        throw new NotSupportedException();
-    }
-
+    
     public bool NameEqual(string name)
     {
         throw new NotImplementedException();

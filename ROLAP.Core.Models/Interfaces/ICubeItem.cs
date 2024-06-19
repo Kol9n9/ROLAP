@@ -8,14 +8,6 @@ namespace ROLAP.Core.Models.Interfaces;
 public interface ICubeItem
 {
     /// <summary>
-    /// Получить тип элемента
-    /// </summary>
-    /// <returns></returns>
-    CubeItemType GetItemType();
-
-    string GetName();
-    
-    /// <summary>
     /// Клонировать элемент
     /// </summary>
     /// <param name="withInnerValues">Клонировать внутрение значения (по возможности)</param>
@@ -29,6 +21,4 @@ public interface ICubeItem
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     T Clone<T>(bool withInnerValues = true) where T : ICubeItem;
-
-    bool NameEqual(string name);
 }
