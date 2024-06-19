@@ -1,4 +1,5 @@
 ﻿using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Model.Containers;
 using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
@@ -12,29 +13,27 @@ internal class MeasureLoader : ILoader<MeasureCubeItem>
     {
         _staticHandler = new MeasureStaticHandler();
     }
-    public IEnumerable<MeasureCubeItem> Load(IEnumerable<ILoadOptions> options)
+    public IContainer Load(IEnumerable<ILoadOptions> options)
     {
-        List<MeasureCubeItem> measures = new List<MeasureCubeItem>();
+        MeasureContainer container = new MeasureContainer();
 
         foreach (var option in options)
         {
-            if (!TryGetValue(option, out var values)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
-            measures.AddRange(values);
+            if (!TryAddValue(option, container)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
         }
 
-        return measures;
+        return container;
     }
 
 
-    private bool TryGetValue(ILoadOptions options, out IEnumerable<MeasureCubeItem> values)
+    private bool TryAddValue(ILoadOptions options, MeasureContainer container)
     {
         if (options is MeasureStaticOptions staticOptions)
         {
-            values = _staticHandler.Load(staticOptions);
+            container.AddValue(_staticHandler.Load(staticOptions));
             return true;
         }
 
-        values = new List<MeasureCubeItem>();
         return false;
     }
 }

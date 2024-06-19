@@ -1,5 +1,6 @@
 ﻿using ROLAP.Core.Models.Enums;
 using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Model.Containers;
 
 namespace ROLAP.Core.Models.Model.CubeItem;
 
@@ -8,14 +9,14 @@ public class CubeConfiguration : ICubeItem
     /// <summary>
     /// Измерения
     /// </summary>
-    public IEnumerable<DimensionCubeItem> Dimensions { get; }
+    public IContainer Dimensions { get; }
     
     /// <summary>
     /// Меры
     /// </summary>
-    public IEnumerable<MeasureCubeItem> Measures { get; }
+    public IContainer Measures { get; }
 
-    public CubeConfiguration(IEnumerable<DimensionCubeItem> dimensions, IEnumerable<MeasureCubeItem> measures)
+    public CubeConfiguration(IContainer dimensions, IContainer measures)
     {
         Dimensions = dimensions;
         Measures = measures;
