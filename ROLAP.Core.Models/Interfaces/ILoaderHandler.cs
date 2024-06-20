@@ -2,9 +2,8 @@
 
 namespace ROLAP.Core.Models.Interfaces;
 
-public interface ILoaderHandler<TITem, TOptions>
-    where TITem: ICubeItem
+public interface ILoaderHandler<T, TOptions>
     where TOptions: ILoadOptions
 {
-    IEnumerable<TITem> Load(TOptions options);
+    IEnumerable<T> Load(TOptions options);
 }

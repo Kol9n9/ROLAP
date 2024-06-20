@@ -1,6 +1,6 @@
 ﻿using ROLAP.Configuration.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.Loaders;
+using ROLAP.Models.Models.ICubeItems;
 
 namespace ROLAP.Configuration.Models;
 

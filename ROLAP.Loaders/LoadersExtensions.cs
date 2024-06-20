@@ -1,7 +1,7 @@
 ﻿using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.Loaders.Loaders;
 using ROLAP.Loaders.Models.Options;
+using ROLAP.Models.Models.ICubeItems;
 
 namespace ROLAP.Loaders;
 
@@ -11,7 +11,7 @@ public static class LoadersExtensions
     
     public static CubeConfiguration LoadCubeConfiguration(string name)
     {
-        var cube = _loader.Load(new List<ILoadOptions> { new CubeStaticOptions(name) }).FirstOrDefault();
+        var cube = _loader.Load(new List<ILoadOptions> { new CubeStaticOptions(name) }).GetValues<CubeConfiguration>().FirstOrDefault();
         if (cube is null) throw new Exception("Конфигурация куба не найдена");
         return cube;
     }

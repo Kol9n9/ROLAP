@@ -4,9 +4,9 @@ namespace ROLAP.Core.Models.Model.Query;
 
 public class CubeItemTuple
 {
-    public IEnumerable<ICubeItem> Members { get; }
+    public IEnumerable<IContainer> Members { get; }
 
-    public CubeItemTuple(IEnumerable<ICubeItem> members)
+    public CubeItemTuple(IEnumerable<IContainer> members)
     {
         Members = members;
     }

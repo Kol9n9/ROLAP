@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Loaders", "ROLAP.Load
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Configuration", "ROLAP.Configuration\ROLAP.Configuration.csproj", "{8D0BDF98-04C5-4A08-ABEF-7A88CFC9159C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROLAP.Models", "ROLAP.Models\ROLAP.Models.csproj", "{67FCBB13-8F75-4F52-9D16-7EBC1A8FC9B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{8D0BDF98-04C5-4A08-ABEF-7A88CFC9159C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D0BDF98-04C5-4A08-ABEF-7A88CFC9159C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D0BDF98-04C5-4A08-ABEF-7A88CFC9159C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67FCBB13-8F75-4F52-9D16-7EBC1A8FC9B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67FCBB13-8F75-4F52-9D16-7EBC1A8FC9B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67FCBB13-8F75-4F52-9D16-7EBC1A8FC9B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67FCBB13-8F75-4F52-9D16-7EBC1A8FC9B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

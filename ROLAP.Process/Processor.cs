@@ -23,9 +23,9 @@ public class Processor : IProcessor
         switch (cubeQuery.QueryType)
         {
             case QueryType.Select:
-            {
-               var cube = _selectProcessor.ExecuteQuery(cubeQuery);
-               WriteToFile(cube);
+            { 
+                var cube = _selectProcessor.ExecuteQuery(cubeQuery); 
+                WriteToFile(cube);
                 break;
             }
         }

@@ -1,4 +1,5 @@
-﻿using ROLAP.Core.Models.Model.CubeItem;
+﻿using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Model.Query;
 
 namespace ROLAP.Process.Models.Result;
 
@@ -7,11 +8,11 @@ namespace ROLAP.Process.Models.Result;
 /// </summary>
 internal class CubeResult
 {
-    public IEnumerable<CubeResultSet> Axes { get; }
-    public IEnumerable<ValueCubeItem> Values { get; }
-    public CubeResult(IEnumerable<CubeResultSet> axes, IEnumerable<ValueCubeItem> values)
+    public IEnumerable<CubeItemSet> Axes { get; }
+    public IEnumerable<ICubeItem> Values { get; }
+    public CubeResult(IEnumerable<CubeItemSet> axes, IEnumerable<ICubeItem> values)
     {
-        Values = values;
         Axes = axes;
+        Values = values;
     }
 }
