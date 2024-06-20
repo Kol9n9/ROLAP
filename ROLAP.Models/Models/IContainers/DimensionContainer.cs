@@ -1,7 +1,7 @@
 using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
+using ROLAP.Models.Models.ICubeItems;
 
-namespace ROLAP.Core.Models.Model.Containers;
+namespace ROLAP.Models.Models.IContainers;
 
 public class DimensionContainer : IContainer
 {
@@ -63,7 +63,7 @@ public class DimensionContainer : IContainer
         
         return _values.All(value =>
         {
-            return dimensionContainer._values.Exists(containerValue =>
+            return !dimensionContainer._values.Any() || dimensionContainer._values.Exists(containerValue =>
             {
                 var res = value.Item.Key == containerValue.Item.Key;
                 if (!res) return false;
@@ -82,7 +82,16 @@ public class DimensionContainer : IContainer
     {
         return containers.Any(InContainer);
     }
-    
+
+    public T Clone<T>(bool withValues = true) where T : ICubeItem
+    {
+        if (typeof(T) != typeof(DimensionContainer) && typeof(T) != typeof(IContainer) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(DimensionContainer)}\"");
+
+        DimensionContainer container = new DimensionContainer(Item.Clone<DimensionCubeItem>(withValues));
+        if(withValues) container.AddValue(_values.Select(x => x.Clone<DimensionContainer>(withValues)));
+        return (T)(ICubeItem)container;
+    }
+
     public void AddValue<T>(T item)
     {
         var dimensionContainer = item as DimensionContainer;
@@ -104,6 +113,10 @@ public class DimensionContainer : IContainer
         throw new NotSupportedException();
     }
 
+    public IEnumerable<ICubeItem> GetValues()
+    {
+        return _values;
+    }
     
     public IContainer? FindByHierarchy(string[] hierarchy)
     {

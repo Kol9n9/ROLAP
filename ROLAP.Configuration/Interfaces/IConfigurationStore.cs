@@ -1,4 +1,4 @@
-﻿using ROLAP.Core.Models.Model.CubeItem;
+﻿using ROLAP.Models.Models.ICubeItems;
 
 namespace ROLAP.Configuration.Interfaces;
 

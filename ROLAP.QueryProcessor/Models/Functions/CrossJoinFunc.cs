@@ -1,4 +1,4 @@
-﻿using ROLAP.Core.Models.Model.CubeItem;
+﻿using ROLAP.Models.Models.ICubeItems;
 using ROLAP.QueryProcessor.Helpers;
 using ROLAP.QueryProcessor.Interfaces;
 using ROLAP.QueryProcessor.Models.Items;

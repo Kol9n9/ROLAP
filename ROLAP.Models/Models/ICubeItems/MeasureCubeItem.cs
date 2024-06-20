@@ -1,6 +1,6 @@
 ﻿using ROLAP.Core.Models.Interfaces;
 
-namespace ROLAP.Core.Models.Model.CubeItem;
+namespace ROLAP.Models.Models.ICubeItems;
 
 public class MeasureCubeItem : ICubeItem
 {
@@ -18,16 +18,12 @@ public class MeasureCubeItem : ICubeItem
     public ILoader<ValueCubeItem> GetLoader() => _loader;
     public void SetLoader(ILoader<ValueCubeItem> loader) => _loader = loader;
 
-    public ICubeItem Clone(bool withInnerValues = true)
+    public T Clone<T>(bool withValues) where T : ICubeItem
     {
+        if (typeof(T) != typeof(MeasureCubeItem) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(MeasureCubeItem)}\"");
+        
         var item = new MeasureCubeItem(Key,Name);
         item.SetLoader(_loader);
-        return item;
-    }
-
-    public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
-    {
-        var clone = Clone(withInnerValues);
-        return (T)clone;
+        return (T)(ICubeItem)item;
     }
 }

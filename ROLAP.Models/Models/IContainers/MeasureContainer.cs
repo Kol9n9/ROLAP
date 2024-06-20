@@ -1,7 +1,7 @@
 using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
+using ROLAP.Models.Models.ICubeItems;
 
-namespace ROLAP.Core.Models.Model.Containers;
+namespace ROLAP.Models.Models.IContainers;
 
 public class MeasureContainer : IContainer
 {
@@ -48,7 +48,7 @@ public class MeasureContainer : IContainer
     public bool InContainer(IContainer container)
     {
         if (container is not MeasureContainer measureContainer) return false;
-        return _values.All(value => measureContainer._values.Exists(val => val.Key == value.Key));
+        return _values.All(value => !measureContainer._values.Any() || measureContainer._values.Exists(val => val.Key == value.Key));
     }
     
     public bool InContainers(IEnumerable<IContainer> containers)
@@ -70,6 +70,15 @@ public class MeasureContainer : IContainer
             AddValue(item);
         }
     }
+    
+    public T Clone<T>(bool withValues = true) where T : ICubeItem
+    {
+        if (typeof(T) != typeof(MeasureContainer) && typeof(T) != typeof(IContainer) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(MeasureContainer)}\"");
+        
+        MeasureContainer container = new MeasureContainer();
+        if (withValues) container.AddValue(_values.Select(x => x.Clone<MeasureCubeItem>(withValues)));
+        return (T)(ICubeItem)container;
+    }
 
     public IEnumerable<T> GetValues<T>()
     {
@@ -77,12 +86,17 @@ public class MeasureContainer : IContainer
         return _values.Cast<T>();
     }
 
+    public IEnumerable<ICubeItem> GetValues()
+    {
+        return _values;
+    }
+    
     public IContainer? FindByHierarchy(string[] hierarchy)
     {
         var measure = _values.FirstOrDefault(x => x.Name == hierarchy[1]);
         if (measure is null) return null;
         var container = new MeasureContainer();
-        container.AddValue(measure.Clone<MeasureCubeItem>());
+        container.AddValue(measure.Clone<MeasureCubeItem>(false));
         return container;
     }
 }

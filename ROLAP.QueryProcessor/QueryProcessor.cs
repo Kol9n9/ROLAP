@@ -1,7 +1,7 @@
 ﻿using ROLAP.Configuration.Interfaces;
 using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
 using ROLAP.Core.Models.Model.Query;
+using ROLAP.Models.Models.ICubeItems;
 using ROLAP.QueryProcessor.Helpers;
 using ROLAP.QueryProcessor.Models;
 using ROLAP.QueryProcessor.Models.Items;
@@ -94,6 +94,7 @@ public class QueryProcessor
     }
 
     private bool IsMeasure(string name) => name.ToLower() == "measure";
+    
 
     #endregion
 }

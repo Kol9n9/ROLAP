@@ -1,6 +1,6 @@
 ﻿using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.Containers;
 using ROLAP.Loaders.Models.Options;
+using ROLAP.Models.Models.IContainers;
 
 namespace ROLAP.Loaders.Helpers;
 
@@ -40,7 +40,7 @@ public static class LoadOptionsHelper
 
 //
 // using ROLAP.Core.Models.Interfaces;
-// using ROLAP.Core.Models.Model.CubeItem;
+// using ROLAP.Core.Models.Models.CubeItem;
 // using ROLAP.Loaders.Models.Options;
 //
 // namespace ROLAP.Loaders.Helpers;

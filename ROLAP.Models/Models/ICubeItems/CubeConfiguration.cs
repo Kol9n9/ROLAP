@@ -1,6 +1,6 @@
 ﻿using ROLAP.Core.Models.Interfaces;
 
-namespace ROLAP.Core.Models.Model.CubeItem;
+namespace ROLAP.Models.Models.ICubeItems;
 
 public class CubeConfiguration : ICubeItem
 {
@@ -20,14 +20,9 @@ public class CubeConfiguration : ICubeItem
         Measures = measures;
     }
 
-    public ICubeItem Clone(bool withInnerValues = true)
+    public T Clone<T>(bool withValues) where T : ICubeItem
     {
         throw new NotSupportedException();
-    }
-
-    public T Clone<T>(bool withInnerValues = true) where T : ICubeItem
-    {
-        throw new NotImplementedException();
     }
     
     public bool NameEqual(string name)

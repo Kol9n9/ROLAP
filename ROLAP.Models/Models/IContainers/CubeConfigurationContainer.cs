@@ -1,7 +1,7 @@
 using ROLAP.Core.Models.Interfaces;
-using ROLAP.Core.Models.Model.CubeItem;
+using ROLAP.Models.Models.ICubeItems;
 
-namespace ROLAP.Core.Models.Model.Containers;
+namespace ROLAP.Models.Models.IContainers;
 
 public class CubeConfigurationContainer : IContainer
 {
@@ -20,6 +20,16 @@ public class CubeConfigurationContainer : IContainer
     public bool InContainers(IEnumerable<IContainer> containers)
     {
         return containers.Any(InContainer);
+    }
+
+    public ICubeItem Clone(bool withValues = true)
+    {
+        throw new NotImplementedException();
+    }
+
+    public T Clone<T>(bool withValues) where T : ICubeItem
+    {
+        throw new NotImplementedException();
     }
 
     public void AddValue<T>(T item)
@@ -41,6 +51,11 @@ public class CubeConfigurationContainer : IContainer
     {
         if (typeof(T) == typeof(CubeConfiguration)) return _values.Cast<T>();
         throw new NotSupportedException();
+    }
+    
+    public IEnumerable<ICubeItem> GetValues()
+    {
+        return _values;
     }
 
     public IContainer FindByHierarchy(string[] hierarchy)
