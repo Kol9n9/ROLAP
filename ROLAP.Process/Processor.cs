@@ -1,8 +1,6 @@
-﻿using System.Text;
-using Newtonsoft.Json;
-using ROLAP.Core.Models.Enums;
+﻿using ROLAP.Core.Models.Enums;
+using ROLAP.Formatter.Formatters;
 using ROLAP.Process.Interfaces;
-using ROLAP.Process.Models.Result;
 using ROLAP.Process.QueryProcessors;
 
 namespace ROLAP.Process;
@@ -17,27 +15,20 @@ public class Processor : IProcessor
         _queryProcessor = queryProcessor;
         _selectProcessor = new SelectProcessor();
     }
-    public Task ProcessQuery(string query)
+    public Task<string> ProcessQuery(string query)
     {
         var cubeQuery = _queryProcessor.ProcessQuery(query);
         switch (cubeQuery.QueryType)
         {
             case QueryType.Select:
             { 
-                var cube = _selectProcessor.ExecuteQuery(cubeQuery); 
-                WriteToFile(cube);
-                break;
+                var cube = _selectProcessor.ExecuteQuery(cubeQuery);
+                return Task.FromResult(JsonFormatter.Format(cube.Axes,cube.Values));
+            }
+            default:
+            {
+                throw new NotSupportedException();
             }
         }
-        return Task.CompletedTask;
-    }
-
-
-    private void WriteToFile(CubeResult cubeResult)
-    {
-        var json = JsonConvert.SerializeObject(cubeResult);
-        using var stream = new FileStream("res.txt",FileMode.Create);
-        stream.Write(Encoding.UTF8.GetBytes(json));
-        stream.Close();
     }
 }

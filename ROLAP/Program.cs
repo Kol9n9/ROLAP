@@ -33,4 +33,5 @@ IProcessor processor = new Processor(new QueryProcessor(ConfigurationExtensions.
 // processor.ProcessQuery(mdx4);
 // processor.ProcessQuery(mdx5);
  
-processor.ProcessQuery(mdx8);
+string res = await processor.ProcessQuery(mdx8);
+var a = 1;

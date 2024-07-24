@@ -3,7 +3,7 @@ using ROLAP.Models.Models.ICubeItems;
 
 namespace ROLAP.Models.Models.IContainers;
 
-public class MeasureContainer : IContainer
+public class MeasureContainer : IMeasureContainer
 {
     private List<MeasureCubeItem> _values = new List<MeasureCubeItem>();
 
@@ -73,8 +73,6 @@ public class MeasureContainer : IContainer
     
     public T Clone<T>(bool withValues = true) where T : ICubeItem
     {
-        if (typeof(T) != typeof(MeasureContainer) && typeof(T) != typeof(IContainer) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(MeasureContainer)}\"");
-        
         MeasureContainer container = new MeasureContainer();
         if (withValues) container.AddValue(_values.Select(x => x.Clone<MeasureCubeItem>(withValues)));
         return (T)(ICubeItem)container;
@@ -82,7 +80,6 @@ public class MeasureContainer : IContainer
 
     public IEnumerable<T> GetValues<T>()
     {
-        if (typeof(T) != typeof(MeasureCubeItem)) throw new NotSupportedException();
         return _values.Cast<T>();
     }
 
@@ -96,7 +93,7 @@ public class MeasureContainer : IContainer
         var measure = _values.FirstOrDefault(x => x.Name == hierarchy[1]);
         if (measure is null) return null;
         var container = new MeasureContainer();
-        container.AddValue(measure.Clone<MeasureCubeItem>(false));
+        container.AddValue(measure.Clone<IMemberCubeItem>(false));
         return container;
     }
 }

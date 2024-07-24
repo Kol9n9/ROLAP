@@ -2,5 +2,5 @@
 
 public interface IProcessor
 {
-    Task ProcessQuery(string query);
+    Task<string> ProcessQuery(string query);
 }

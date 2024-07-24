@@ -3,7 +3,7 @@ using ROLAP.Models.Models.ICubeItems;
 
 namespace ROLAP.Models.Models.IContainers;
 
-public class ValueContainer : IContainer
+public class ValueContainer : IValueContainer
 {
     private List<ValueCubeItem> _values = new List<ValueCubeItem>();
     
@@ -25,8 +25,6 @@ public class ValueContainer : IContainer
 
     public T Clone<T>(bool withValues = true) where T : ICubeItem
     {
-        if (typeof(T) != typeof(ValueContainer)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(ValueContainer)}\"");
-
         ValueContainer container = new ValueContainer();
         if (withValues) container.AddValue(_values.Select(x => x.Clone<ValueCubeItem>(withValues)));
         return (T)(ICubeItem)container;
@@ -55,7 +53,6 @@ public class ValueContainer : IContainer
 
     public IEnumerable<T> GetValues<T>()
     {
-        if (typeof(T) != typeof(ValueCubeItem)) throw new NotSupportedException();
         return _values.Cast<T>();
     }
 

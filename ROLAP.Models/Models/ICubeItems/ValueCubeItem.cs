@@ -2,7 +2,7 @@
 
 namespace ROLAP.Models.Models.ICubeItems;
 
-public class ValueCubeItem : ICubeItem
+public class ValueCubeItem : IValueCubeItem
 {
     public string Id { get; }
     public string Value { get; }
@@ -20,9 +20,17 @@ public class ValueCubeItem : ICubeItem
     
     public T Clone<T>(bool withValues) where T : ICubeItem
     {
-        if (typeof(T) != typeof(ValueCubeItem) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(ValueCubeItem)}\"");
-
         var val = (ICubeItem)(new ValueCubeItem(Id, Value, Measure, Dimensions.Select(x => x.Clone<IContainer>(withValues))));
         return (T)val;
+    }
+
+    public string GetValue()
+    {
+        return Value;
+    }
+
+    public string GetFormattedValue()
+    {
+        return Value;
     }
 }

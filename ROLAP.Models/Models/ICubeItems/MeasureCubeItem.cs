@@ -2,7 +2,7 @@
 
 namespace ROLAP.Models.Models.ICubeItems;
 
-public class MeasureCubeItem : ICubeItem
+public class MeasureCubeItem : IMemberCubeItem
 {
     public string Key { get; }
     public string Name { get; }
@@ -20,10 +20,18 @@ public class MeasureCubeItem : ICubeItem
 
     public T Clone<T>(bool withValues) where T : ICubeItem
     {
-        if (typeof(T) != typeof(MeasureCubeItem) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(MeasureCubeItem)}\"");
-        
         var item = new MeasureCubeItem(Key,Name);
         item.SetLoader(_loader);
         return (T)(ICubeItem)item;
+    }
+
+    public string GetName()
+    {
+        return Name;
+    }
+
+    public string GetKey()
+    {
+        return Key;
     }
 }
