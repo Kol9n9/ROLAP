@@ -1,4 +1,4 @@
-﻿using ROLAP.Models.Models.ICubeItems;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.QueryProcessor.Interfaces;
 
 namespace ROLAP.QueryProcessor.Models.Items;
@@ -12,7 +12,7 @@ internal abstract class FunctionItem : IQueryItem
         _args = args;
     }
 
-    protected abstract IQueryItem Run(CubeConfiguration copyConfigurationCubeCopy, IEnumerable<IQueryItem> args);
+    protected abstract IQueryItem Run(ICubeConfiguration copyConfigurationCubeCopy, IEnumerable<IQueryItem> args);
 
-    public IQueryItem Execute(CubeConfiguration copyConfigurationCubeCopy) => Run(copyConfigurationCubeCopy, _args);
+    public IQueryItem Execute(ICubeConfiguration copyConfigurationCubeCopy) => Run(copyConfigurationCubeCopy, _args);
 }

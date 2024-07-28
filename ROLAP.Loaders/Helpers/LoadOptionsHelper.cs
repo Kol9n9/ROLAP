@@ -1,10 +1,11 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Models.Models.IContainers;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Loaders.Models.Containers;
 
 namespace ROLAP.Loaders.Helpers;
 
-public static class LoadOptionsHelper
+internal static class LoadOptionsHelper
 {
     public static IEnumerable<ILoadOptions> GetValueOptions(IEnumerable<IContainer> containers)
     {
@@ -34,37 +35,6 @@ public static class LoadOptionsHelper
         {
             values.Add(GetDimensionOption(value));
         }
-        return new DimensionStaticOptions(dimensionContainers.Item.Key,dimensionContainers.Item.Name,values);
+        return new DimensionStaticOptions(dimensionContainers.Item.GetKey(),dimensionContainers.Item.GetName(),values);
     }
 }
-
-//
-// using ROLAP.Core.Models.Interfaces;
-// using ROLAP.Core.Models.Models.CubeItem;
-// using ROLAP.Loaders.Models.Options;
-//
-// namespace ROLAP.Loaders.Helpers;
-//
-// public static class LoadOptionsHelper
-// {
-//     public static ILoadOptions GetValueOptionsByDimension(IEnumerable<DimensionCubeItem> dimensionCubeItems)
-//     {
-//         List<ILoadOptions> dimensionOptions = new List<ILoadOptions>();
-//         foreach (var dimensionCubeItem in dimensionCubeItems)
-//         {
-//             dimensionOptions.AddRange(SplitDimensionToOptions(dimensionCubeItem));
-//         }
-//         return new ValueStaticOptions("", "", dimensionOptions);
-//     }
-//     private static IEnumerable<ILoadOptions> SplitDimensionToOptions(DimensionCubeItem dimensionCubeItem)
-//     {
-//         List<ILoadOptions> options = new List<ILoadOptions>();
-//         List<ILoadOptions> values = new List<ILoadOptions>();
-//         foreach (var value in dimensionCubeItem.Values)
-//         {
-//             values.AddRange(SplitDimensionToOptions(value));
-//         }
-//         options.Add(new DimensionStaticOptions(dimensionCubeItem.Key,dimensionCubeItem.Name,values));
-//         return options;
-//     }
-// }

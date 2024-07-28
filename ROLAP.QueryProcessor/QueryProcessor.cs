@@ -1,7 +1,7 @@
 ﻿using ROLAP.Configuration.Interfaces;
-using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Model.Query;
-using ROLAP.Models.Models.ICubeItems;
 using ROLAP.QueryProcessor.Helpers;
 using ROLAP.QueryProcessor.Models;
 using ROLAP.QueryProcessor.Models.Items;
@@ -39,7 +39,7 @@ public class QueryProcessor
     
     #region ProcessQueryModel
     
-    private IEnumerable<CubeItemTuple> ProcessAxes(IEnumerable<AxisItem> axesQuery, CubeConfiguration configurationCube)
+    private IEnumerable<CubeItemTuple> ProcessAxes(IEnumerable<AxisItem> axesQuery, ICubeConfiguration configurationCube)
     {
         List<CubeItemTuple> tuples = new List<CubeItemTuple>();
 
@@ -52,7 +52,7 @@ public class QueryProcessor
     }
 
 
-    private CubeItemTuple ProcessAxisQuery(AxisItem? axisQuery, CubeConfiguration configurationCube)
+    private CubeItemTuple ProcessAxisQuery(AxisItem? axisQuery, ICubeConfiguration configurationCube)
     {
         if (axisQuery is null) throw new ArgumentNullException(nameof(axisQuery));
 
@@ -69,7 +69,7 @@ public class QueryProcessor
         return new CubeItemTuple(items);
     }
 
-    private void ProcessQueryTuple(TupleItem? tupleQuery, CubeConfiguration configurationCube, ref IEnumerable<IContainer> containers)
+    private void ProcessQueryTuple(TupleItem? tupleQuery, ICubeConfiguration configurationCube, ref IEnumerable<IContainer> containers)
     {
         if (tupleQuery is null) throw new ArgumentNullException(nameof(tupleQuery));
         foreach (var member in tupleQuery.Items)
@@ -82,13 +82,13 @@ public class QueryProcessor
         }
     }
 
-    private IContainer? ProcessMember(MemberItem? memberQuery, CubeConfiguration configurationCube)
+    private IContainer? ProcessMember(MemberItem? memberQuery, ICubeConfiguration configurationCube)
     {
         if (memberQuery is null) throw new ArgumentNullException(nameof(memberQuery));
 
         IContainer container = IsMeasure(memberQuery.Hierarchy[0])
-            ? configurationCube.Measures
-            : configurationCube.Dimensions;
+            ? configurationCube.GetMeasures()
+            : configurationCube.GetDimensions();
 
         return container.FindByHierarchy(memberQuery.Hierarchy);
     }

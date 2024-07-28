@@ -1,15 +1,17 @@
-using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Core.Models.Model.Query;
-using ROLAP.Models.Models.IContainers;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Loaders.Models.Containers;
+using ROLAP.Loaders.Models.CubeItems;
 
 namespace ROLAP.Loaders.Helpers;
 
 public static class ValuesHelper
 {
-    public static IEnumerable<ICubeItem> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
+    public static IEnumerable<IValueCubeItem> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
     {
-        List<ICubeItem> values = new List<ICubeItem>();
+        List<IValueCubeItem> values = new List<IValueCubeItem>();
 
         List<IContainer> measureContainers = new List<IContainer>();
         List<IContainer> dimensionsContainers = new List<IContainer>();
@@ -28,7 +30,7 @@ public static class ValuesHelper
 
         List<ILoadOptions> optionsList = LoadOptionsHelper.GetValueOptions(dimensionsContainers).ToList();
 
-        foreach (var measure in measureContainers.SelectMany(x => x.GetValues<MeasureCubeItem>()))
+        foreach (var measure in measureContainers.SelectMany(x => x.GetValues<IMeasureCubeItem>()))
         {
             values.AddRange(measure.GetLoader().Load(optionsList).GetValues<ValueCubeItem>());
         }
@@ -36,7 +38,7 @@ public static class ValuesHelper
         return values;
     }
 
-    public static ICubeItem AggregatedValues(IEnumerable<ICubeItem> values)
+    public static IValueCubeItem AggregatedValues(IEnumerable<IValueCubeItem> values)
     {
         var first = values.FirstOrDefault();
         return first ?? new ValueCubeItem("", "", null, null);

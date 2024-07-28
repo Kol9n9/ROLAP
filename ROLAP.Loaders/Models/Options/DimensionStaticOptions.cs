@@ -1,4 +1,4 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
 
 namespace ROLAP.Loaders.Models.Options;
 

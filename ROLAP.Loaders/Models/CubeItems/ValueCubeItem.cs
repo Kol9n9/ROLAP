@@ -1,8 +1,9 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 
-namespace ROLAP.Models.Models.ICubeItems;
+namespace ROLAP.Loaders.Models.CubeItems;
 
-public class ValueCubeItem : IValueCubeItem
+internal class ValueCubeItem : IValueCubeItem
 {
     public string Id { get; }
     public string Value { get; }
@@ -24,6 +25,11 @@ public class ValueCubeItem : IValueCubeItem
         return (T)val;
     }
 
+    public string GetId()
+    {
+        return Id;
+    }
+
     public string GetValue()
     {
         return Value;
@@ -33,4 +39,7 @@ public class ValueCubeItem : IValueCubeItem
     {
         return Value;
     }
+
+    public IEnumerable<IContainer> GetDimensions() => Dimensions;
+    public IContainer GetMeasure() => Measure;
 }

@@ -1,4 +1,7 @@
-namespace ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+
+namespace ROLAP.Core.Models.Interfaces.Container;
+
 
 public interface IContainer : ICubeItem
 {

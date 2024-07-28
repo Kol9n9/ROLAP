@@ -1,8 +1,8 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 
-namespace ROLAP.Models.Models.ICubeItems;
+namespace ROLAP.Loaders.Models.CubeItems;
 
-public class DimensionCubeItem : IMemberCubeItem
+internal class DimensionCubeItem : IDimensionCubeItem
 {
     public string Key { get; }
     public string Name { get; }

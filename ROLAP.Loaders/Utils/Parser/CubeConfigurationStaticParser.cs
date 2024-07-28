@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ROLAP.Core.Models.Helpers;
-using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Enums;
 using ROLAP.Loaders.Models.Options;
 

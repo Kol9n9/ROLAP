@@ -1,8 +1,0 @@
-﻿using ROLAP.Core.Models.Interfaces;
-
-namespace ROLAP.Core.Models.Interfaces;
-
-public interface ILoader<T>
-{
-    IContainer Load(IEnumerable<ILoadOptions> options);
-}

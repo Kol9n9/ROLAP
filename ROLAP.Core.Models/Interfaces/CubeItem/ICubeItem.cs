@@ -1,6 +1,4 @@
-﻿using ROLAP.Core.Models.Enums;
-
-namespace ROLAP.Core.Models.Interfaces;
+﻿namespace ROLAP.Core.Models.Interfaces.CubeItem;
 
 /// <summary>
 /// Абстракция для элемента

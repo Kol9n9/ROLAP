@@ -1,6 +1,4 @@
-﻿using ROLAP.Core.Models.Interfaces;
-
-namespace ROLAP.Core.Models.Interfaces;
+﻿namespace ROLAP.Core.Models.Interfaces.Loader;
 
 public interface ILoaderHandler<T, TOptions>
     where TOptions: ILoadOptions

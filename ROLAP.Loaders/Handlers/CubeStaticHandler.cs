@@ -1,16 +1,16 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Loaders;
+using ROLAP.Loaders.Models.Containers;
 using ROLAP.Loaders.Models.Options;
 using ROLAP.Loaders.Utils.Parser;
-using ROLAP.Models.Models.IContainers;
-using ROLAP.Models.Models.ICubeItems;
-using CubeConfiguration = ROLAP.Models.Models.ICubeItems.CubeConfiguration;
+using CubeConfiguration = ROLAP.Loaders.Models.CubeItems.CubeConfiguration;
 namespace ROLAP.Loaders.Handlers;
 
 internal class CubeStaticHandler : ILoaderHandler<CubeConfiguration,CubeStaticOptions>
 {
     private readonly ILoader<DimensionContainer> _dimensionLoader;
-    private readonly ILoader<MeasureCubeItem> _measureLoader;
+    private readonly ILoader<IMeasureCubeItem> _measureLoader;
 
     public CubeStaticHandler()
     {

@@ -1,4 +1,4 @@
-﻿using ROLAP.Models.Models.ICubeItems;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.QueryProcessor.Interfaces;
 
 namespace ROLAP.QueryProcessor.Models.Items;
@@ -12,7 +12,7 @@ internal class MemberItem : IQueryItem
         Hierarchy = hierarchy;
     }
 
-    public IQueryItem Execute(CubeConfiguration configurationCube)
+    public IQueryItem Execute(ICubeConfiguration configurationCube)
     {
         return this;
     }

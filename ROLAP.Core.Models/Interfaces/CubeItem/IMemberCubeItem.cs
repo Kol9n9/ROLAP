@@ -1,4 +1,4 @@
-﻿namespace ROLAP.Core.Models.Interfaces;
+﻿namespace ROLAP.Core.Models.Interfaces.CubeItem;
 
 public interface IMemberCubeItem : ICubeItem
 {

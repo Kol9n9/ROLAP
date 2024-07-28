@@ -1,8 +1,8 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Model.Query;
 using ROLAP.Loaders.Helpers;
-using ROLAP.Models.Helpers;
 using ROLAP.Process.Models.Result;
+using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Process.QueryProcessors;
 
@@ -99,7 +99,7 @@ internal class SelectProcessor
         return res;
     }
     
-    private IEnumerable<ICubeItem> FillSetsValues(IEnumerable<ICubeItem> values, IEnumerable<CubeItemSet> sets, IEnumerable<CubeItemTuple> prevTuples = null)
+    private IEnumerable<ICubeItem> FillSetsValues(IEnumerable<IValueCubeItem> values, IEnumerable<CubeItemSet> sets, IEnumerable<CubeItemTuple> prevTuples = null)
     {
         List<ICubeItem> resValues = new List<ICubeItem>();
     
@@ -111,7 +111,7 @@ internal class SelectProcessor
         else
         {
             var lastSet = sets.LastOrDefault();
-            List<CubeItemTuple> tuples = new List<CubeItemTuple>();
+            
             foreach (var tuple in lastSet.Tuples)
             {
                 var copyTuples = new List<CubeItemTuple> { tuple };
@@ -126,14 +126,14 @@ internal class SelectProcessor
         return resValues;
     }
     
-    private IEnumerable<ICubeItem> FillTupleValues(IEnumerable<ICubeItem> values,
+    private IEnumerable<ICubeItem> FillTupleValues(IEnumerable<IValueCubeItem> values,
         IEnumerable<CubeItemTuple> tuples)
     {
         List<ICubeItem> resValues = new List<ICubeItem>();
         
         foreach (var tuple in tuples)
         {
-            List<ICubeItem> tupleValues = new List<ICubeItem>();
+            List<IValueCubeItem> tupleValues = new List<IValueCubeItem>();
             foreach (var value in values)
             {
                 if(CubeItemHelper.IsCubeItemInContainers(value,tuple.Members)) tupleValues.Add(value);

@@ -1,11 +1,11 @@
-using ROLAP.Core.Models.Interfaces;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 
-namespace ROLAP.Models.Models.IContainers;
+namespace ROLAP.Loaders.Models.Containers;
 
-public class MeasureContainer : IMeasureContainer
+internal class MeasureContainer : IMeasureContainer
 {
-    private List<MeasureCubeItem> _values = new List<MeasureCubeItem>();
+    private List<IMeasureCubeItem> _values = new List<IMeasureCubeItem>();
 
     public IEnumerable<IContainer> Merge(IEnumerable<IContainer> containers)
     {
@@ -25,7 +25,7 @@ public class MeasureContainer : IMeasureContainer
 
         foreach (var value in _values)
         {
-            var findContainer = measureContainers.FirstOrDefault(x => x.FindByHierarchy(new string[]{"",value.Name}) != null);
+            var findContainer = measureContainers.FirstOrDefault(x => x.FindByHierarchy(new string[]{"",value.GetName()}) != null);
             if (findContainer is null)
             {
                 if (measureContainers.Length == 1)
@@ -48,7 +48,7 @@ public class MeasureContainer : IMeasureContainer
     public bool InContainer(IContainer container)
     {
         if (container is not MeasureContainer measureContainer) return false;
-        return _values.All(value => !measureContainer._values.Any() || measureContainer._values.Exists(val => val.Key == value.Key));
+        return _values.All(value => !measureContainer._values.Any() || measureContainer._values.Exists(val => val.GetKey() == value.GetKey()));
     }
     
     public bool InContainers(IEnumerable<IContainer> containers)
@@ -58,7 +58,7 @@ public class MeasureContainer : IMeasureContainer
 
     public void AddValue<T>(T item)
     {
-        var measure = item as MeasureCubeItem;
+        var measure = item as IMeasureCubeItem;
         if (measure is null) throw new NotSupportedException();
         _values.Add(measure);
     }
@@ -74,7 +74,7 @@ public class MeasureContainer : IMeasureContainer
     public T Clone<T>(bool withValues = true) where T : ICubeItem
     {
         MeasureContainer container = new MeasureContainer();
-        if (withValues) container.AddValue(_values.Select(x => x.Clone<MeasureCubeItem>(withValues)));
+        if (withValues) container.AddValue(_values.Select(x => x.Clone<IMeasureCubeItem>(withValues)));
         return (T)(ICubeItem)container;
     }
 
@@ -90,7 +90,7 @@ public class MeasureContainer : IMeasureContainer
     
     public IContainer? FindByHierarchy(string[] hierarchy)
     {
-        var measure = _values.FirstOrDefault(x => x.Name == hierarchy[1]);
+        var measure = _values.FirstOrDefault(x => x.GetName() == hierarchy[1]);
         if (measure is null) return null;
         var container = new MeasureContainer();
         container.AddValue(measure.Clone<IMemberCubeItem>(false));

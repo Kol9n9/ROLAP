@@ -1,5 +1,6 @@
 ﻿using System.Text;
-using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 using ROLAP.Core.Models.Model.Query;
 using ROLAP.Formatter.Models;
 

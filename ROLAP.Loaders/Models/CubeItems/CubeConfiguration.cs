@@ -1,8 +1,9 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 
-namespace ROLAP.Models.Models.ICubeItems;
+namespace ROLAP.Loaders.Models.CubeItems;
 
-public class CubeConfiguration : ICubeItem
+internal class CubeConfiguration : ICubeConfiguration
 {
     /// <summary>
     /// Измерения
@@ -24,9 +25,8 @@ public class CubeConfiguration : ICubeItem
     {
         throw new NotSupportedException();
     }
-    
-    public bool NameEqual(string name)
-    {
-        throw new NotImplementedException();
-    }
+
+    public IContainer GetDimensions() => Dimensions;
+
+    public IContainer GetMeasures() => Measures;
 }

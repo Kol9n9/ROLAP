@@ -1,8 +1,8 @@
-﻿using ROLAP.Models.Models.ICubeItems;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 
 namespace ROLAP.Configuration.Interfaces;
 
 public interface IConfigurationStore
 {
-    CubeConfiguration GetConfiguration(string cubeName);
+    ICubeConfiguration GetConfiguration(string cubeName);
 }

@@ -1,14 +1,15 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Models.Models.IContainers;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Loaders.Models.Containers;
 
 namespace ROLAP.Loaders.Loaders;
 
-internal class MeasureLoader : ILoader<MeasureCubeItem>
+internal class MeasureLoader : ILoader<IMeasureCubeItem>
 {
-    private readonly ILoaderHandler<MeasureCubeItem, MeasureStaticOptions> _staticHandler;
+    private readonly ILoaderHandler<IMeasureCubeItem, MeasureStaticOptions> _staticHandler;
     public MeasureLoader()
     {
         _staticHandler = new MeasureStaticHandler();

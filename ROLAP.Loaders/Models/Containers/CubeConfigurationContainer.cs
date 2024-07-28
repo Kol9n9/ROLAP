@@ -1,9 +1,10 @@
-using ROLAP.Core.Models.Interfaces;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Loaders.Models.CubeItems;
 
-namespace ROLAP.Models.Models.IContainers;
+namespace ROLAP.Loaders.Models.Containers;
 
-public class CubeConfigurationContainer : IContainer
+internal class CubeConfigurationContainer : IContainer
 {
     private List<CubeConfiguration> _values = new List<CubeConfiguration>();
 

@@ -1,8 +1,9 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Models.Models.IContainers;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Loaders.Models.Containers;
+using ROLAP.Loaders.Models.CubeItems;
 
 namespace ROLAP.Loaders.Loaders;
 

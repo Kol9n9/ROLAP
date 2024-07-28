@@ -1,4 +1,4 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Core.Models.Model.Query;
 

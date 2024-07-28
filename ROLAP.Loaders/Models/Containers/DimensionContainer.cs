@@ -1,14 +1,14 @@
-using ROLAP.Core.Models.Interfaces;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 
-namespace ROLAP.Models.Models.IContainers;
+namespace ROLAP.Loaders.Models.Containers;
 
-public class DimensionContainer : IDimensionContainer
+internal class DimensionContainer : IDimensionContainer
 {
     private List<DimensionContainer> _values = new List<DimensionContainer>();
-    public DimensionCubeItem Item { get; }
+    public IDimensionCubeItem Item { get; }
 
-    public DimensionContainer(DimensionCubeItem dimensionCubeItem)
+    public DimensionContainer(IDimensionCubeItem dimensionCubeItem)
     {
         Item = dimensionCubeItem;
     }
@@ -26,7 +26,7 @@ public class DimensionContainer : IDimensionContainer
             return new List<IContainer>(containers) { this };
         }
 
-        var parentContainer = typeContainers.FirstOrDefault(x => x.Item.Name == Item.Name);
+        var parentContainer = typeContainers.FirstOrDefault(x => x.Item.GetName() == Item.GetName());
         if (parentContainer is null)
         {
             var container = new DimensionContainer(Item);
@@ -39,7 +39,7 @@ public class DimensionContainer : IDimensionContainer
         
         foreach (var value in _values)
         {
-            var findContainer = parentContainer._values.FirstOrDefault(x => x.Item.Name == value.Item.Name);
+            var findContainer = parentContainer._values.FirstOrDefault(x => x.Item.GetName() == value.Item.GetName());
             if (findContainer is null)
             {
                 parentContainer.AddValue(value);
@@ -59,13 +59,13 @@ public class DimensionContainer : IDimensionContainer
     {
         if (container is not DimensionContainer dimensionContainer) return false;
 
-        if (Item.Key != dimensionContainer.Item.Key) return false;
+        if (Item.GetKey() != dimensionContainer.Item.GetKey()) return false;
         
         return _values.All(value =>
         {
             return !dimensionContainer._values.Any() || dimensionContainer._values.Exists(containerValue =>
             {
-                var res = value.Item.Key == containerValue.Item.Key;
+                var res = value.Item.GetKey() == containerValue.Item.GetKey();
                 if (!res) return false;
                 if (value._values.Any())
                 {
@@ -92,7 +92,7 @@ public class DimensionContainer : IDimensionContainer
     {
         if (typeof(T) != typeof(DimensionContainer) && typeof(T) != typeof(IContainer) && typeof(T) != typeof(ICubeItem)) throw new InvalidCastException($"Получить копию можно только для типа \"{nameof(DimensionContainer)}\"");
 
-        DimensionContainer container = new DimensionContainer(Item.Clone<DimensionCubeItem>(withValues));
+        DimensionContainer container = new DimensionContainer(Item.Clone<IDimensionCubeItem>(withValues));
         if(withValues) container.AddValue(_values.Select(x => x.Clone<DimensionContainer>(withValues)));
         return (T)(ICubeItem)container;
     }
@@ -133,7 +133,7 @@ public class DimensionContainer : IDimensionContainer
         
         while (index < hierarchy.Length)
         {
-            tmp = currents.FirstOrDefault(x => x.Item.Name == hierarchy[index]) as DimensionContainer;
+            tmp = currents.FirstOrDefault(x => x.Item.GetName() == hierarchy[index]) as DimensionContainer;
             index++;
             if (tmp is null) return null;
             currents = tmp.GetValues<DimensionContainer>();

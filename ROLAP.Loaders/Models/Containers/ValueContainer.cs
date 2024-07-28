@@ -1,11 +1,11 @@
-using ROLAP.Core.Models.Interfaces;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Container;
 
-namespace ROLAP.Models.Models.IContainers;
+namespace ROLAP.Loaders.Models.Containers;
 
-public class ValueContainer : IValueContainer
+internal class ValueContainer : IValueContainer
 {
-    private List<ValueCubeItem> _values = new List<ValueCubeItem>();
+    private List<IValueCubeItem> _values = new List<IValueCubeItem>();
     
     public IEnumerable<IContainer> Merge(IEnumerable<IContainer> containers)
     {
@@ -15,7 +15,7 @@ public class ValueContainer : IValueContainer
     public bool InContainer(IContainer container)
     {
         if (container is not ValueContainer valueContainer) return false;
-        return _values.All(value => valueContainer._values.Exists(val => val.Id == value.Id));
+        return _values.All(value => valueContainer._values.Exists(val => val.GetId() == value.GetId()));
     }
 
     public bool InContainers(IEnumerable<IContainer> containers)
@@ -26,14 +26,14 @@ public class ValueContainer : IValueContainer
     public T Clone<T>(bool withValues = true) where T : ICubeItem
     {
         ValueContainer container = new ValueContainer();
-        if (withValues) container.AddValue(_values.Select(x => x.Clone<ValueCubeItem>(withValues)));
+        if (withValues) container.AddValue(_values.Select(x => x.Clone<IValueCubeItem>(withValues)));
         return (T)(ICubeItem)container;
     }
 
 
     public void AddValue<T>(T item)
     {
-        var value = item as ValueCubeItem;
+        var value = item as IValueCubeItem;
         if (value is null) throw new NotSupportedException();
         _values.Add(value);
     }

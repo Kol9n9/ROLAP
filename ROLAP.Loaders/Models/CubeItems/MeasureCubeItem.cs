@@ -1,13 +1,14 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 
-namespace ROLAP.Models.Models.ICubeItems;
+namespace ROLAP.Loaders.Models.CubeItems;
 
-public class MeasureCubeItem : IMemberCubeItem
+internal class MeasureCubeItem : IMeasureCubeItem
 {
     public string Key { get; }
     public string Name { get; }
 
-    private ILoader<ValueCubeItem> _loader;
+    private ILoader<IValueCubeItem> _loader = null!;
 
     public MeasureCubeItem(string key, string name)
     {
@@ -15,8 +16,8 @@ public class MeasureCubeItem : IMemberCubeItem
         Name = name;
     }
 
-    public ILoader<ValueCubeItem> GetLoader() => _loader;
-    public void SetLoader(ILoader<ValueCubeItem> loader) => _loader = loader;
+    public ILoader<IValueCubeItem> GetLoader() => _loader;
+    public void SetLoader(ILoader<IValueCubeItem> loader) => _loader = loader;
 
     public T Clone<T>(bool withValues) where T : ICubeItem
     {

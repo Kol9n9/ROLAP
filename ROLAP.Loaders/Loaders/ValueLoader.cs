@@ -1,15 +1,16 @@
-﻿using ROLAP.Core.Models.Interfaces;
+﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Models.Models.IContainers;
-using ROLAP.Models.Models.ICubeItems;
+using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Loaders.Models.Containers;
 
 namespace ROLAP.Loaders.Loaders;
 
-internal class ValueLoader : ILoader<ValueCubeItem>
+internal class ValueLoader : ILoader<IValueCubeItem>
 {
-    private ILoaderHandler<ValueCubeItem, ValueStaticOptions> _staticHandler;
-    public ValueLoader(MeasureCubeItem measure, IEnumerable<ILoadOptions> valuesOptions)
+    private ILoaderHandler<IValueCubeItem, ValueStaticOptions> _staticHandler;
+    public ValueLoader(IMeasureCubeItem measure, IEnumerable<ILoadOptions> valuesOptions)
     {
         _staticHandler = new ValueStaticHandler(valuesOptions.Where(x => x is ValueStaticOptions).Cast<ValueStaticOptions>(), new DimensionLoader(), measure);
     }

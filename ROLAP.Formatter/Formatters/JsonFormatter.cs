@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using ROLAP.Core.Models.Interfaces;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Model.Query;
 using ROLAP.Formatter.Helpers;
 using ROLAP.Formatter.Models;

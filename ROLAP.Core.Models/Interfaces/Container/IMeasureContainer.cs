@@ -1,5 +1,4 @@
-﻿namespace ROLAP.Core.Models.Interfaces;
-
+﻿namespace ROLAP.Core.Models.Interfaces.Container;
 public interface IMeasureContainer : IContainer
 {
     
