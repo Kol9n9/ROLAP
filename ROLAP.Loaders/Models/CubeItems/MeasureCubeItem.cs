@@ -5,34 +5,49 @@ namespace ROLAP.Loaders.Models.CubeItems;
 
 internal class MeasureCubeItem : IMeasureCubeItem
 {
-    public string Key { get; }
-    public string Name { get; }
+    private string _key;
+    private string _name;
 
     private ILoader<IValueCubeItem> _loader = null!;
 
-    public MeasureCubeItem(string key, string name)
+    private Func<IEnumerable<IValueCubeItem>, IValueCubeItem> _aggregateFunction;
+    private Type _valueType;
+
+    public MeasureCubeItem(string key, string name, Type valueType, Func<IEnumerable<IValueCubeItem>, IValueCubeItem> aggregateFunction)
     {
-        Key = key;
-        Name = name;
+        _key = key;
+        _name = name;
+        _valueType = valueType;
+        _aggregateFunction = aggregateFunction;
     }
 
     public ILoader<IValueCubeItem> GetLoader() => _loader;
+    public IValueCubeItem Aggregate(IEnumerable<IValueCubeItem> items)
+    {
+        return _aggregateFunction(items);
+    }
+
+    public Type GetValueType()
+    {
+        return _valueType;
+    }
+
     public void SetLoader(ILoader<IValueCubeItem> loader) => _loader = loader;
 
     public T Clone<T>(bool withValues) where T : ICubeItem
     {
-        var item = new MeasureCubeItem(Key,Name);
+        var item = new MeasureCubeItem(_key, _name, _valueType, _aggregateFunction);
         item.SetLoader(_loader);
         return (T)(ICubeItem)item;
     }
 
     public string GetName()
     {
-        return Name;
+        return _name;
     }
 
     public string GetKey()
     {
-        return Key;
+        return _key;
     }
 }

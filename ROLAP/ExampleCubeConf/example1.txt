@@ -99,6 +99,8 @@
                     {
                         "Key": "1",
                         "Name": "Прибыль",
+                        "ValueType": "IntValue",
+                        "Aggregation": "Sum",
                         "Values": [
                             {
                                 "Source": {
@@ -176,6 +178,8 @@
                     {
                         "Key": "2",
                         "Name": "Расход",
+                        "ValueType": "IntValue",
+                        "Aggregation": "First",
                         "Values": [
                             {
                                 "Source": {

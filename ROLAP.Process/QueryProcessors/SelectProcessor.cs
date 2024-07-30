@@ -138,7 +138,15 @@ internal class SelectProcessor
             {
                 if(CubeItemHelper.IsCubeItemInContainers(value,tuple.Members)) tupleValues.Add(value);
             }
-            resValues.Add(ValuesHelper.AggregatedValues(tupleValues));
+
+            if (values.Any())
+            {
+                resValues.Add(values.First().GetMeasure().Aggregate(tupleValues));
+            }
+            else
+            {
+                
+            }
         }
     
         return resValues;

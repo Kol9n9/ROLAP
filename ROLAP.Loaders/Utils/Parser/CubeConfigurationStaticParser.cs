@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
+using ROLAP.Core.Models.Enums;
 using ROLAP.Core.Models.Helpers;
 using ROLAP.Core.Models.Interfaces.Loader;
+using ROLAP.Core.Models.Model.TypedValues;
 using ROLAP.Loaders.Enums;
 using ROLAP.Loaders.Models.Options;
 
@@ -68,7 +70,7 @@ internal static class CubeConfigurationStaticParser
     }
 
 
-    private static ILoadOptions ParseDataItem(SourceType sourceType, JToken dataItem,ConnectionInfo connectionInfo, SourceLoaderType sourceLoaderType)
+    private static ILoadOptions ParseDataItem(SourceType sourceType, JToken dataItem, ConnectionInfo connectionInfo, SourceLoaderType sourceLoaderType)
     {
         switch (sourceLoaderType)
         {
@@ -114,10 +116,15 @@ internal static class CubeConfigurationStaticParser
         IEnumerable<ILoadOptions> values = new List<ILoadOptions>();
         if (token["Values"] != null) values = ParseValues(token["Values"]!, SourceLoaderType.Value);
 
+        Type valueType = ValueTypeHelper.GetValueType(token["ValueType"]?.ToString() ?? nameof(StringValue));
+        AggregateFunctionType aggregateFunction =
+            EnumHelper.GetEnumValue<AggregateFunctionType>(token["Aggregation"]?.ToString() ?? "") ??
+            AggregateFunctionType.Sum;
+        
         return sourceType switch
         {
             SourceType.Static => new MeasureStaticOptions(token[connectionInfo.KeyField]?.ToString() ?? "NULL",
-                token[connectionInfo.NameField]?.ToString() ?? "Не задано", values),
+                token[connectionInfo.NameField]?.ToString() ?? "Не задано", valueType, aggregateFunction, values),
             
             _ => throw new Exception("Неизвестный тип источника")
         };

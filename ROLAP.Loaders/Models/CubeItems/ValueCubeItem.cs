@@ -1,4 +1,5 @@
-﻿using ROLAP.Core.Models.Interfaces.CubeItem;
+﻿using ROLAP.Core.Models.Interfaces.Value;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Loaders.Models.CubeItems;
@@ -6,12 +7,12 @@ namespace ROLAP.Loaders.Models.CubeItems;
 internal class ValueCubeItem : IValueCubeItem
 {
     public string Id { get; }
-    public string Value { get; }
+    public IValue Value { get; }
     public IContainer Measure { get; }
     
     public IEnumerable<IContainer> Dimensions { get; }
 
-    public ValueCubeItem(string id, string value, IContainer measure, IEnumerable<IContainer> dimensions)
+    public ValueCubeItem(string id, IValue value, IContainer measure, IEnumerable<IContainer> dimensions)
     {
         Id = id;
         Value = value;
@@ -30,16 +31,21 @@ internal class ValueCubeItem : IValueCubeItem
         return Id;
     }
 
-    public string GetValue()
+    public IValue GetValue()
     {
         return Value;
     }
 
     public string GetFormattedValue()
     {
-        return Value;
+        return Value.GetStringValue();
     }
 
     public IEnumerable<IContainer> GetDimensions() => Dimensions;
-    public IContainer GetMeasure() => Measure;
+
+    public IContainer GetMeasureContainer() => Measure;
+    public IMeasureCubeItem GetMeasure()
+    {
+        return Measure.GetValues<IMeasureCubeItem>().FirstOrDefault()!;
+    }
 }

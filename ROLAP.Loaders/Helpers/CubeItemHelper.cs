@@ -19,7 +19,7 @@ public static class CubeItemHelper
             if (valueDimension.InContainers(containers)) matches++;
         }
 
-        if (value.GetMeasure().InContainers(containers)) matches++;
+        if (value.GetMeasureContainer().InContainers(containers)) matches++;
 
         return fullMatches ? value.GetDimensions().Count() == matches : containers.Count() == matches;
     }

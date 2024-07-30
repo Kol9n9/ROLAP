@@ -5,4 +5,8 @@ namespace ROLAP.Core.Models.Interfaces.CubeItem;
 public interface IMeasureCubeItem : IMemberCubeItem
 {
     ILoader<IValueCubeItem> GetLoader();
+
+    IValueCubeItem Aggregate(IEnumerable<IValueCubeItem> items);
+
+    Type GetValueType();
 }

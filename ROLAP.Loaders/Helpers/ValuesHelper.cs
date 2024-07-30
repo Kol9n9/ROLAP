@@ -37,10 +37,4 @@ public static class ValuesHelper
        
         return values;
     }
-
-    public static IValueCubeItem AggregatedValues(IEnumerable<IValueCubeItem> values)
-    {
-        var first = values.FirstOrDefault();
-        return first ?? new ValueCubeItem("", "", null, null);
-    }
 }
