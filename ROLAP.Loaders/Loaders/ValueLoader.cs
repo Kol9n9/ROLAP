@@ -14,24 +14,24 @@ internal class ValueLoader : ILoader<IValueCubeItem>
     {
         _staticHandler = new ValueStaticHandler(valuesOptions.Where(x => x is ValueStaticOptions).Cast<ValueStaticOptions>(), new DimensionLoader(), measure);
     }
-    public IContainer Load(IEnumerable<ILoadOptions> options)
+    public IEnumerable<IValueCubeItem> Load(IEnumerable<ILoadOptions> options)
     {
-        ValueContainer container = new ValueContainer();
+        List<IValueCubeItem> values = new List<IValueCubeItem>();
 
         foreach (var option in options)
         {
-            if (!TryAddValue(option,container)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
+            if (!TryAddValue(option,values)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
         }
-        return container;
+        return values;
         
     }
     
     
-    private bool TryAddValue(ILoadOptions options, ValueContainer container)
+    private bool TryAddValue(ILoadOptions options, List<IValueCubeItem> values)
     {
         if (options is ValueStaticOptions staticOptions)
         {
-            container.AddValue(_staticHandler.Load(staticOptions));
+            values.AddRange(_staticHandler.Load(staticOptions));
             return true;
         }
 

@@ -10,9 +10,9 @@ internal class ValueCubeItem : IValueCubeItem
     public IValue Value { get; }
     public IContainer Measure { get; }
     
-    public IEnumerable<IContainer> Dimensions { get; }
+    public IEnumerable<IDimensionCubeItem> Dimensions { get; }
 
-    public ValueCubeItem(string id, IValue value, IContainer measure, IEnumerable<IContainer> dimensions)
+    public ValueCubeItem(string id, IValue value, IContainer measure, IEnumerable<IDimensionCubeItem> dimensions)
     {
         Id = id;
         Value = value;
@@ -22,8 +22,18 @@ internal class ValueCubeItem : IValueCubeItem
     
     public T Clone<T>(bool withValues) where T : ICubeItem
     {
-        var val = (ICubeItem)(new ValueCubeItem(Id, Value, Measure, Dimensions.Select(x => x.Clone<IContainer>(withValues))));
+        var val = (ICubeItem)(new ValueCubeItem(Id, Value, Measure, Dimensions.Select(x => x.Clone<IDimensionCubeItem>(withValues))));
         return (T)val;
+    }
+
+    public ICubeItem FindByHierarchy(string[] hierarchy)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
     }
 
     public string GetId()
@@ -41,9 +51,8 @@ internal class ValueCubeItem : IValueCubeItem
         return Value.GetStringValue();
     }
 
-    public IEnumerable<IContainer> GetDimensions() => Dimensions;
+    public IEnumerable<IDimensionCubeItem> GetDimensions() => Dimensions;
 
-    public IContainer GetMeasureContainer() => Measure;
     public IMeasureCubeItem GetMeasure()
     {
         return Measure.GetValues<IMeasureCubeItem>().FirstOrDefault()!;

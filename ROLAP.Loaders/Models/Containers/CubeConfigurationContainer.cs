@@ -33,6 +33,16 @@ internal class CubeConfigurationContainer : IContainer
         throw new NotImplementedException();
     }
 
+    ICubeItem ICubeItem.FindByHierarchy(string[] hierarchy)
+    {
+        return FindByHierarchy(hierarchy);
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
     public void AddValue<T>(T item)
     {
         var configuration = item as CubeConfiguration;

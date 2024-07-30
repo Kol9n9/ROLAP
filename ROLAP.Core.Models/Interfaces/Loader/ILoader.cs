@@ -1,8 +1,9 @@
 ﻿using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 
 namespace ROLAP.Core.Models.Interfaces.Loader;
 
-public interface ILoader<T>
+public interface ILoader<T> where T : ICubeItem
 {
-    IContainer Load(IEnumerable<ILoadOptions> options);
+    IEnumerable<T> Load(IEnumerable<ILoadOptions> options);
 }

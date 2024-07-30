@@ -136,7 +136,8 @@ internal class SelectProcessor
             List<IValueCubeItem> tupleValues = new List<IValueCubeItem>();
             foreach (var value in values)
             {
-                if(CubeItemHelper.IsCubeItemInContainers(value,tuple.Members)) tupleValues.Add(value);
+                throw new Exception();
+                //if(CubeItemHelper.IsCubeItemInContainers(value,tuple.Members)) tupleValues.Add(value);
             }
 
             if (values.Any())

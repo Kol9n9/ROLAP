@@ -56,7 +56,7 @@ public class QueryProcessor
     {
         if (axisQuery is null) throw new ArgumentNullException(nameof(axisQuery));
 
-        IEnumerable<IContainer> items = new List<IContainer>();
+        List<CubeItemTuple> items = new List<CubeItemTuple>();
         
         var set = MappingHelper.ToSet(axisQuery.Member);
         
@@ -66,33 +66,91 @@ public class QueryProcessor
            ProcessQueryTuple(MappingHelper.ToTuple(tuple), configurationCube, ref items);
         }
 
-        return new CubeItemTuple(items);
+        throw new Exception();
+        //return new CubeItemTuple(items);
     }
 
-    private void ProcessQueryTuple(TupleItem? tupleQuery, ICubeConfiguration configurationCube, ref IEnumerable<IContainer> containers)
+    private void ProcessQueryTuple(TupleItem? tupleQuery, ICubeConfiguration configurationCube, ref List<CubeItemTuple> tuples)
     {
         if (tupleQuery is null) throw new ArgumentNullException(nameof(tupleQuery));
         foreach (var member in tupleQuery.Items)
         {
-            var cubeItem = ProcessMember(member as MemberItem, configurationCube);
-            if (cubeItem is not null)
+            var tuple = ProcessMember(member as MemberItem, configurationCube);
+            if (tuple is not null)
             {
-                containers = cubeItem.Merge(containers);
+                MergeTuples(tuples, tuple);
+                //containers = cubeItem.Merge(containers);
             }
         }
     }
 
-    private IContainer? ProcessMember(MemberItem? memberQuery, ICubeConfiguration configurationCube)
+    private CubeItemTuple? ProcessMember(MemberItem? memberQuery, ICubeConfiguration configurationCube)
     {
         if (memberQuery is null) throw new ArgumentNullException(nameof(memberQuery));
 
-        IContainer container = IsMeasure(memberQuery.Hierarchy[0])
-            ? configurationCube.GetMeasures()
-            : configurationCube.GetDimensions();
-
-        return container.FindByHierarchy(memberQuery.Hierarchy);
+        var cubeItem = IsMeasure(memberQuery.Hierarchy[0])
+            ? FindInEnumerable(configurationCube.GetMeasures(), memberQuery.Hierarchy)
+            : FindInEnumerable(configurationCube.GetDimensions(), memberQuery.Hierarchy);
+        if (cubeItem is null) return null;
+        return new CubeItemTuple(new List<ICubeItem> { cubeItem });
     }
 
+    private ICubeItem? FindInEnumerable(IEnumerable<ICubeItem> cubeItems, string[] hierarchy)
+    {
+        ICubeItem? find = null;
+
+        foreach (var cubeItem in cubeItems)
+        {
+            find = cubeItem.FindByHierarchy(hierarchy);
+            if(find is not null) break;
+        }
+        
+        return find;
+    }
+
+    private void MergeTuples(List<CubeItemTuple> tuples, CubeItemTuple tuple)
+    {
+        if (!tuples.Any())
+        {
+            tuples.Add(tuple);
+            return;
+        }
+
+        bool isMeasure = (tuple.Members.First()! as IMeasureCubeItem) != null;
+
+        if (isMeasure)
+        {
+            var measure = tuples.FirstOrDefault(x => x.Members.OfType<IMeasureCubeItem>() != null);
+            if (measure is null)
+            {
+                tuples.Add(tuple);
+                return;
+            }
+            var find = FindByName(measure, tuple.Members.First(), out var _);
+            if (find is null)
+            {
+                measure.AddMember(tuple.Members.First());
+            }
+            return;
+        }
+
+        foreach (var VARIABLE in tuples.Where(x => x.Members.OfType<IDimensionCubeItem>() != null))
+        {
+            
+        }
+    }
+
+    private ICubeItem? FindByName(CubeItemTuple tuple, ICubeItem cubeItem, out ICubeItem prev)
+    {
+        prev = null;
+        CubeItemTuple? find = null;
+
+        foreach (var member in tuple.Members)
+        {
+            member.FindByHierarchy();
+        }
+    }
+    
     private bool IsMeasure(string name) => name.ToLower() == "measure";
     
 

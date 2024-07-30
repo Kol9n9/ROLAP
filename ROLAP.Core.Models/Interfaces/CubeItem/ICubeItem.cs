@@ -10,4 +10,8 @@ public interface ICubeItem
     /// </summary>
     /// <returns></returns>
     T Clone<T>(bool withValues) where T : ICubeItem;
+
+    ICubeItem? FindByHierarchy(string[] hierarchy);
+
+    bool Contains(ICubeItem item);
 }

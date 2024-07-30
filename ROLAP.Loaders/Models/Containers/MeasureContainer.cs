@@ -78,6 +78,16 @@ internal class MeasureContainer : IMeasureContainer
         return (T)(ICubeItem)container;
     }
 
+    ICubeItem ICubeItem.FindByHierarchy(string[] hierarchy)
+    {
+        return FindByHierarchy(hierarchy);
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
     public IEnumerable<T> GetValues<T>()
     {
         return _values.Cast<T>();

@@ -41,6 +41,17 @@ internal class MeasureCubeItem : IMeasureCubeItem
         return (T)(ICubeItem)item;
     }
 
+    public ICubeItem? FindByHierarchy(string[] hierarchy)
+    {
+        if (_name == hierarchy[1]) return Clone<MeasureCubeItem>(false);
+        return null;
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
     public string GetName()
     {
         return _name;

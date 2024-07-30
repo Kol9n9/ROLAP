@@ -30,6 +30,16 @@ internal class ValueContainer : IValueContainer
         return (T)(ICubeItem)container;
     }
 
+    ICubeItem ICubeItem.FindByHierarchy(string[] hierarchy)
+    {
+        return FindByHierarchy(hierarchy);
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
 
     public void AddValue<T>(T item)
     {

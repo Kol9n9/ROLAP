@@ -4,6 +4,6 @@ namespace ROLAP.Core.Models.Interfaces.CubeItem;
 
 public interface ICubeConfiguration : ICubeItem
 {
-    IContainer GetDimensions();
-    IContainer GetMeasures();
+    IEnumerable<IDimensionCubeItem> GetDimensions();
+    IEnumerable<IMeasureCubeItem> GetMeasures();
 }

@@ -2,5 +2,5 @@
 
 public interface IDimensionCubeItem : IMemberCubeItem
 {
-    
+    IEnumerable<IDimensionCubeItem> GetDimensions();
 }

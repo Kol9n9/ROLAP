@@ -32,7 +32,7 @@ public static class ValuesHelper
 
         foreach (var measure in measureContainers.SelectMany(x => x.GetValues<IMeasureCubeItem>()))
         {
-            values.AddRange(measure.GetLoader().Load(optionsList).GetValues<ValueCubeItem>());
+            values.AddRange(measure.GetLoader().Load(optionsList));
         }
        
         return values;

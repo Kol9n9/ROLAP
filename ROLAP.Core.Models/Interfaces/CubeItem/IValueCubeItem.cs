@@ -9,7 +9,6 @@ public interface IValueCubeItem : ICubeItem
     IValue GetValue();
     string GetFormattedValue();
 
-    IEnumerable<IContainer> GetDimensions();
-    IContainer GetMeasureContainer();
+    IEnumerable<IDimensionCubeItem> GetDimensions();
     IMeasureCubeItem GetMeasure();
 }

@@ -1,5 +1,6 @@
 using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Interfaces.Container;
+using ROLAP.Loaders.Models.CubeItems;
 
 namespace ROLAP.Loaders.Models.Containers;
 
@@ -97,6 +98,16 @@ internal class DimensionContainer : IDimensionContainer
         return (T)(ICubeItem)container;
     }
 
+    ICubeItem ICubeItem.FindByHierarchy(string[] hierarchy)
+    {
+        return FindByHierarchy(hierarchy);
+    }
+
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
     public void AddValue<T>(T item)
     {
         var dimensionContainer = item as DimensionContainer;
@@ -114,6 +125,14 @@ internal class DimensionContainer : IDimensionContainer
 
     public IEnumerable<T> GetValues<T>()
     {
+        DimensionCubeItem dimensionCubeItem = Item.Clone<DimensionCubeItem>(false);
+        foreach (var value in _values)
+        {
+            dimensionCubeItem.Values.AddRange(value.GetValues<DimensionCubeItem>());
+        }
+
+        return new List<T>{(T)(ICubeItem)dimensionCubeItem};
+        
         return _values.Cast<T>();
     }
 

@@ -8,14 +8,14 @@ internal class CubeConfiguration : ICubeConfiguration
     /// <summary>
     /// Измерения
     /// </summary>
-    public IContainer Dimensions { get; }
+    public IEnumerable<IDimensionCubeItem> Dimensions { get; }
     
     /// <summary>
     /// Меры
     /// </summary>
-    public IContainer Measures { get; }
+    public IEnumerable<IMeasureCubeItem> Measures { get; }
 
-    public CubeConfiguration(IContainer dimensions, IContainer measures)
+    public CubeConfiguration(IEnumerable<IDimensionCubeItem> dimensions, IEnumerable<IMeasureCubeItem> measures)
     {
         Dimensions = dimensions;
         Measures = measures;
@@ -26,7 +26,23 @@ internal class CubeConfiguration : ICubeConfiguration
         throw new NotSupportedException();
     }
 
-    public IContainer GetDimensions() => Dimensions;
+    public ICubeItem FindByHierarchy(string[] hierarchy)
+    {
+        throw new NotImplementedException();
+    }
 
-    public IContainer GetMeasures() => Measures;
+    public bool Contains(ICubeItem item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<IDimensionCubeItem> GetDimensions()
+    {
+        return Dimensions;
+    }
+
+    public IEnumerable<IMeasureCubeItem> GetMeasures()
+    {
+        return Measures;
+    }
 }
