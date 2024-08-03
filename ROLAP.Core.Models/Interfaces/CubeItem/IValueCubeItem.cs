@@ -1,5 +1,4 @@
-﻿using ROLAP.Core.Models.Interfaces.Container;
-using ROLAP.Core.Models.Interfaces.Value;
+﻿using ROLAP.Core.Models.Interfaces.Value;
 
 namespace ROLAP.Core.Models.Interfaces.CubeItem;
 
@@ -9,7 +8,6 @@ public interface IValueCubeItem : ICubeItem
     IValue GetValue();
     string GetFormattedValue();
 
-    IEnumerable<IContainer> GetDimensions();
-    IContainer GetMeasureContainer();
+    IEnumerable<IDimensionCubeItem> GetDimensions();
     IMeasureCubeItem GetMeasure();
 }

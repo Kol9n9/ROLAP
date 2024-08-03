@@ -1,7 +1,6 @@
 ﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Loaders;
-using ROLAP.Loaders.Models.Containers;
 using ROLAP.Loaders.Models.Options;
 using ROLAP.Loaders.Utils.Parser;
 using CubeConfiguration = ROLAP.Loaders.Models.CubeItems.CubeConfiguration;
@@ -9,7 +8,7 @@ namespace ROLAP.Loaders.Handlers;
 
 internal class CubeStaticHandler : ILoaderHandler<CubeConfiguration,CubeStaticOptions>
 {
-    private readonly ILoader<DimensionContainer> _dimensionLoader;
+    private readonly ILoader<IDimensionCubeItem> _dimensionLoader;
     private readonly ILoader<IMeasureCubeItem> _measureLoader;
 
     public CubeStaticHandler()

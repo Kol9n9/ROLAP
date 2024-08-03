@@ -1,6 +1,5 @@
 ﻿using ROLAP.Core.Models.Interfaces.Value;
 using ROLAP.Core.Models.Interfaces.CubeItem;
-using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Loaders.Models.CubeItems;
 
@@ -8,11 +7,11 @@ internal class ValueCubeItem : IValueCubeItem
 {
     public string Id { get; }
     public IValue Value { get; }
-    public IContainer Measure { get; }
+    public IMeasureCubeItem Measure { get; }
     
-    public IEnumerable<IContainer> Dimensions { get; }
+    public IEnumerable<IDimensionCubeItem> Dimensions { get; }
 
-    public ValueCubeItem(string id, IValue value, IContainer measure, IEnumerable<IContainer> dimensions)
+    public ValueCubeItem(string id, IValue value, IMeasureCubeItem measure, IEnumerable<IDimensionCubeItem> dimensions)
     {
         Id = id;
         Value = value;
@@ -20,10 +19,10 @@ internal class ValueCubeItem : IValueCubeItem
         Dimensions = dimensions;
     }
     
-    public T Clone<T>(bool withValues) where T : ICubeItem
+    public ICubeItem Clone(bool withValues)
     {
-        var val = (ICubeItem)(new ValueCubeItem(Id, Value, Measure, Dimensions.Select(x => x.Clone<IContainer>(withValues))));
-        return (T)val;
+        var val = (ICubeItem)(new ValueCubeItem(Id, Value, Measure, Dimensions.Select(x => (IDimensionCubeItem)x.Clone(withValues))));
+        return val;
     }
 
     public string GetId()
@@ -41,11 +40,10 @@ internal class ValueCubeItem : IValueCubeItem
         return Value.GetStringValue();
     }
 
-    public IEnumerable<IContainer> GetDimensions() => Dimensions;
+    public IEnumerable<IDimensionCubeItem> GetDimensions() => Dimensions;
 
-    public IContainer GetMeasureContainer() => Measure;
     public IMeasureCubeItem GetMeasure()
     {
-        return Measure.GetValues<IMeasureCubeItem>().FirstOrDefault()!;
+        return Measure;
     }
 }

@@ -4,13 +4,13 @@ namespace ROLAP.Core.Models.Model.Query;
 
 public class CubeQuery
 {
-    public IEnumerable<CubeItemTuple> Sets { get; }
+    public IEnumerable<CubeItemSet> Sets { get; }
     
-    public IEnumerable<CubeItemTuple> Where { get; set; }
+    public CubeItemSet? Where { get; set; }
 
     public QueryType QueryType { get; }
     
-    public CubeQuery(QueryType type, IEnumerable<CubeItemTuple> sets, IEnumerable<CubeItemTuple> where)
+    public CubeQuery(QueryType type, IEnumerable<CubeItemSet> sets, CubeItemSet? where)
     {
         QueryType = type;
         Sets = sets;

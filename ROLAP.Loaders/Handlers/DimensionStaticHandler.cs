@@ -1,26 +1,26 @@
-﻿using ROLAP.Core.Models.Interfaces.Loader;
-using ROLAP.Loaders.Models.Containers;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
+using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Models.CubeItems;
 using ROLAP.Loaders.Models.Options;
 
 namespace ROLAP.Loaders.Handlers;
 
-internal class DimensionStaticHandler : ILoaderHandler<DimensionContainer,DimensionStaticOptions>
+internal class DimensionStaticHandler : ILoaderHandler<IDimensionCubeItem,DimensionStaticOptions>
 {
-    private readonly ILoader<DimensionContainer> _loader;
-    public DimensionStaticHandler(ILoader<DimensionContainer> loader)
+    private readonly ILoader<IDimensionCubeItem> _loader;
+    public DimensionStaticHandler(ILoader<IDimensionCubeItem> loader)
     {
         _loader = loader;
     }
-    public IEnumerable<DimensionContainer> Load(DimensionStaticOptions options)
+    public IEnumerable<IDimensionCubeItem> Load(DimensionStaticOptions options)
     {
-        DimensionContainer container = new DimensionContainer(new DimensionCubeItem(options.Key, options.Name));
+        DimensionCubeItem dimensions = new DimensionCubeItem(options.Key, options.Name);
         
         if (options.Values.Any())
         {
-            container.AddValue(_loader.Load(options.Values).GetValues<DimensionContainer>());
+            dimensions.Values.AddRange(_loader.Load(options.Values));
         }
         
-        return new List<DimensionContainer> { container };
+        return new List<IDimensionCubeItem> { dimensions };
     }
 }

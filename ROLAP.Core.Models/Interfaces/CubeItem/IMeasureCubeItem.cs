@@ -9,4 +9,8 @@ public interface IMeasureCubeItem : IMemberCubeItem
     IValueCubeItem Aggregate(IEnumerable<IValueCubeItem> items);
 
     Type GetValueType();
+    
+    ICubeItem GetTotalItem();
+
+    bool IsTotal();
 }

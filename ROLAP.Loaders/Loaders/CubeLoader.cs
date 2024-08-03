@@ -1,8 +1,6 @@
 ﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Core.Models.Interfaces.Container;
-using ROLAP.Loaders.Models.Containers;
 using ROLAP.Loaders.Models.CubeItems;
 
 namespace ROLAP.Loaders.Loaders;
@@ -16,22 +14,22 @@ internal class CubeLoader : ILoader<CubeConfiguration>
         _staticHandler = new CubeStaticHandler();
     }
     
-    public IContainer Load(IEnumerable<ILoadOptions> options)
+    public IEnumerable<CubeConfiguration> Load(IEnumerable<ILoadOptions> options)
     {
-        CubeConfigurationContainer container = new CubeConfigurationContainer();
+        List<CubeConfiguration> configurations = new List<CubeConfiguration>();
         
         foreach (var option in options)
         {
-            if (!TryAddValue(option, container)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
+            if (!TryAddValue(option, configurations)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
         }
 
-        return container;
+        return configurations;
     }
-    private bool TryAddValue(ILoadOptions options, CubeConfigurationContainer container)
+    private bool TryAddValue(ILoadOptions options,  List<CubeConfiguration> configurations)
     {
         if (options is CubeStaticOptions staticOptions)
         {
-            container.AddValue(_staticHandler.Load(staticOptions));
+            configurations.AddRange(_staticHandler.Load(staticOptions));
             return true;
         }
 

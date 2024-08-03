@@ -1,6 +1,4 @@
-﻿using System.Text;
-using ROLAP.Core.Models.Interfaces.CubeItem;
-using ROLAP.Core.Models.Interfaces.Container;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Model.Query;
 using ROLAP.Formatter.Models;
 
@@ -10,93 +8,60 @@ internal static class MappingHelper
 {
     public static SetResult Map(CubeItemSet set)
     {
-        List<TupleResult> tuples = new List<TupleResult>();
-        foreach (var tuple in set.Tuples)    
+        List<TupleResult> results = new List<TupleResult>();
+        foreach (var tuple in set.Tuples)
         {
-            tuples.Add(Map(tuple));
+            results.Add(Map(tuple));
         }
 
-        return new SetResult(tuples);
+        return new SetResult(results);
     }
 
     public static TupleResult Map(CubeItemTuple tuple)
     {
-        List<MemberResult> memberResults = new List<MemberResult>();
+        List<MemberResult> members = new List<MemberResult>();
         foreach (var member in tuple.Members)
         {
-            if(member is IDimensionContainer dimensionContainer) memberResults.AddRange(Map(dimensionContainer));
-            if(member is IMeasureContainer measureContainer) memberResults.AddRange(Map(measureContainer));
+            members.Add(member is IDimensionCubeItem dimension ? Map(dimension) :
+                member is IMeasureCubeItem measure ? Map(measure) : throw new Exception("Неожиданный тип"));
         }
-
-        return new TupleResult(memberResults);
+        return new TupleResult(members);
     }
 
-    public static IEnumerable<MemberResult> Map(IDimensionContainer container, List<MemberResult> prevMembers = null)
+    public static MemberResult Map(IDimensionCubeItem dimension, IEnumerable<IDimensionCubeItem>? prevDimensions = null)
     {
-        List<MemberResult> res = new List<MemberResult>();
-        var item = Map((container.GetItem() as IMemberCubeItem)!);
-
-        if (prevMembers is null) prevMembers = new List<MemberResult>();
-        else prevMembers = new List<MemberResult>(prevMembers);
+        List<IDimensionCubeItem> items = new List<IDimensionCubeItem>();
+        if(prevDimensions is not null) items.AddRange(prevDimensions);
+        items.Add(dimension);
         
-        prevMembers.Add(item);
-
-        var values = container.GetValues<IDimensionContainer>();
+        var values = dimension.GetDimensions();
         if (values.Any())
         {
-            foreach (var value in values)
-            {
-                 res.AddRange(Map(value, prevMembers));
-            }
+            return Map(values.First(), items);
         }
-        else
+        string name = string.Join(".", items.Select(x => $"[{x.GetName()}]"));
+        string key = string.Join(".", items.Select(x => $"[{x.GetKey()}]"));
+
+        if (items.Count == 1)
         {
-            StringBuilder nameBuilder = new StringBuilder();
-            StringBuilder keyBuilder = new StringBuilder();
-            for (int i = 0; i < prevMembers.Count; i++)
-            {
-                nameBuilder.Append("[" + prevMembers[i].Name + "]");
-                keyBuilder.Append("[" + prevMembers[i].Key + "]");
-                if (i != prevMembers.Count - 1)
-                {
-                    nameBuilder.Append('.');
-                    keyBuilder.Append('.');
-                }
-            }
-
-            if (prevMembers.Count == 1)
-            {
-                nameBuilder.Append(".[All]");
-                keyBuilder.Append(".[All]");
-            }
-            res.Add(new MemberResult(nameBuilder.ToString(),keyBuilder.ToString()));
+            name += ".[All]";
+            key += ".[All]";
         }
-
-        return res;
-    }
-    public static IEnumerable<MemberResult> Map(IMeasureContainer container)
-    {
-        List<MemberResult> res = new List<MemberResult>();
-        foreach (var value in container.GetValues<IMemberCubeItem>())
-        {
-            var mapItem = Map(value);
-            res.Add(new MemberResult("[Индикатор].["+mapItem.Name+"]","[Индикатор].["+mapItem.Key+"]"));
-        }
-
-        if (!res.Any())
-        {
-            res.Add(new MemberResult("[Индикатор].[All]","[Индикатор].[All]"));
-        }
-
-        return res;
+        
+        return new MemberResult(name, key);
     }
 
-    public static MemberResult Map(IMemberCubeItem memberCubeItem)
+    public static MemberResult Map(IMeasureCubeItem measure)
     {
-        return new MemberResult(memberCubeItem.GetName(),memberCubeItem.GetKey());
+        if (measure.IsTotal())
+        {
+            return new MemberResult("[Индикаторы].[All]", "[Индикаторы].[All]");
+        }
+        return new MemberResult($"[Индикаторы].[{measure.GetName()}]",$"[Индикаторы].[{measure.GetKey()}]");
     }
-    public static ValueResult Map(IValueCubeItem valueCubeItem)
+    
+    public static ValueResult Map(IValueCubeItem value)
     {
-        return new ValueResult(valueCubeItem.GetValue(), valueCubeItem.GetFormattedValue());
+        return new ValueResult(value.GetValue(), value.GetFormattedValue());
     }
 }

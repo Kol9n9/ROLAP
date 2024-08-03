@@ -101,7 +101,7 @@ internal static class CubeConfigurationStaticParser
         return sourceType switch
         {
             SourceType.Static => new DimensionStaticOptions(token[connectionInfo.KeyField]?.ToString() ?? "NULL",
-                token[connectionInfo.NameField]?.ToString() ?? "Не задано", values),
+                token[connectionInfo.NameField]?.ToString() ?? String.Empty, values),
             
             _ => throw new Exception("Неизвестный тип источника")
         };
@@ -124,7 +124,7 @@ internal static class CubeConfigurationStaticParser
         return sourceType switch
         {
             SourceType.Static => new MeasureStaticOptions(token[connectionInfo.KeyField]?.ToString() ?? "NULL",
-                token[connectionInfo.NameField]?.ToString() ?? "Не задано", valueType, aggregateFunction, values),
+                token[connectionInfo.NameField]?.ToString() ?? String.Empty, valueType, aggregateFunction, values),
             
             _ => throw new Exception("Неизвестный тип источника")
         };
@@ -138,7 +138,7 @@ internal static class CubeConfigurationStaticParser
         return sourceType switch
         {
             SourceType.Static => new ValueStaticOptions(token["Id"]?.ToString() ?? "NULL",
-                token["Value"]?.ToString() ?? "Не задано", dimensions),
+                token["Value"]?.ToString() ?? String.Empty, dimensions),
             
             _ => throw new Exception("Неизвестный тип источника")
         };

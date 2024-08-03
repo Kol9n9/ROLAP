@@ -9,5 +9,5 @@ public interface ICubeItem
     /// Клонировать элемент
     /// </summary>
     /// <returns></returns>
-    T Clone<T>(bool withValues) where T : ICubeItem;
+    ICubeItem Clone(bool withValues);
 }

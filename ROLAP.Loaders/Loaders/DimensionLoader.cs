@@ -1,13 +1,11 @@
 ﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Handlers;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Core.Models.Interfaces.Container;
-using ROLAP.Loaders.Models.Containers;
-using ROLAP.Loaders.Models.CubeItems;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 
 namespace ROLAP.Loaders.Loaders;
 
-internal class DimensionLoader : ILoader<DimensionContainer>
+internal class DimensionLoader : ILoader<IDimensionCubeItem>
 {
     private readonly DimensionStaticHandler _staticHandler;
     public DimensionLoader()
@@ -15,25 +13,25 @@ internal class DimensionLoader : ILoader<DimensionContainer>
         _staticHandler = new DimensionStaticHandler(this);
     }
     
-    public IContainer Load(IEnumerable<ILoadOptions> options)
+    public IEnumerable<IDimensionCubeItem> Load(IEnumerable<ILoadOptions> options)
     {
 
-        DimensionContainer container = new DimensionContainer(new DimensionCubeItem("-1","Измерения"));
-        
+        List<IDimensionCubeItem> dimensions = new List<IDimensionCubeItem>();
+
         foreach (var option in options)
         {
-            if (!TryAddValue(option, container)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
+            if (!TryAddValue(option, dimensions)) throw new Exception($"Для типа {option.GetType()} не задан обработчик");
         }
 
-        return container;
+        return dimensions;
     }
     
     
-    private bool TryAddValue(ILoadOptions options, DimensionContainer container)
+    private bool TryAddValue(ILoadOptions options, List<IDimensionCubeItem> dimensions)
     {
         if (options is DimensionStaticOptions staticOptions)
         {
-            container.AddValue(_staticHandler.Load(staticOptions));
+            dimensions.AddRange(_staticHandler.Load(staticOptions));
             return true;
         }
 

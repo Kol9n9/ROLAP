@@ -1,5 +1,4 @@
 ﻿using ROLAP.Core.Models.Interfaces.CubeItem;
-using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Loaders.Models.CubeItems;
 
@@ -8,25 +7,31 @@ internal class CubeConfiguration : ICubeConfiguration
     /// <summary>
     /// Измерения
     /// </summary>
-    public IContainer Dimensions { get; }
+    public IEnumerable<IDimensionCubeItem> Dimensions { get; }
     
     /// <summary>
     /// Меры
     /// </summary>
-    public IContainer Measures { get; }
+    public IEnumerable<IMeasureCubeItem> Measures { get; }
 
-    public CubeConfiguration(IContainer dimensions, IContainer measures)
+    public CubeConfiguration(IEnumerable<IDimensionCubeItem> dimensions, IEnumerable<IMeasureCubeItem> measures)
     {
         Dimensions = dimensions;
         Measures = measures;
     }
 
-    public T Clone<T>(bool withValues) where T : ICubeItem
+    public ICubeItem Clone(bool withValues)
     {
         throw new NotSupportedException();
     }
+    
+    public IEnumerable<IDimensionCubeItem> GetDimensions()
+    {
+        return Dimensions;
+    }
 
-    public IContainer GetDimensions() => Dimensions;
-
-    public IContainer GetMeasures() => Measures;
+    public IEnumerable<IMeasureCubeItem> GetMeasures()
+    {
+        return Measures;
+    }
 }
