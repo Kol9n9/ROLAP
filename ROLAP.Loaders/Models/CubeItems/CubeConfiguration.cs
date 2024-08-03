@@ -1,5 +1,4 @@
 ﻿using ROLAP.Core.Models.Interfaces.CubeItem;
-using ROLAP.Core.Models.Interfaces.Container;
 
 namespace ROLAP.Loaders.Models.CubeItems;
 
@@ -21,21 +20,11 @@ internal class CubeConfiguration : ICubeConfiguration
         Measures = measures;
     }
 
-    public T Clone<T>(bool withValues) where T : ICubeItem
+    public ICubeItem Clone(bool withValues)
     {
         throw new NotSupportedException();
     }
-
-    public ICubeItem FindByHierarchy(string[] hierarchy)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Contains(ICubeItem item)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public IEnumerable<IDimensionCubeItem> GetDimensions()
     {
         return Dimensions;

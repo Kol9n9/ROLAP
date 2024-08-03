@@ -1,40 +1,42 @@
 using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Core.Models.Model.Query;
-using ROLAP.Core.Models.Interfaces.Container;
 using ROLAP.Core.Models.Interfaces.CubeItem;
-using ROLAP.Loaders.Models.Containers;
-using ROLAP.Loaders.Models.CubeItems;
 
 namespace ROLAP.Loaders.Helpers;
 
 public static class ValuesHelper
 {
-    public static IEnumerable<IValueCubeItem> LoadValues(IEnumerable<CubeItemTuple> tupleItems, IEnumerable<CubeItemTuple> whereTupleItems)
+    public static IEnumerable<IValueCubeItem> LoadValues(IEnumerable<CubeItemSet> sets, CubeItemSet? whereSet)
     {
         List<IValueCubeItem> values = new List<IValueCubeItem>();
 
-        List<IContainer> measureContainers = new List<IContainer>();
-        List<IContainer> dimensionsContainers = new List<IContainer>();
-
-        foreach (var tupleItem in tupleItems)
+        List<IMeasureCubeItem> measureCubeItems = new List<IMeasureCubeItem>();
+        List<IDimensionCubeItem> dimensionCubeItems = new List<IDimensionCubeItem>();
+        
+        foreach (var set in sets)
         {
-            measureContainers.AddRange(tupleItem.Members.OfType<MeasureContainer>());
-            dimensionsContainers.AddRange(tupleItem.Members.OfType<DimensionContainer>());
+            measureCubeItems.AddRange(SelectFromSet<IMeasureCubeItem>(set));
+            dimensionCubeItems.AddRange(SelectFromSet<IDimensionCubeItem>(set));
+        }
+
+        if (whereSet is not null)
+        {
+            measureCubeItems.AddRange(SelectFromSet<IMeasureCubeItem>(whereSet));
+            dimensionCubeItems.AddRange(SelectFromSet<IDimensionCubeItem>(whereSet));
         }
         
-        foreach (var tupleItem in whereTupleItems)
-        {
-            measureContainers.AddRange(tupleItem.Members.OfType<MeasureContainer>());
-            dimensionsContainers.AddRange(tupleItem.Members.OfType<DimensionContainer>());
-        }
-
-        List<ILoadOptions> optionsList = LoadOptionsHelper.GetValueOptions(dimensionsContainers).ToList();
-
-        foreach (var measure in measureContainers.SelectMany(x => x.GetValues<IMeasureCubeItem>()))
+        List<ILoadOptions> optionsList = LoadOptionsHelper.GetValueOptions(dimensionCubeItems).ToList();
+        
+        foreach (var measure in measureCubeItems)
         {
             values.AddRange(measure.GetLoader().Load(optionsList));
         }
-       
+
         return values;
+    }
+
+    private static IEnumerable<T> SelectFromSet<T>(CubeItemSet set)
+    {
+        return set.Tuples.Where(x => x.Members.First() is T).SelectMany(x => x.Members.Cast<T>());
     }
 }

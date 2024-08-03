@@ -1,5 +1,4 @@
-﻿using ROLAP.Core.Models.Interfaces.Container;
-using ROLAP.Core.Models.Interfaces.CubeItem;
+﻿using ROLAP.Core.Models.Interfaces.CubeItem;
 
 namespace ROLAP.Core.Models.Model.Query;
 

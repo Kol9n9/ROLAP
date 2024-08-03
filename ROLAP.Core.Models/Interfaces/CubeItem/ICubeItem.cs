@@ -9,9 +9,5 @@ public interface ICubeItem
     /// Клонировать элемент
     /// </summary>
     /// <returns></returns>
-    T Clone<T>(bool withValues) where T : ICubeItem;
-
-    ICubeItem? FindByHierarchy(string[] hierarchy);
-
-    bool Contains(ICubeItem item);
+    ICubeItem Clone(bool withValues);
 }

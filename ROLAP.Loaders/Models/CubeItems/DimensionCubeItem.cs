@@ -8,7 +8,7 @@ internal class DimensionCubeItem : IDimensionCubeItem
     public string Name { get; }
     public string? GroupName { get; }
 
-    public List<IDimensionCubeItem> Values { get; } = new List<IDimensionCubeItem>();
+    public List<IDimensionCubeItem> Values { get; private set; } = new List<IDimensionCubeItem>();
 
     public DimensionCubeItem(string key, string name, string? groupName = null)
     {
@@ -17,48 +17,11 @@ internal class DimensionCubeItem : IDimensionCubeItem
         GroupName = groupName;
     }
     
-    public T Clone<T>(bool withValues) where T: ICubeItem
+    public ICubeItem Clone(bool withValues)
     {
-        return (T)(ICubeItem)new DimensionCubeItem(Key, Name, GroupName);
-    }
-
-    public ICubeItem? FindByHierarchy(string[] hierarchy)
-    {
-        if (Name != hierarchy[0]) return null;
-        DimensionCubeItem clone = Clone<DimensionCubeItem>(false);
-        DimensionCubeItem current = clone;
-
-        hierarchy = hierarchy.Skip(1).ToArray();
-
-        IEnumerable<IDimensionCubeItem> currentValues = Values.ToList();
-
-        while (hierarchy.Any())
-        {
-            IDimensionCubeItem? find = null;
-
-            foreach (var value in currentValues)
-            {
-                find = value.FindByHierarchy(hierarchy) as IDimensionCubeItem;
-                if(find is not null) break;
-            }
-
-            if (find is null) return null;
-
-            current.Values.Add(find.Clone<DimensionCubeItem>(false));
-            current = current.Values.First() as DimensionCubeItem;
-
-            if (current is null) return null;
-            
-            currentValues = current.GetDimensions();
-            hierarchy = hierarchy.Skip(1).ToArray();
-        }
-
+        var clone = new DimensionCubeItem(Key, Name, GroupName);
+        if (withValues) clone.Values = Values.Select(x => (IDimensionCubeItem)x.Clone(withValues)).ToList();
         return clone;
-    }
-
-    public bool Contains(ICubeItem item)
-    {
-        throw new NotImplementedException();
     }
 
     public string GetName()
@@ -70,9 +33,27 @@ internal class DimensionCubeItem : IDimensionCubeItem
     {
         return Key;
     }
+    
 
     public IEnumerable<IDimensionCubeItem> GetDimensions()
     {
         return Values;
+    }
+
+    public void AddDimension(IDimensionCubeItem dimension)
+    {
+        Values.Add(dimension);
+    }
+
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not IDimensionCubeItem dimension) return false;
+        return Key == dimension.GetKey() && (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(dimension.GetName()) || Name == dimension.GetName());
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Key, Name, "Dimension");
     }
 }

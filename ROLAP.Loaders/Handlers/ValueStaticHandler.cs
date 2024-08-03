@@ -1,9 +1,7 @@
 ﻿using ROLAP.Core.Models.Helpers;
-using ROLAP.Core.Models.Interfaces.Container;
 using ROLAP.Core.Models.Interfaces.CubeItem;
 using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Core.Models.Model.TypedValues;
-using ROLAP.Loaders.Models.Containers;
 using ROLAP.Loaders.Models.CubeItems;
 using ROLAP.Loaders.Models.Options;
 
@@ -12,7 +10,7 @@ namespace ROLAP.Loaders.Handlers;
 internal class ValueStaticHandler : ILoaderHandler<IValueCubeItem,ValueStaticOptions>
 {
     private readonly ILoader<IDimensionCubeItem> _dimensionLoader;
-    private readonly IContainer _measure;
+    private readonly IMeasureCubeItem _measure;
     private readonly IEnumerable<ValueStaticOptions> _valueOptions;
     private readonly IMeasureCubeItem _measureCubeItem;
     
@@ -21,8 +19,7 @@ internal class ValueStaticHandler : ILoaderHandler<IValueCubeItem,ValueStaticOpt
         _valueOptions = valueOptions;
         _dimensionLoader = dimensionLoader;
         _measureCubeItem = measureCubeItem;
-        _measure = new MeasureContainer();
-        _measure.AddValue(measureCubeItem);
+        _measure = measureCubeItem;
     }
     public IEnumerable<IValueCubeItem> Load(ValueStaticOptions options)
     {
@@ -32,9 +29,15 @@ internal class ValueStaticHandler : ILoaderHandler<IValueCubeItem,ValueStaticOpt
 
     private IEnumerable<IValueCubeItem> FilterValues(IEnumerable<IDimensionCubeItem> dimensions,Type valueType)
     {
-        var items = _valueOptions
-            .Select(x => new ValueCubeItem(x.Id,ValueTypeHelper.Create(valueType,x.Value),_measure,_dimensionLoader.Load(x.Dimensions)))
-            .Where(x => CubeItemHelper.IsCubeItemInContainers(x, dimensions));
-        return items;
+        List<IValueCubeItem> values = new List<IValueCubeItem>();
+
+        foreach (var valueOption in _valueOptions)
+        {
+            var value = new ValueCubeItem(valueOption.Id, ValueTypeHelper.Create(valueType, valueOption.Value), _measure,
+                _dimensionLoader.Load(valueOption.Dimensions));
+            if(CubeItemHelper.IsValueInDimensions(value,dimensions)) values.Add(value);
+        }
+        
+        return values;
     }
 }

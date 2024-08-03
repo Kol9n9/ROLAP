@@ -1,25 +1,24 @@
 ﻿using ROLAP.Core.Models.Interfaces.Loader;
 using ROLAP.Loaders.Models.Options;
-using ROLAP.Core.Models.Interfaces.Container;
-using ROLAP.Loaders.Models.Containers;
+using ROLAP.Core.Models.Interfaces.CubeItem;
 
 namespace ROLAP.Loaders.Helpers;
 
 internal static class LoadOptionsHelper
 {
-    public static IEnumerable<ILoadOptions> GetValueOptions(IEnumerable<IContainer> containers)
+    public static IEnumerable<ILoadOptions> GetValueOptions(IEnumerable<IDimensionCubeItem> dimensions)
     {
         List<ILoadOptions> options = new List<ILoadOptions>();
-        options.Add(GetDimensionOptions(containers.OfType<DimensionContainer>()));
+        options.Add(GetDimensionOptions(dimensions));
 
         return options;
     }
 
 
-    private static ILoadOptions GetDimensionOptions(IEnumerable<DimensionContainer> dimensionContainers)
+    private static ILoadOptions GetDimensionOptions(IEnumerable<IDimensionCubeItem> dimensions)
     {
         List<ILoadOptions> values = new List<ILoadOptions>();
-        foreach (var value in dimensionContainers)
+        foreach (var value in dimensions)
         {
             values.Add(GetDimensionOption(value));
         }
@@ -27,14 +26,14 @@ internal static class LoadOptionsHelper
         return new ValueStaticOptions("", "", values);
     }
 
-    private static ILoadOptions GetDimensionOption(DimensionContainer dimensionContainers)
+    private static ILoadOptions GetDimensionOption(IDimensionCubeItem dimension)
     {
         List<ILoadOptions> options = new List<ILoadOptions>();
         List<ILoadOptions> values = new List<ILoadOptions>();
-        foreach (var value in dimensionContainers.GetValues<DimensionContainer>())
+        foreach (var value in dimension.GetDimensions())
         {
             values.Add(GetDimensionOption(value));
         }
-        return new DimensionStaticOptions(dimensionContainers.Item.GetKey(),dimensionContainers.Item.GetName(),values);
+        return new DimensionStaticOptions(dimension.GetKey(),dimension.GetName(),values);
     }
 }

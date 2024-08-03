@@ -5,13 +5,15 @@ namespace ROLAP.Loaders.Models.CubeItems;
 
 internal class MeasureCubeItem : IMeasureCubeItem
 {
-    private string _key;
-    private string _name;
+    private readonly string _key;
+    private readonly string _name;
 
     private ILoader<IValueCubeItem> _loader = null!;
 
     private Func<IEnumerable<IValueCubeItem>, IValueCubeItem> _aggregateFunction;
     private Type _valueType;
+
+    private bool _isTotal = false;
 
     public MeasureCubeItem(string key, string name, Type valueType, Func<IEnumerable<IValueCubeItem>, IValueCubeItem> aggregateFunction)
     {
@@ -34,22 +36,32 @@ internal class MeasureCubeItem : IMeasureCubeItem
 
     public void SetLoader(ILoader<IValueCubeItem> loader) => _loader = loader;
 
-    public T Clone<T>(bool withValues) where T : ICubeItem
+    public ICubeItem Clone(bool withValues)
     {
         var item = new MeasureCubeItem(_key, _name, _valueType, _aggregateFunction);
         item.SetLoader(_loader);
-        return (T)(ICubeItem)item;
+        item._isTotal = _isTotal;
+        return item;
     }
 
-    public ICubeItem? FindByHierarchy(string[] hierarchy)
+    public ICubeItem GetTotalItem()
     {
-        if (_name == hierarchy[1]) return Clone<MeasureCubeItem>(false);
-        return null;
+        var totalMeasure = new MeasureCubeItem("", "Индикаторы", _valueType,_aggregateFunction);
+        totalMeasure._isTotal = true;
+        return totalMeasure;
     }
 
-    public bool Contains(ICubeItem item)
+    public bool IsTotal() => _isTotal;
+
+    public override bool Equals(object? obj)
     {
-        throw new NotImplementedException();
+        if (obj is not MeasureCubeItem measureCubeItem) return false;
+        return measureCubeItem.IsTotal() || _key == measureCubeItem.GetKey() && (string.IsNullOrWhiteSpace(_name) || string.IsNullOrWhiteSpace(measureCubeItem.GetName()) || _name == measureCubeItem.GetName());
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_key, _name, "Measure");
     }
 
     public string GetName()
