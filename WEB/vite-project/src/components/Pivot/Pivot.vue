@@ -266,8 +266,11 @@
 
 </template>
 <script lang="ts" setup>
-import { parseMDX } from './utils';
-parseMDX();
+import { parseMDX } from './parserMdx';
+import { generateHeader } from './generateHeader';
+const data = parseMDX();
+    console.log(data);
+    generateHeader(data.Columns,data.Rows)
 </script>
 <style scoped>
     td{
