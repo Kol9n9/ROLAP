@@ -1,0 +1,135 @@
+import { HeaderCellModel, HeaderTd, HeaderTr, PivotData } from "../model/models";
+
+function mapHeaderCellModel(cell:HeaderCellModel): HeaderTd{
+    return {
+        Title: cell.Name,
+        RowSpan: 1,
+        ColSpan: 1,
+        DataIndex: cell.DataIndex,
+        IsTotal: cell.IsTotal
+    }
+}
+
+
+function getChildrenLength(trs: HeaderTr[]): number{
+    if(!trs.length) return 1;
+    const firstTr = trs[0];
+    return firstTr.Cells.reduce((prev: number, current: HeaderTd): number=>{
+        return prev + current.ColSpan
+    },0) || 1;
+}
+
+function parseColumns(cell: HeaderCellModel): HeaderTr[]{
+    const td: HeaderTd = mapHeaderCellModel(cell);
+    const childen = parseColumnChildren(cell.Children.sort(sortHeaderCellByTotal)).filter(i => i.Cells.length);
+    td.ColSpan = getChildrenLength(childen);
+    return [{
+        Cells: [td]
+    }, ...childen];
+}
+
+function parseColumnChildren(children: HeaderCellModel[]): HeaderTr[]{
+    const tr: HeaderTr = {
+        Cells: []
+    }
+
+    const childtr: HeaderTr[] = [];
+
+    for(const child of children){
+        const parsed = parseColumns(child);
+        tr.Cells.push(...parsed[0].Cells);
+        for(const [index,parsedTr] of parsed.slice(1).entries()){
+            if(!childtr[index]){
+                childtr[index] = parsedTr;
+            } else {
+                childtr[index].Cells.push(...parsedTr.Cells);
+            }
+        }
+    }
+
+    return [tr,...childtr];
+}
+
+
+function addUniqueTdToTr(tr: HeaderTr, cells: HeaderTd[]){
+    const names = tr.Cells.map(i => i.Title);
+    for(const cell of cells){
+        if(names.includes(cell.Title)) continue;
+        tr.Cells.push(cell);
+    }
+}
+
+function getRowChildrenLength(trs: HeaderTr[]){
+    if(!trs.length) return 1;
+    return trs.length;
+}
+
+
+function sortHeaderCellByTotal(a: HeaderCellModel,b: HeaderCellModel): number{
+    if(a.IsTotal && !b.IsTotal) return 1;
+    if(!a.IsTotal && b.IsTotal) return -1;
+    return 0;
+}
+
+function parseRows(cell: HeaderCellModel): HeaderTr[]{
+    const trs: HeaderTr[] = [
+        {
+            Cells: [mapHeaderCellModel(cell)]
+        }
+    ]
+
+    for(const child of cell.Children.sort(sortHeaderCellByTotal)){
+        const childCell = mapHeaderCellModel(child);
+
+        if(child.Children.length){
+            const parsed = parseRows(child.Children[0]);
+            
+            addUniqueTdToTr(trs[0],parsed[0].Cells)
+            
+            const firstTrIndex = trs.length;
+
+            const dataRows = parsed.slice(1)
+
+            for(const tr of dataRows){
+                trs.push({
+                    Cells: [...tr.Cells]
+                })
+            }
+            
+            trs[firstTrIndex].Cells.unshift({
+                ...childCell,
+                RowSpan: getRowChildrenLength(dataRows)
+            })
+            
+        } else {
+            trs.push({
+                Cells: [childCell]
+            })
+        }
+    }
+
+    return trs;
+}
+
+
+function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
+    for(const [index,row] of rowHeader.Cells.entries()){
+        row.RowSpan = trs.length;
+        trs[0].Cells.splice(index,0,row);
+    }
+}
+
+export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null): PivotData{
+    const parsedColumns = parseColumns(columns);
+    const parsedRows = rows ? parseRows(rows) : undefined;
+
+    if(parsedRows){
+        addRowHeaderToColumns(parsedRows[0],parsedColumns);
+        parsedRows.splice(0,1);
+    }
+
+    return {
+        columns: parsedColumns,
+        ...(parsedRows ? {rows: parsedRows} : {})
+    }
+}

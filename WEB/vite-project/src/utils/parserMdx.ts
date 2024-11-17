@@ -1,6 +1,4 @@
-import { MdxDataModel, MdxSetModel, MdxTupleModel, ValueModel, HeaderCellModel, MdxValueModel, MdxParseResult } from './models';
-
-import cubeData from '../../data/testCube.json' assert { type: "json" };
+import { MdxDataModel, MdxSetModel, MdxTupleModel, ValueModel, HeaderCellModel, MdxValueModel, MdxParseResult } from '../model/models';
 
 function parseSet(set: MdxSetModel): HeaderCellModel{
     const res: HeaderCellModel = mapTupleModel(set.Tuples[0],0);
@@ -81,7 +79,7 @@ function parseValues(values: MdxValueModel[]): ValueModel[]{
     return res;
 }
 
-export function parseMDX(): MdxParseResult{
+export default function(cubeData: MdxDataModel): MdxParseResult{
     const axes = [];
     for(const set of cubeData.Sets){
         axes.push(parseSet(set));

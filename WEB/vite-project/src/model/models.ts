@@ -13,8 +13,8 @@ export type MdxValueModel = {
     FormattedValue: string
 }
 export type MdxDataModel = {
-    Sets: Array<MdxDataModel>,
-    Values: Array<MdxDataModel>
+    Sets: Array<MdxSetModel>,
+    Values: Array<MdxValueModel>
 }
 export type HeaderCellModel = {
     IsTotal: boolean,
@@ -32,4 +32,20 @@ export type MdxParseResult = {
     Columns: HeaderCellModel,
     Rows: HeaderCellModel | null,
     Values: ValueModel[]
+}
+
+export type HeaderTr = {
+    Cells: HeaderTd[]
+}
+
+export type HeaderTd = {
+    Title: string,
+    RowSpan: number,
+    ColSpan: number,
+    DataIndex?: number,
+    IsTotal: boolean
+}
+export type PivotData = {
+    columns: HeaderTr[],
+    rows?: HeaderTr[]
 }
