@@ -25,7 +25,7 @@ function renderTr(columns: HeaderTr, data: ValueModel[], tr?: HeaderTr): VNode{
 
     for(const col of columns.Cells){
         const valueIndex = rowDataIndex * columns.Cells.length + (col.DataIndex)!;
-        const value = data[valueIndex].FormattedValue;
+        const value = data ? data[valueIndex]?.FormattedValue ?? '' : '';
         cells.push(renderCell(col,value))
     }
 
