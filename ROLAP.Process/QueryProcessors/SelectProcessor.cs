@@ -96,13 +96,13 @@ internal class SelectProcessor
     {
         List<CubeItemTuple> res = new List<CubeItemTuple>();
     
-        if (isAggregate)
-        {
-            res.Add(new CubeItemTuple(new List<ICubeItem>
-            {
-                measures.First().GetTotalItem()
-            }));
-        }
+        // if (isAggregate)
+        // {
+        //     res.Add(new CubeItemTuple(new List<ICubeItem>
+        //     {
+        //         measures.First().GetTotalItem()
+        //     }));
+        // }
     
         foreach (var measure in measures)
         {
@@ -181,23 +181,20 @@ internal class SelectProcessor
         IEnumerable<CubeItemTuple> tuples)
     {
         List<ICubeItem> resValues = new List<ICubeItem>();
+
+        if (!values.Any()) return resValues;
+        var valuesMeasure = values.First().GetMeasure();
         
         foreach (var tuple in tuples)
         {
             List<IValueCubeItem> tupleValues = new List<IValueCubeItem>();
             foreach (var value in values)
             {
-                if(CubeItemHelper.IsValueInTuple(value,tuple)) tupleValues.Add(value);
+                if(CubeItemHelper.IsValueInTuple(value,tuple)) 
+                    tupleValues.Add(value);
             }
-    
-            if (values.Any())
-            {
-                resValues.Add(values.First().GetMeasure().Aggregate(tupleValues));
-            }
-            else
-            {
-                
-            }
+            
+            resValues.Add(valuesMeasure.Aggregate(tupleValues));
         }
     
         return resValues;

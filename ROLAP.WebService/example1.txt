@@ -166,6 +166,128 @@
                                                     }
                                                 }
                                             ]
+                                        },
+                                        {
+                                            "Id": 2,
+                                            "Value": 200,
+                                            "Dimensions": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Key": "1", // Страна 
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "3" // Казахстан,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "2", // Факты и прогнозы,
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Факт,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "3", // ОКВЭД
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // 01,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Key"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Id": 3,
+                                            "Value": 150,
+                                            "Dimensions": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Key": "1", // Страна 
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Россия,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "2", // Факты и прогнозы,
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Факт,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "3", // ОКВЭД
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "2" // 06,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Key"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     ]
                                 },

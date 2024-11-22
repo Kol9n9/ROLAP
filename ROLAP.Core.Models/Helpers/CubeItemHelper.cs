@@ -19,13 +19,14 @@ public static class CubeItemHelper
     }
 
     private static bool IsValueDimensionInDimension(IDimensionCubeItem valueDimension,
-        IEnumerable<IDimensionCubeItem> dimensions, bool fullMatches, bool prevFind = false)
+        IEnumerable<IDimensionCubeItem> dimensions, bool fullMatches, bool isPrevTotal = false)
     {
         IDimensionCubeItem? find = dimensions.FirstOrDefault(x => x.Equals(valueDimension));
-        if (find is null) return fullMatches ? false : prevFind;
+        if (find is null) return !fullMatches && isPrevTotal;
         var valDimension = valueDimension.GetDimensions().FirstOrDefault();
         if (valDimension is null) return true;
-        return IsValueDimensionInDimension(valDimension, find.GetDimensions(),fullMatches,true);
+        bool isTotal = !find.GetDimensions().Any();
+        return IsValueDimensionInDimension(valDimension, find.GetDimensions(),fullMatches,isTotal);
     }
 
     public static bool IsValueInMeasure(IValueCubeItem value, IMeasureCubeItem measure)

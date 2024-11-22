@@ -13,7 +13,7 @@ const queryString = ref("");
 
     <div>
         <QueryInput @search="(val)=>queryString=val"/>
-        <Pivot :QueryString="queryString" Api="http://192.168.0.6:5032/api/cube?query="/>
+        <Pivot :QueryString="queryString" Api="http://localhost:5032/api/cube?query="/>
     </div>
 
 </template>
