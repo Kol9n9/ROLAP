@@ -31,7 +31,7 @@ function mapTupleModel(tuple: MdxTupleModel, dataIndex: number): HeaderCellModel
         hierarchyParts[0].push(...keys);
         hierarchyParts[1].push(...names);
         hierarchyParts[2].push(...Array.from({
-            length: 2
+            length: keys.length
         },()=>isTotal))
     }
 

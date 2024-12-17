@@ -29,6 +29,21 @@ string mdx9 =
 string mdx10 =
     "SELECT {[Страна].[Россия],[Страна].[Казахстан]} ON 0, CROSSJOIN({[ОКВЭД].[01 Растениеводство и животноводство],[ОКВЭД].[06 Добыча сырой нефти и природного газа]},{[Measure].[Прибыль],[Measure].[Расход]}) ON 1 FROM [example1]";
 
+string mdx11 =
+    "SELECT {[Страна].[Россия],[Страна].[Китай]} ON 0 FROM [example2] WHERE {[Measure].[Прибыль]}";
+
+string mdx12 =
+    "SELECT CROSSJOIN({[Страна].[Россия],[Страна].[Китай]},[Факты и прогнозы].[Факт]) ON 0 FROM [example2] WHERE {[Measure].[Прибыль]}";
+
+string mdx13 =
+    "SELECT CROSSJOIN([Страна],[Факты и прогнозы]) ON 0 FROM [example2] WHERE {[Measure].[Прибыль]}";
+
+string mdx14 =
+    "SELECT {[Страна].[Россия].[Томск],[Страна].[Россия].[Москва]} ON 0 FROM [example2] WHERE {[Measure].[Прибыль]}";
+
+string mdx15 =
+    "SELECT {[Страна].[Россия].[Томск],[Страна].[Россия].[Москва],[Страна].[Китай].[Пекин]} ON 0 FROM [example2] WHERE {[Measure].[Прибыль]}";
+
 IProcessor processor = new Processor(new QueryProcessor(ConfigurationExtensions.GetConfigurationStore()));
 //processor.ProcessQuery(mdx);
 // processor.ProcessQuery(mdx2);
@@ -36,5 +51,5 @@ IProcessor processor = new Processor(new QueryProcessor(ConfigurationExtensions.
 // processor.ProcessQuery(mdx4);
 // processor.ProcessQuery(mdx5);
  
-string res = await processor.ProcessQuery(mdx10);
+string res = await processor.ProcessQuery(mdx15);
 var a = 1;

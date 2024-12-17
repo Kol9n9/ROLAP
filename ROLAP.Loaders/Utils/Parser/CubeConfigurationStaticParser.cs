@@ -139,7 +139,7 @@ internal static class CubeConfigurationStaticParser
         {
             SourceType.Static => new ValueStaticOptions(token["Id"]?.ToString() ?? "NULL",
                 token["Value"]?.ToString() ?? String.Empty, dimensions),
-            
+             
             _ => throw new Exception("Неизвестный тип источника")
         };
     }

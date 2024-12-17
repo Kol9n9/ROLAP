@@ -201,34 +201,55 @@ public class QueryProcessor
         return measureCubeItem.GetName() == hierarchy[1] ? measureCubeItem.Clone(false) : null;
     }
     
+    // private ICubeItem? FindDimensionByHierarchy(IDimensionCubeItem dimensionCubeItem, string[] hierarchy)
+    // {
+    //     if (dimensionCubeItem.GetName() != hierarchy[0]) return null;
+    //     IDimensionCubeItem clone = (IDimensionCubeItem)dimensionCubeItem.Clone(false);
+    //     IDimensionCubeItem current = clone;
+    //
+    //     hierarchy = hierarchy.Skip(1).ToArray();
+    //
+    //     IEnumerable<IDimensionCubeItem> currentValues = dimensionCubeItem.GetDimensions();
+    //
+    //     while (true)
+    //     {
+    //         IDimensionCubeItem? find = null;
+    //
+    //         foreach (var value in currentValues)
+    //         {
+    //             find = FindDimensionByHierarchy(value,hierarchy) as IDimensionCubeItem;
+    //             if(find is not null) break;
+    //         }
+    //
+    //         if (find is null) return null;
+    //
+    //         current.AddDimension((IDimensionCubeItem)find.Clone(true));
+    //         current = current.GetDimensions().First();
+    //
+    //         if (current is null) return null;
+    //         
+    //         currentValues = current.GetDimensions();
+    //         hierarchy = hierarchy.Skip(1).ToArray();
+    //     }
+    //
+    //     return clone;
+    // }
+
     private ICubeItem? FindDimensionByHierarchy(IDimensionCubeItem dimensionCubeItem, string[] hierarchy)
     {
         if (dimensionCubeItem.GetName() != hierarchy[0]) return null;
+        hierarchy = hierarchy.Skip(1).ToArray();
         IDimensionCubeItem clone = (IDimensionCubeItem)dimensionCubeItem.Clone(false);
         IDimensionCubeItem current = clone;
-
-        hierarchy = hierarchy.Skip(1).ToArray();
-
         IEnumerable<IDimensionCubeItem> currentValues = dimensionCubeItem.GetDimensions();
-
         while (hierarchy.Any())
         {
-            IDimensionCubeItem? find = null;
+            var find = currentValues.FirstOrDefault(value => value.GetName() == hierarchy[0]);
+            if (find == null) return null;
 
-            foreach (var value in currentValues)
-            {
-                find = FindDimensionByHierarchy(value,hierarchy) as IDimensionCubeItem;
-                if(find is not null) break;
-            }
-
-            if (find is null) return null;
-
+            currentValues = find.GetDimensions();
             current.AddDimension((IDimensionCubeItem)find.Clone(false));
             current = current.GetDimensions().First();
-
-            if (current is null) return null;
-            
-            currentValues = current.GetDimensions();
             hierarchy = hierarchy.Skip(1).ToArray();
         }
 

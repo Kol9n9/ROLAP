@@ -35,13 +35,19 @@ watch(()=>props.QueryString, async (query: String)=>{
     try{
         const res = await axios.get<MdxDataModel>(props.Api + query);
 
-        const mdxData = parseMDX(res.data);
-        const mdxHeaders = getPivotHeaders(mdxData.Columns,mdxData.Rows);
-        Object.assign(pivotData,{
-            columns: mdxHeaders.columns,
-            rows: mdxHeaders.rows,
-            data: mdxData.Values
-        })
+        try{
+            const mdxData = parseMDX(res.data);
+            console.log('mdxData',mdxData);
+            const mdxHeaders = getPivotHeaders(mdxData.Columns,mdxData.Rows);
+            Object.assign(pivotData,{
+                columns: mdxHeaders.columns,
+                rows: mdxHeaders.rows,
+                data: mdxData.Values
+            })
+        } catch(e){
+            console.error(e);
+        }
+     
 
     } catch(e: any){
         alert(e.response.data);
@@ -51,6 +57,7 @@ watch(()=>props.QueryString, async (query: String)=>{
 
 
 import { HeaderTr, MdxDataModel,ValueModel } from '../../model/models';
+import { c } from 'naive-ui';
 
 type PivotData = {
     columns: HeaderTr[],

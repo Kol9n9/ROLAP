@@ -1,0 +1,304 @@
+﻿{
+    "Dimensions": [
+        {
+            "Source": {
+                "Type": "STATIC",
+                "Data": [
+                    {
+                        "Key": "1",
+                        "Name": "Страна",
+                        "Values": [
+                            {
+                                "Source": {
+                                    "Type": "STATIC",
+                                    "Data": [
+                                        {
+                                            "Id": "1",
+                                            "Name": "Россия",
+                                            "Values": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Id": "1",
+                                                                "Name": "Томск"
+                                                            },
+                                                            {
+                                                                "Id": "2",
+                                                                "Name": "Москва"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Id",
+                                                        "NameField": "Name"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Id": "2",
+                                            "Name": "Китай",
+                                            "Values": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Id": "1",
+                                                                "Name": "Пекин"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Id",
+                                                        "NameField": "Name"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "ConnectionInfo": {
+                                    "KeyField": "Id",
+                                    "NameField": "Name"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "Key": "2",
+                        "Name": "Факты и прогнозы",
+                        "Values": [
+                            {
+                                "Source": {
+                                    "Type": "STATIC",
+                                    "Data": [
+                                        {
+                                            "Key": "1",
+                                            "Name": "Факт"
+                                        },
+                                        {
+                                            "Key": "2",
+                                            "Name": "План"
+                                        }
+                                    ]
+                                },
+                                "ConnectionInfo": {
+                                    "KeyField": "Key",
+                                    "NameField": "Name"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "ConnectionInfo": {
+                "KeyField": "Key",
+                "NameField": "Name"
+            }
+        }
+    ],
+    "Measures": [
+        {
+            "Source": {
+                "Type": "STATIC",
+                "Data": [
+                    {
+                        "Key": "1",
+                        "Name": "Прибыль",
+                        "ValueType": "IntValue",
+                        "Aggregation": "Sum",
+                        "Values": [
+                            {
+                                "Source": {
+                                    "Type": "STATIC",
+                                    "Data": [
+                                        {
+                                            "Id": 1,
+                                            "Value": 100,
+                                            "Dimensions": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Key": "1", // Страна 
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1", // Россия,
+                                                                                    "Values": [
+                                                                                        {
+                                                                                            "Source": {
+                                                                                                "Type": "STATIC",
+                                                                                                "Data": [
+                                                                                                    {
+                                                                                                        "Key": "1" // Томск,
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "2", // Факты и прогнозы,
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Факт,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Key"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Id": 2,
+                                            "Value": 200,
+                                            "Dimensions": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Key": "1", // Страна 
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1", // Россия,
+                                                                                    "Values": [
+                                                                                        {
+                                                                                            "Source": {
+                                                                                                "Type": "STATIC",
+                                                                                                "Data": [
+                                                                                                    {
+                                                                                                        "Key": "2" // Москва,
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "2", // Факты и прогнозы,
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Факт,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Key"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Id": 3,
+                                            "Value": 600,
+                                            "Dimensions": [
+                                                {
+                                                    "Source": {
+                                                        "Type": "STATIC",
+                                                        "Data": [
+                                                            {
+                                                                "Key": "1", // Страна 
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "2", // Китай,
+                                                                                    "Values": [
+                                                                                        {
+                                                                                            "Source": {
+                                                                                                "Type": "STATIC",
+                                                                                                "Data": [
+                                                                                                    {
+                                                                                                        "Key": "1" // Пекин,
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "Key": "2", // Факты и прогнозы,
+                                                                "Values": [
+                                                                    {
+                                                                        "Source": {
+                                                                            "Type": "STATIC",
+                                                                            "Data": [
+                                                                                {
+                                                                                    "Key": "1" // Факт,
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "ConnectionInfo": {
+                                                        "KeyField": "Key"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "ConnectionInfo": {
+                                    "ValueField": "Value"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

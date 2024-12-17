@@ -88,7 +88,7 @@ internal class SelectProcessor
         ICubeItem fistItem = item.Members.First();
         
         if (fistItem is IMeasureCubeItem) return GetMeasureTuples(item.Members.Cast<IMeasureCubeItem>(),isAggregate);
-        if (fistItem is IDimensionCubeItem) return GetDimensionTuples(item.Members.Cast<IDimensionCubeItem>(),isAggregate);
+        if (fistItem is IDimensionCubeItem) return MapDimensions(GetDimensionTuplesNew(item.Members.Cast<IDimensionCubeItem>(), isAggregate));
         throw new Exception("asdasd");
     }
     
@@ -138,6 +138,8 @@ internal class SelectProcessor
                 {
                     clone
                 }));
+                
+                res.AddRange(GetDimensionTuples(dimensionValue.GetDimensions(),isAggregate));
             }
         }
         
@@ -149,7 +151,50 @@ internal class SelectProcessor
     
         return res;
     }
-    
+
+    private List<IDimensionCubeItem> GetDimensionTuplesNew(IEnumerable<IDimensionCubeItem> dimensions, bool isAggregate)
+    {
+        List<IDimensionCubeItem> res = new List<IDimensionCubeItem>();
+        foreach (var dimension in dimensions)
+        {
+            var dimensionValues = dimension.GetDimensions();
+            if (dimensionValues.Any())
+            {
+                if (isAggregate)
+                {
+                    res.Add((IDimensionCubeItem)dimension.Clone(false));
+                }
+                foreach (var dimensionValue in GetDimensionTuplesNew(dimensionValues,isAggregate))
+                {
+                    var value = (IDimensionCubeItem)dimension.Clone(false);
+                    value.AddDimension(dimensionValue);
+                    res.Add(value);
+                }
+                
+            }
+            else
+            {
+                res.Add((IDimensionCubeItem)dimension.Clone(false));
+            }
+        }
+        return res;
+    }
+
+    private List<CubeItemTuple> MapDimensions(List<IDimensionCubeItem> dimensions)
+    {
+        List<CubeItemTuple> res = new List<CubeItemTuple>();
+
+        foreach (var dimension in dimensions)
+        {
+            res.Add(new CubeItemTuple(new List<ICubeItem>
+            {
+                dimension
+            }));
+        }
+        
+        return res;
+    }
+
     private IEnumerable<ICubeItem> FillSetsValues(IEnumerable<IValueCubeItem> values, IEnumerable<CubeItemSet> sets, IEnumerable<CubeItemTuple> prevTuples = null)
     {
         List<ICubeItem> resValues = new List<ICubeItem>();
