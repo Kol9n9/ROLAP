@@ -7,6 +7,7 @@ internal class DimensionCubeItem : IDimensionCubeItem
     public string Key { get; }
     public string Name { get; }
     public string? GroupName { get; }
+    private bool _isAggregate = false;
 
     public List<IDimensionCubeItem> Values { get; private set; } = new List<IDimensionCubeItem>();
 
@@ -20,6 +21,7 @@ internal class DimensionCubeItem : IDimensionCubeItem
     public ICubeItem Clone(bool withValues)
     {
         var clone = new DimensionCubeItem(Key, Name, GroupName);
+        clone.SetAggregate(_isAggregate);
         if (withValues) clone.Values = Values.Select(x => (IDimensionCubeItem)x.Clone(withValues)).ToList();
         return clone;
     }
@@ -44,6 +46,13 @@ internal class DimensionCubeItem : IDimensionCubeItem
     {
         Values.Add(dimension);
     }
+
+    public void SetAggregate(bool isAggregate)
+    {
+        _isAggregate = isAggregate;
+    }
+
+    public bool IsAggregate() => _isAggregate;
 
 
     public override bool Equals(object? obj)

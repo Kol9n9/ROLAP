@@ -8,7 +8,7 @@ function renderTd(td: HeaderTd): VNode{
     return h('td',{
         rowSpan: td.RowSpan,
         colSpan: td.ColSpan,
-    },td.Title)
+    },td.DisplayName)
 }
 
 function renderTr(tr: HeaderTr): VNode{

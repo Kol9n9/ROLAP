@@ -16,13 +16,14 @@ function createCell(hierarchyParts: string[][], index: number): HeaderCellModel{
         IsTotal: isTotal,
         Key: hierarchyParts[0][index],
         Name: hierarchyParts[1][index],
-        Children: []
+        Children: [],
+        DisplayName: hierarchyParts[1][index]
     }
 }
 
 
 function mapTupleModel(tuple: MdxTupleModel, dataIndex: number): HeaderCellModel{
-    const hierarchyParts: string[][] = [[],[],[]];
+    const hierarchyParts: string[][] = [[],[],[],[]];
 
     for(const member of tuple.Members){
         const isTotal = member.Name.endsWith('[All]').toString()
@@ -32,7 +33,10 @@ function mapTupleModel(tuple: MdxTupleModel, dataIndex: number): HeaderCellModel
         hierarchyParts[1].push(...names);
         hierarchyParts[2].push(...Array.from({
             length: keys.length
-        },()=>isTotal))
+        },()=>isTotal));
+        hierarchyParts[3].push(...Array.from({
+            length: keys.length
+        },()=>member.Name.split('.').join('.')));
     }
 
     const cell: HeaderCellModel = createCell(hierarchyParts,0)
@@ -40,6 +44,7 @@ function mapTupleModel(tuple: MdxTupleModel, dataIndex: number): HeaderCellModel
     
     for(let i = 1; i < hierarchyParts[0].length; i++){
         const createdCell = createCell(hierarchyParts,i);
+        //createdCell.DisplayName = currentCell.DisplayName + '.' + createdCell.DisplayName;
         currentCell.Children.push(createdCell);
         currentCell = createdCell;
     }
@@ -49,11 +54,17 @@ function mapTupleModel(tuple: MdxTupleModel, dataIndex: number): HeaderCellModel
     return cell;
 }
 
+
 function mergeCells(parentCell: HeaderCellModel, mergedCell: HeaderCellModel){
     for(const cell of mergedCell.Children){
         const find = parentCell.Children.find(i => i.Key === cell.Key);
         if(!find){
-            parentCell.Children.push(cell);
+            const isTotalChildIndex = parentCell.Children.findIndex(i => i.Key === '[All]');
+            if(isTotalChildIndex !== -1){
+                parentCell.Children.splice(isTotalChildIndex,0,cell);
+            } else{
+                parentCell.Children.push(cell);
+            }
             return;
         }
         if(find.Children.length === 0){

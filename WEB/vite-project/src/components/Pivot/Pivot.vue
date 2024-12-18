@@ -1,7 +1,7 @@
 <template>
     <table class="pivot">
         <PivotHeader :Columns="pivotData.columns" />
-        <PivotData :Columns="pivotData.columns[pivotData.columns.length - 1]" :Rows="pivotData.rows" :Data="pivotData.data" />
+        <PivotData :Columns="pivotColumns!" :Rows="pivotData.rows" :Data="pivotData.data" />
     </table>
 </template>
 <script lang="ts" setup>
@@ -26,6 +26,8 @@ const props = defineProps({
     }
 })
 
+const pivotColumns = ref<HeaderTr>();
+
 watch(()=>props.QueryString, async (query: String)=>{
     Object.assign(pivotData,{
             columns: [],
@@ -39,6 +41,7 @@ watch(()=>props.QueryString, async (query: String)=>{
             const mdxData = parseMDX(res.data);
             console.log('mdxData',mdxData);
             const mdxHeaders = getPivotHeaders(mdxData.Columns,mdxData.Rows);
+            pivotColumns.value = getPivotColumns(mdxHeaders.columns,mdxData.Columns)
             Object.assign(pivotData,{
                 columns: mdxHeaders.columns,
                 rows: mdxHeaders.rows,
@@ -54,10 +57,44 @@ watch(()=>props.QueryString, async (query: String)=>{
     }
 })
 
+function getPivotColumns(trsColumns: HeaderTr[], columns: HeaderCellModel) : HeaderTr{
+    const cells: HeaderTd[] = [];
+
+    for(let i = trsColumns.length - 1; i >= 0; i--){
+        for(const cell of trsColumns[i].Cells){
+            if(cell.DataIndex !== undefined && cell.DataIndex !== null){
+                cells.push(cell)
+            }
+        }
+    }
+
+    const dataIndexes: number[] = [];
+    const memory: HeaderCellModel[] = [columns];
+    
+    while(memory.length){
+        const current = memory.shift()!;
+        if(current.Children.length){
+            memory.unshift(...current.Children);
+        } else{
+            dataIndexes.push(current.DataIndex!)
+        }
+    }
+
+    var result: HeaderTr = {
+        Cells: []
+    }
+
+    for(const dataIndex of dataIndexes){
+        var cell = cells.find(cell => cell.DataIndex! === dataIndex)!;
+        result.Cells.push(cell);
+    }
+
+    return result;
+}
 
 
-import { HeaderTr, MdxDataModel,ValueModel } from '../../model/models';
-import { c } from 'naive-ui';
+
+import { HeaderCellModel, HeaderTd, HeaderTr, MdxDataModel,ValueModel } from '../../model/models';
 
 type PivotData = {
     columns: HeaderTr[],

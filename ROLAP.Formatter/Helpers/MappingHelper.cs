@@ -42,7 +42,7 @@ internal static class MappingHelper
         string name = string.Join(".", items.Select(x => $"[{x.GetName()}]"));
         string key = string.Join(".", items.Select(x => $"[{x.GetKey()}]"));
 
-        if (items.Count == 1)
+        if (dimension.IsAggregate())
         {
             name += ".[All]";
             key += ".[All]";

@@ -162,7 +162,9 @@ internal class SelectProcessor
             {
                 if (isAggregate)
                 {
-                    res.Add((IDimensionCubeItem)dimension.Clone(false));
+                    var aggregate = (IDimensionCubeItem)dimension.Clone(false);
+                    aggregate.SetAggregate(true);
+                    res.Add(aggregate);
                 }
                 foreach (var dimensionValue in GetDimensionTuplesNew(dimensionValues,isAggregate))
                 {

@@ -19,9 +19,10 @@ export type MdxDataModel = {
 export type HeaderCellModel = {
     IsTotal: boolean,
     Name: string,
+    DisplayName: string,
     Key: string,
     Children: Array<HeaderCellModel>,
-    DataIndex?: number
+    DataIndex?: number,
 }
 
 export type ValueModel = MdxValueModel & {
@@ -40,6 +41,7 @@ export type HeaderTr = {
 
 export type HeaderTd = {
     Title: string,
+    DisplayName: string,
     RowSpan: number,
     ColSpan: number,
     DataIndex?: number,
