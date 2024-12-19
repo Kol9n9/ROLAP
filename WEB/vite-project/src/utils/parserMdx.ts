@@ -17,7 +17,10 @@ function createCell(hierarchyParts: string[][], index: number): HeaderCellModel{
         Key: hierarchyParts[0][index],
         Name: hierarchyParts[1][index],
         Children: [],
-        DisplayName: hierarchyParts[1][index]
+        DisplayName: hierarchyParts[1][index],
+        Hierarchy: hierarchyParts[3][index],
+        RowSpan: 1,
+        ColSpan: 1
     }
 }
 

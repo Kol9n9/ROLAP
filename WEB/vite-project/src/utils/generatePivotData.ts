@@ -1,5 +1,6 @@
 import { HeaderCellModel, HeaderTd, HeaderTr, PivotData } from "../model/models";
 
+
 function mapHeaderCellModel(cell:HeaderCellModel): HeaderTd{
     return {
         Title: cell.Name,
@@ -138,6 +139,48 @@ function parseRows(cell: HeaderCellModel): HeaderTr[]{
     return trs;
 }
 
+function isTotalDimension(cell:HeaderCellModel): boolean{
+    const hierarchyParts = cell.Hierarchy.split('.');
+    return hierarchyParts.length === 2 && hierarchyParts[1] === '[All]' && (cell.DataIndex === undefined || cell.DataIndex === null) && cell.Key !== '[All]';
+}
+type StringKey = string;
+type HierarchyLevels = Object & {
+    [key: StringKey]: number
+};
+
+function parseRowsNew(cell:HeaderCellModel, hierarchyLevels: HierarchyLevels | null = null): HeaderTr[]{
+    if(hierarchyLevels === null){
+        hierarchyLevels = {};
+    }
+    const trs: HeaderTr[] = [
+        { // headers
+            Cells: []
+        }
+    ];
+
+    const childTrs: HeaderTr[] = [];
+    for(const kind of cell.Children){
+        const parsed = parseRowsNew(kind,hierarchyLevels);
+        trs[0].Cells.push(...parsed[0].Cells);
+        childTrs.push(...parsed.slice(1));
+    }
+
+    const mapped = mapHeaderCellModel(cell);
+    
+    if(isTotalDimension(cell)){
+        trs[0].Cells.push(mapped)
+        trs.push(...childTrs);
+    } else{
+        mapped.RowSpan = childTrs.length || 1;
+        trs.push({
+            Cells: [mapped,...childTrs[0]?.Cells ?? []]
+        })
+        trs.push(...childTrs.slice(1));
+    }
+
+    return trs;
+}
+
 
 function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
     for(const [index,row] of rowHeader.Cells.entries()){
@@ -150,6 +193,11 @@ function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
 
 export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null): PivotData{
     const parsedColumns = parseColumns(columns);
+    if(rows){
+        debugger;
+        const r = parseRowsNew(rows);
+        const b = 1;
+    }
     const parsedRows = rows ? parseRows(rows) : undefined;
 
     if(parsedRows){

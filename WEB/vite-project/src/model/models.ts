@@ -23,6 +23,9 @@ export type HeaderCellModel = {
     Key: string,
     Children: Array<HeaderCellModel>,
     DataIndex?: number,
+    Hierarchy: string,
+    RowSpan: number,
+    ColSpan: number
 }
 
 export type ValueModel = MdxValueModel & {

@@ -29,3 +29,7 @@ SELECT CROSSJOIN({[Страна].[Россия].[Томск],[Страна].[Р�
 SELECT CROSSJOIN({[Страна].[Россия].[Томск],[Страна].[Россия].[Москва].[Центральный],[Страна].[Китай]},[Факты и прогнозы]) ON 0, {[Measure].[Прибыль]} ON 1 FROM [example4]
 
 SELECT CROSSJOIN([Страна],[Факты и прогнозы]) ON 0, {[Measure].[Прибыль]} ON 1 FROM [example4]
+
+SELECT [Measure].[Прибыль] ON 0, [Страна].[Россия].[Томск] ON 1 FROM [example4]
+
+SELECT [Measure].[Прибыль] ON 0, CROSSJOIN([Страна].[Россия].[Томск],[Факты и прогнозы].[Факт]) ON 1 FROM [example4] 
