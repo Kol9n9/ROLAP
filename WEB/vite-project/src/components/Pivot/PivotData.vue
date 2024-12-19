@@ -20,7 +20,7 @@ function renderTr(columns: HeaderTr, data: ValueModel[], tr?: HeaderTr): VNode{
     const rowDataIndex = tr ? (tr.Cells[tr.Cells.length - 1].DataIndex)! : 0;
     const isTotal = isTotalTr(tr);
     if(tr){
-        cells.push(...tr.Cells.map(i => renderCell(i,i.Title)))
+        cells.push(...tr.Cells.map(i => renderCell(i,i.DisplayName)))
     }
 
     for(const col of columns.Cells){

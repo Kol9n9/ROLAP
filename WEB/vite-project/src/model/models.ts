@@ -23,9 +23,7 @@ export type HeaderCellModel = {
     Key: string,
     Children: Array<HeaderCellModel>,
     DataIndex?: number,
-    Hierarchy: string,
-    RowSpan: number,
-    ColSpan: number
+    Hierarchy: string
 }
 
 export type ValueModel = MdxValueModel & {
@@ -43,12 +41,14 @@ export type HeaderTr = {
 }
 
 export type HeaderTd = {
-    Title: string,
+    Key: string,
+    Name: string,
     DisplayName: string,
     RowSpan: number,
     ColSpan: number,
     DataIndex?: number,
-    IsTotal: boolean
+    IsTotal: boolean,
+    Hierarchy: string
 }
 export type PivotData = {
     columns: HeaderTr[],
