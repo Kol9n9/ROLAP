@@ -6,161 +6,18 @@ function mapHeaderCellModel(cell:HeaderCellModel): HeaderTd{
         Key: cell.Name,
         Name: cell.Name,
         DisplayName: cell.DisplayName,
-        RowSpan: 1,
-        ColSpan: 1,
+        RowSpan: cell.RowSpan,
+        ColSpan: cell.ColSpan,
         DataIndex: cell.DataIndex,
         IsTotal: cell.IsTotal,
         Hierarchy: cell.Hierarchy
     }
 }
 
-
-function getChildrenLength(trs: HeaderTr[]): number{
-    if(!trs.length) return 1;
-    const firstTr = trs[0];
-    return firstTr.Cells.reduce((prev: number, current: HeaderTd): number=>{
-        return prev + current.ColSpan
-    },0) || 1;
-}
-
-function parseColumns(cell: HeaderCellModel): HeaderTr[]{
-    const td: HeaderTd = mapHeaderCellModel(cell);
-    const childen = parseColumnChildren(cell.Children.sort(sortHeaderCellByTotal)).filter(i => i.Cells.length); 
-    td.ColSpan = getChildrenLength(childen);
-    return [{
-        Cells: [td]
-    }, ...childen];
-}
-
-function parseColumnChildren(children: HeaderCellModel[]): HeaderTr[]{
-    const tr: HeaderTr = {
-        Cells: []
-    }
-
-    const childtr: HeaderTr[] = [];
-
-
-    for(const child of children){
-        const parsed = parseColumns(child);
-        tr.Cells.push(...parsed[0].Cells);
-
-        const diff = childtr.length - (parsed.length - 1)
-
-        if(childtr.length &&  diff !== 0){ // отличаются уровни
-            if(diff > 0){
-                for(const cell of parsed[0].Cells) cell.RowSpan+=diff;
-                for(const [index,parsedTr] of parsed.slice(1).entries()){
-                    childtr[index+diff].Cells.push(...parsedTr.Cells);
-                }
-            }
-            else {
-                var trs = childtr.splice(0);
-                for(const [index,parsedTr] of parsed.slice(1).entries()){
-                    childtr.push({
-                        Cells: [...parsedTr.Cells]
-                    })
-                }
-                for(const [index,tr] of trs.entries()){
-                    childtr[childtr.length + diff].Cells.unshift(...tr.Cells);
-                }
-                tr.Cells[tr.Cells.length-1+diff].RowSpan+=-diff;
-                
-            }
-        } else {
-            for(const [index,parsedTr] of parsed.slice(1).entries()){
-                if(!childtr[index]){
-                    childtr[index] = parsedTr;
-                } else {
-                    childtr[index].Cells.push(...parsedTr.Cells);
-                }
-            }
-        }
-    }
-
-    return [tr,...childtr];
-}
-
-function sortHeaderCellByTotal(a: HeaderCellModel,b: HeaderCellModel): number{
-    const aTotal = a.Name.endsWith('[All]');
-    const bTotal = b.Name.endsWith('[All]');
-    if(aTotal && !bTotal) return 1;
-    if(!aTotal && bTotal) return -1;
-    return 0;
-}
-
-
 function isTotalDimension(cell:HeaderCellModel): boolean{
     const hierarchyParts = cell.Hierarchy.split('.');
     return cell.Name === '[Индикаторы]' || (hierarchyParts.length === 2 && hierarchyParts[1] === '[All]' && (cell.DataIndex === undefined || cell.DataIndex === null) && cell.Key !== '[All]');
 }
-type StringKey = string;
-type HierarchyLevels = Object & {
-    [key: StringKey]: number
-};
-
-function addHierarchyLevels(cell: HeaderCellModel, hierarchyLevels: HierarchyLevels){
-    const hierarchy = cell.Hierarchy.split('.');
-    const dimension = hierarchy.splice(0,1)[0];
-    if(!hierarchyLevels.hasOwnProperty(dimension)){
-        hierarchyLevels[dimension] = 0;
-    }
-    if(hierarchy.length > hierarchyLevels[dimension]) hierarchyLevels[dimension] = hierarchy.length;
-}
-
-function addUniqueTdToTr(tr: HeaderTr, cells: HeaderTd[]){
-    const names = tr.Cells.map(i => i.Name);
-    const insertCells = cells.filter(cell => !names.includes(cell.Name))
-    tr.Cells.unshift(...insertCells);
-}
-
-function parseRows(cell:HeaderCellModel, hierarchyLevels: HierarchyLevels): HeaderTr[]{
-    const trs: HeaderTr[] = [
-        { // headers
-            Cells: []
-        }
-    ];
-
-    const childTrs: HeaderTr[] = [];
-    for(const kind of cell.Children){
-        const parsed = parseRows(kind,hierarchyLevels);
-        addUniqueTdToTr(trs[0],parsed[0].Cells)
-        childTrs.push(...parsed.slice(1));
-    }
-    addHierarchyLevels(cell,hierarchyLevels);
-
-    const mapped = mapHeaderCellModel(cell);
-    
-    if(isTotalDimension(cell)){
-        trs[0].Cells.unshift(mapped)
-        trs.push(...childTrs);
-    } else{
-        mapped.RowSpan = childTrs.length || 1;
-        trs.push({
-            Cells: [mapped,...childTrs[0]?.Cells ?? []]
-        })
-        trs.push(...childTrs.slice(1));
-    }
-
-    return trs;
-}
-
-function fixRowCellColSpan(cell: HeaderTd, hierarchyLevels: HierarchyLevels){
-    const hierarchy = cell.Hierarchy.split('.');
-    const dimension = hierarchy.splice(0,1)[0];
-    const level = hierarchyLevels[dimension];
-    const hierarchyLength = hierarchy.length ;
-    if(hierarchyLength === level - 1) return;
-    cell.ColSpan = level - (hierarchyLength) || 1;
-}
-
-function fixRowsColSpans(trs: HeaderTr[], hierarchyLevels: HierarchyLevels){
-    for(const tr of trs){
-        for(const cell of tr.Cells){
-            fixRowCellColSpan(cell,hierarchyLevels);
-        }
-    }
-}
-
 
 function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
     for(const [index,row] of rowHeader.Cells.entries()){
@@ -169,16 +26,205 @@ function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
     }
 }
 
+type TrRow = {
+    Cells: HeaderCellModel[]
+}
 
+function copyCell(cell: HeaderCellModel): HeaderCellModel{
+    return {
+        IsTotal: cell.IsTotal,
+        Name: cell.Name,
+        DisplayName: cell.DisplayName,
+        Key: cell.Key,
+        Children: [],
+        DataIndex: cell.DataIndex,
+        Hierarchy: cell.Hierarchy,
+        RowSpan: cell.RowSpan,
+        ColSpan: cell.ColSpan,
+        IsDeleted: cell.IsDeleted
+    }
+}
+
+function getFlatRows(cell: HeaderCellModel, prevRow: TrRow = {Cells: []}): TrRow[]{
+    const res: TrRow[] = [];
+
+    if(cell.Children.length){
+        for(const kind of cell.Children){
+            const copy: TrRow = {
+                Cells: [...prevRow.Cells,copyCell(cell)]
+            }
+            res.push(...getFlatRows(kind,copy));
+        }
+    } else{
+        const copy = [...prevRow.Cells,cell].map(copyCell)
+        res.push({
+            Cells: copy
+        })
+    }
+    return res;
+}
+
+type DimensionsChain = Object & {
+    [key: string]: number
+}
+
+function calculateAndGetDimensionsChain(flatRows: TrRow[]): DimensionsChain{
+    const longChains: DimensionsChain = {};
+
+    for(const row of flatRows){
+        let index = 0;
+        while(row.Cells[index]){
+            const currentDimension = row.Cells[index].Hierarchy.split('.')[0];
+            const dimensionParts = row.Cells.filter(cell => cell.Hierarchy.startsWith(currentDimension));
+            if(!longChains.hasOwnProperty(currentDimension)){
+                longChains[currentDimension] = 0;
+            }
+            if(longChains[currentDimension] < dimensionParts.length) longChains[currentDimension] = dimensionParts.length;
+            index += dimensionParts.length;
+        }
+    }
+
+    for(const row of flatRows){
+        let index = 0;
+        while(row.Cells[index]){
+            const currentDimension = row.Cells[index].Hierarchy.split('.')[0];
+            const dimensionParts = row.Cells.filter(cell => cell.Hierarchy.startsWith(currentDimension));
+            const dimensionChains = longChains[currentDimension];
+            if(dimensionParts.length !== dimensionChains){
+                const last = dimensionParts.slice(-1)[0];
+                row.Cells.splice(dimensionParts.length + index,0,...Array.from({length: dimensionChains - dimensionParts.length}, ()=>copyCell(last)));
+            }
+            index += dimensionChains;
+        }
+    }
+
+    return longChains;
+}
+
+function addUniqueCellToCells(cells: HeaderCellModel[], cell: HeaderCellModel){
+    const names = cells.map(i => i.Name);
+    if(names.includes(cell.Name)) return;
+    cells.push(cell);
+}
+
+function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolean = true): void{
+    const headerCells: HeaderCellModel[] = [];
+    for(let currentRowIndex = 0; currentRowIndex < flatRows.length; currentRowIndex++){
+        let index: number = 0;
+        while(flatRows[currentRowIndex].Cells[index]){
+            const currentCell = flatRows[currentRowIndex].Cells[index];
+            let rowIndex = currentRowIndex;
+            if(currentCell.IsDeleted){
+                while(currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key){
+                    flatRows[rowIndex+1].Cells[index].IsDeleted = true;
+                    rowIndex++;
+                }
+                index++;
+                continue;
+            }
+    
+            if(isRow && isTotalDimension(currentCell)){
+                addUniqueCellToCells(headerCells,currentCell);
+                for(const row of flatRows){
+                    row.Cells.splice(index,1)
+                }
+                continue;
+            }
+    
+            let rowSpan = 0;
+            while(currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key){
+                flatRows[rowIndex+1].Cells[index].IsDeleted = true;
+                rowSpan++;
+                rowIndex++;
+            }
+    
+            let cellIndex = index;
+            let colSpan = 0;
+    
+            if(isRow){
+                while(currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
+                    flatRows[currentRowIndex].Cells[cellIndex+1].IsDeleted = true;
+                    colSpan++;
+                    cellIndex++;
+                }
+            } else {
+
+                function isEqualCells(source: HeaderCellModel, target: HeaderCellModel): boolean{
+                    
+                }
+
+                while((currentRowIndex === 0 || currentCell.Hierarchy.split('.')[0] === flatRows[currentRowIndex-1]?.Cells[cellIndex+1]?.Hierarchy.split('.')[0]) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
+                    flatRows[currentRowIndex].Cells[cellIndex+1].IsDeleted = true;
+                    colSpan++;
+                    cellIndex++;
+                }
+            }
+
+            
+    
+            currentCell.RowSpan = rowSpan + 1;
+            currentCell.ColSpan = colSpan + 1;
+
+            index++;
+        }
+    }
+    if(isRow){
+        for(const cell of headerCells){
+            cell.RowSpan = 1;
+            const currentDimension = cell.Hierarchy.split('.')[0]
+            cell.ColSpan = chains[currentDimension] - 1
+        }
+        flatRows.splice(0,0,{
+            Cells: headerCells
+        })
+    }
+}
+
+function getHeaderTr(flatRows: TrRow[]): HeaderTr[]{
+    const trs: HeaderTr[] = [];
+
+    for(const row of flatRows){
+        const cells = row.Cells.filter(cell => !cell.IsDeleted);
+        trs.push({
+            Cells: cells.map(mapHeaderCellModel)
+        })
+    }
+
+    return trs;
+}
+
+function transparentRows(flatRows: TrRow[]){
+    const transparent: TrRow[] = [];
+
+    for(let i = 0; i < flatRows.length; i++){
+        for(let j = 0; j < flatRows[i].Cells.length; j++){
+            transparent[j] = transparent[j] || {Cells: []};
+            transparent[j].Cells.splice(i,0,flatRows[i].Cells[j])
+        }
+    }
+
+    flatRows.splice(0);
+    flatRows.push(...transparent);
+}
+
+function getColumnsTr(columns: HeaderCellModel): HeaderTr[]{
+    const flatRows = getFlatRows(columns);
+    const chains = calculateAndGetDimensionsChain(flatRows);
+    transparentRows(flatRows);
+    mergeFlatRows(flatRows,chains,false);
+    return getHeaderTr(flatRows);
+}
+
+function getRowsTr(rows: HeaderCellModel): HeaderTr[]{
+    const flatRows = getFlatRows(rows);
+    const chains = calculateAndGetDimensionsChain(flatRows);
+    mergeFlatRows(flatRows,chains);
+    return getHeaderTr(flatRows);
+}
 
 export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null): PivotData{
-    const parsedColumns = parseColumns(columns);
-    const parsedRows = rows ? (function(){
-        const hierarchyLevels: HierarchyLevels = {};
-        const parsedRows = parseRows(rows,hierarchyLevels);
-        fixRowsColSpans(parsedRows,hierarchyLevels);
-        return parsedRows;
-    })() : undefined;  
+    const parsedColumns = getColumnsTr(columns);
+    const parsedRows = rows ? getRowsTr(rows) : undefined;
 
     if(parsedRows){
         addRowHeaderToColumns(parsedRows[0],parsedColumns);
