@@ -14,9 +14,11 @@ function mapHeaderCellModel(cell:HeaderCellModel): HeaderTd{
     }
 }
 
+const measureName = '[Индикаторы]';
+
 function isTotalDimension(cell:HeaderCellModel): boolean{
     const hierarchyParts = cell.Hierarchy.split('.');
-    return cell.Name === '[Индикаторы]' || (hierarchyParts.length === 2 && hierarchyParts[1] === '[All]' && (cell.DataIndex === undefined || cell.DataIndex === null) && cell.Key !== '[All]');
+    return cell.Name === measureName || (hierarchyParts.length === 2 && hierarchyParts[1] === '[All]' && (cell.DataIndex === undefined || cell.DataIndex === null) && cell.Key !== '[All]');
 }
 
 function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]){
@@ -113,6 +115,10 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
         let index: number = 0;
         while(flatRows[currentRowIndex].Cells[index]){
             const currentCell = flatRows[currentRowIndex].Cells[index];
+            if(currentCell.Hierarchy.split('.')[0] === measureName){
+                index++;
+                continue;
+            }
             let rowIndex = currentRowIndex;
             if(currentCell.IsDeleted){
                 while(currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key){
@@ -149,11 +155,14 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
                 }
             } else {
 
-                function isEqualCells(source: HeaderCellModel, target: HeaderCellModel): boolean{
-                    
+                function isParentsEqual(cellIndex: number): boolean{
+                    if(currentRowIndex === 0) return true;
+                    const currentParentCell = flatRows[currentRowIndex-1].Cells[index];
+                    const nextParentCell = flatRows[currentRowIndex-1].Cells[cellIndex];
+                    return currentParentCell?.Hierarchy === nextParentCell?.Hierarchy;
                 }
 
-                while((currentRowIndex === 0 || currentCell.Hierarchy.split('.')[0] === flatRows[currentRowIndex-1]?.Cells[cellIndex+1]?.Hierarchy.split('.')[0]) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
+                while(isParentsEqual(cellIndex+1) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
                     flatRows[currentRowIndex].Cells[cellIndex+1].IsDeleted = true;
                     colSpan++;
                     cellIndex++;

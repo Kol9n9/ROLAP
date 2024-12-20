@@ -3,10 +3,10 @@
 import { defineComponent, h, PropType, VNode } from 'vue'
 import { HeaderTd, HeaderTr, ValueModel } from '../../model/models';
 
-function renderCell(td: HeaderTd, value: string): VNode{
+function renderCell(value: string, rowSpan: number = 1, colSpan: number = 1): VNode{
     return h('td',{
-        rowSpan: td.RowSpan,
-        colSpan: td.ColSpan
+        rowSpan: rowSpan,
+        colSpan: colSpan
     },value)
 }
 
@@ -20,13 +20,13 @@ function renderTr(columns: HeaderTr, data: ValueModel[], tr?: HeaderTr): VNode{
     const rowDataIndex = tr ? (tr.Cells[tr.Cells.length - 1].DataIndex)! : 0;
     const isTotal = isTotalTr(tr);
     if(tr){
-        cells.push(...tr.Cells.map(i => renderCell(i,i.DisplayName)))
+        cells.push(...tr.Cells.map(i => renderCell(i.DisplayName, i.RowSpan, i.ColSpan)))
     }
 
     for(const col of columns.Cells){
         const valueIndex = rowDataIndex * columns.Cells.length + (col.DataIndex)!;
         const value = data ? data[valueIndex]?.FormattedValue ?? '' : '';
-        cells.push(renderCell(col,value))
+        cells.push(renderCell(value, 1, 1))
     }
 
 
