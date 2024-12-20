@@ -115,10 +115,6 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
         let index: number = 0;
         while(flatRows[currentRowIndex].Cells[index]){
             const currentCell = flatRows[currentRowIndex].Cells[index];
-            if(currentCell.Hierarchy.split('.')[0] === measureName){
-                index++;
-                continue;
-            }
             let rowIndex = currentRowIndex;
             if(currentCell.IsDeleted){
                 while(currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key){
@@ -156,6 +152,9 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
             } else {
 
                 function isParentsEqual(cellIndex: number): boolean{
+                    if(currentCell.Hierarchy.split('.')[0] === measureName){
+                        return false;
+                    }
                     if(currentRowIndex === 0) return true;
                     const currentParentCell = flatRows[currentRowIndex-1].Cells[index];
                     const nextParentCell = flatRows[currentRowIndex-1].Cells[cellIndex];
