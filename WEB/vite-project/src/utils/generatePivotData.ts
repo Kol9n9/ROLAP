@@ -109,6 +109,10 @@ function addUniqueCellToCells(cells: HeaderCellModel[], cell: HeaderCellModel){
     cells.push(cell);
 }
 
+function isMeasure(cell: HeaderCellModel): boolean{
+    return cell.Hierarchy.split('.')[0] === measureName;
+}
+
 function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolean = true): void{
     const headerCells: HeaderCellModel[] = [];
     for(let currentRowIndex = 0; currentRowIndex < flatRows.length; currentRowIndex++){
@@ -134,7 +138,7 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
             }
     
             let rowSpan = 0;
-            while(currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key){
+            while(!isMeasure(currentCell) && currentCell.Hierarchy === flatRows[rowIndex+1]?.Cells[index]?.Hierarchy && currentCell.Key === flatRows[rowIndex+1]?.Cells[index]?.Key && currentCell.Name === flatRows[rowIndex+1]?.Cells[index]?.Name){
                 flatRows[rowIndex+1].Cells[index].IsDeleted = true;
                 rowSpan++;
                 rowIndex++;
@@ -144,7 +148,7 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
             let colSpan = 0;
     
             if(isRow){
-                while(currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
+                while(!isMeasure(currentCell) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key && currentCell.Name === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Name){
                     flatRows[currentRowIndex].Cells[cellIndex+1].IsDeleted = true;
                     colSpan++;
                     cellIndex++;
@@ -152,7 +156,7 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
             } else {
 
                 function isParentsEqual(cellIndex: number): boolean{
-                    if(currentCell.Hierarchy.split('.')[0] === measureName){
+                    if(isMeasure(currentCell)){
                         return false;
                     }
                     if(currentRowIndex === 0) return true;
@@ -161,7 +165,7 @@ function mergeFlatRows(flatRows: TrRow[], chains: DimensionsChain, isRow: boolea
                     return currentParentCell?.Hierarchy === nextParentCell?.Hierarchy;
                 }
 
-                while(isParentsEqual(cellIndex+1) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key){
+                while(isParentsEqual(cellIndex+1) && currentCell.Hierarchy === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Hierarchy && currentCell.Key === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Key && currentCell.Name === flatRows[currentRowIndex]?.Cells[cellIndex+1]?.Name){
                     flatRows[currentRowIndex].Cells[cellIndex+1].IsDeleted = true;
                     colSpan++;
                     cellIndex++;
