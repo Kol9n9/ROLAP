@@ -20,8 +20,7 @@ function createCell(hierarchyParts: string[][], index: number): HeaderCellModel{
         DisplayName: hierarchyParts[1][index],
         Hierarchy: hierarchyParts[3][index],
         RowSpan: 1,
-        ColSpan: 1,
-        IsDeleted: false
+        ColSpan: 1
     }
 }
 

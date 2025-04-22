@@ -25,8 +25,7 @@ export type HeaderCellModel = {
     DataIndex?: number,
     Hierarchy: string,
     RowSpan: number,
-    ColSpan: number,
-    IsDeleted: boolean
+    ColSpan: number
 }
 
 export type ValueModel = MdxValueModel & {
