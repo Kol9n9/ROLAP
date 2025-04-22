@@ -127,7 +127,7 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
 
         const currentItemDepthLevels: Record<string, {
             td: HeaderTd,
-            item: HeaderCellModel,
+            item: HeaderCellModelWithParent,
             depthLevel: number
         }[]> = {};
 
@@ -157,6 +157,7 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
         for (const hierarchy in currentItemDepthLevels) {
             if (currentItemDepthLevels[hierarchy].length === 1) continue;
 
+
             const maxDepthLevel = currentItemDepthLevels[hierarchy].map(td => td.depthLevel).reduce((prev: number, curr: number) => {
                 if (curr > prev) return curr;
                 return prev;
@@ -165,6 +166,7 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
             for (const item of currentItemDepthLevels[hierarchy]) {
                 const childHierarchy = item.item.Hierarchy.split('.').slice(0, -1).join('.');
                 if (item.item.Children.length && !item.item.Children[0].Hierarchy.startsWith(childHierarchy)) item.td.RowSpan = maxDepthLevel;
+                if(!item.item.Children.length && item.item.Parent?.Hierarchy === item.item.Hierarchy) item.td.RowSpan = maxDepthLevel;
             }
         }
     }
