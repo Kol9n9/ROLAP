@@ -204,8 +204,6 @@ function getRows(rows: HeaderCellModel): HeaderTr[] {
         const map = mapHeaderCellModel(first);
         const depth = maxDepthes.splice(0, 1)[0];
 
-        
-
         memory.unshift(...first.Children);
         if (isTotalDimension(first)) {
             totalDimensions.push(first);
@@ -248,10 +246,11 @@ function getRows(rows: HeaderCellModel): HeaderTr[] {
         }
     }
 
-    for(const hierarchy of hierarchies){
+    for(let i = 0; i < hierarchies.length; i++){
+        const hierarchy = hierarchies[i];
         const totalDimension = totalDimensions.find(dimension => dimension.Hierarchy.startsWith(hierarchy));
         if(totalDimension) continue;
-        headerTr.Cells.push({
+        headerTr.Cells.splice(i,0,{
             Key: hierarchy,
             Name: hierarchy,
             DisplayName: hierarchy,
