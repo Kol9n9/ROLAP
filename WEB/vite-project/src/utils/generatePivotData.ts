@@ -166,7 +166,7 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
             for (const item of currentItemDepthLevels[hierarchy]) {
                 const childHierarchy = item.item.Hierarchy.split('.').slice(0, -1).join('.');
                 if (item.item.Children.length && !item.item.Children[0].Hierarchy.startsWith(childHierarchy)) item.td.RowSpan = maxDepthLevel;
-                if(!item.item.Children.length && item.item.Parent?.Hierarchy === item.item.Hierarchy) item.td.RowSpan = maxDepthLevel;
+                if (!item.item.Children.length) item.td.RowSpan = maxDepthLevel + 1;
             }
         }
     }
