@@ -233,9 +233,10 @@ function getRows(rows: HeaderCellModel): HeaderTr[] {
             currentTr = { Cells: [] };
             trs.push(currentTr);
             const firstParent = parents.splice(0, 1)[0];
-            for (const cell of firstParent.Cells) {
-                cell.RowSpan++;
-            }
+            if(firstParent)
+                for (const cell of firstParent.Cells) {
+                    cell.RowSpan++;
+                }
         }
     }
     if (!trs[trs.length - 1].Cells.length) trs.splice(trs.length - 1, 1);
