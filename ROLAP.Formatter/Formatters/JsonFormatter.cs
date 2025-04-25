@@ -8,7 +8,7 @@ namespace ROLAP.Formatter.Formatters;
 
 public static class JsonFormatter
 {
-    public static string Format(IEnumerable<CubeItemSet> sets, IEnumerable<ICubeItem> values)
+    public static string Format(IEnumerable<CubeItemSet> sets, IEnumerable<ICubeItem> values, bool isAggregated)
     {
         List<SetResult> setResults = new List<SetResult>();
         List<ValueResult> valueResults = new List<ValueResult>();
@@ -22,7 +22,7 @@ public static class JsonFormatter
             valueResults.Add(MappingHelper.Map(value));
         }
 
-        CubeResult cubeResult = new CubeResult(setResults, valueResults);
+        CubeResult cubeResult = new CubeResult(setResults, valueResults, isAggregated);
         
         var json = JsonConvert.SerializeObject(cubeResult);
         return json;

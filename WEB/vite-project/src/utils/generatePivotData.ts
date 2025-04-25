@@ -1,5 +1,16 @@
 import { HeaderCellModel, HeaderTd, HeaderTr, PivotData } from "../model/models";
 
+type HeaderTdModelWithParent = HeaderTd & {
+    Parent?: HeaderTd
+}
+
+type HeaderTrWithParents = Omit<HeaderTr, 'Cells'> & {
+    Cells: HeaderTdModelWithParent[]
+}
+
+type HeaderCellModelWithParent = HeaderCellModel & {
+    Parent?: HeaderTd
+}
 
 function mapHeaderCellModel(cell: HeaderCellModel): HeaderTdModelWithParent {
     return {
@@ -28,9 +39,9 @@ function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]) {
     }
 }
 
-export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null): PivotData {
+export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null, IsAggregated: boolean): PivotData {
     const parsedColumns = getColumns(columns);
-    const parsedRows = rows ? getRows(rows) : undefined;
+    const parsedRows = rows ? getRows(rows,IsAggregated) : undefined;
     if (parsedRows) {
         addRowHeaderToColumns(parsedRows[0], parsedColumns);
         parsedRows.splice(0, 1);
@@ -106,18 +117,6 @@ function insertInto(memory: HeaderCellModelWithParent[], item: HeaderCellModel, 
     })));
 }
 
-type HeaderTdModelWithParent = HeaderTd & {
-    Parent?: HeaderTd
-}
-
-type HeaderTrWithParents = Omit<HeaderTr, 'Cells'> & {
-    Cells: HeaderTdModelWithParent[]
-}
-
-type HeaderCellModelWithParent = HeaderCellModel & {
-    Parent?: HeaderTd
-}
-
 function getColumns(columns: HeaderCellModel): HeaderTr[] {
     const memory: HeaderCellModelWithParent[] = [columns];
     const trs: HeaderTrWithParents[] = [{ Cells: [] }];
@@ -188,7 +187,7 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
     return trs;
 }
 
-function getRows(rows: HeaderCellModel): HeaderTr[] {
+function getRows(rows: HeaderCellModel, IsAggregated: boolean = true): HeaderTr[] {
     const memory = [rows];
     const hierarchies: string[] = [];
     const totalDimensions: HeaderCellModel[] = [];
@@ -197,6 +196,8 @@ function getRows(rows: HeaderCellModel): HeaderTr[] {
     let currentTr = trs[0];
     const parents: HeaderTr[] = [];
     const maxDepthes: number[] = [];
+    let isFirst = true;
+
     while (memory.length) {
         const first = memory.splice(0, 1)[0];
         const hierarchy = first.Hierarchy.split('.')[0];
@@ -205,6 +206,10 @@ function getRows(rows: HeaderCellModel): HeaderTr[] {
         const depth = maxDepthes.splice(0, 1)[0];
 
         memory.unshift(...first.Children);
+        if(!IsAggregated && isFirst){
+            isFirst = false;
+            continue;
+        }
         if (isTotalDimension(first)) {
             totalDimensions.push(first);
             const depthLevel = getHierarchyDepth(first);

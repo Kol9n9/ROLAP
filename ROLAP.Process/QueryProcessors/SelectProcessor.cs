@@ -10,11 +10,12 @@ internal class SelectProcessor
 {
     internal CubeResult ExecuteQuery(CubeQuery query)
     {
+        bool isAggregated = false;
         var values = ValuesHelper.LoadValues(query.Sets, query.Where);
         
-        var sets = PrepareSets(query.Sets);
+        var sets = PrepareSets(query.Sets,isAggregated);
         var aggregatedValues = FillSetsValues(values, sets);
-        return new CubeResult(sets,aggregatedValues);
+        return new CubeResult(sets,aggregatedValues, isAggregated);
     }
     
     #region Aggregate
@@ -29,20 +30,10 @@ internal class SelectProcessor
             var members = set.Tuples.ToList();
             if (members.Any())
             {
-                if (isAggregate)
+                resultTuples = GetTuples(members[^1], isAggregate);
+                for (int i = members.Count - 2; i >= 0; i--)
                 {
-                    resultTuples = GetTuples(members[^1], isAggregate);
-                    for (int i = members.Count - 2; i >= 0; i--)
-                    {
-                        resultTuples = Merge(GetTuples(members[i], isAggregate), resultTuples);
-                    }
-                }
-                else
-                {
-                    foreach (var member in members)
-                    {
-                        resultTuples.AddRange(GetTuples(member, isAggregate));
-                    }
+                    resultTuples = Merge(GetTuples(members[i], isAggregate), resultTuples);
                 }
             }
     

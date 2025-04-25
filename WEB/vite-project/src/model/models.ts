@@ -14,7 +14,8 @@ export type MdxValueModel = {
 }
 export type MdxDataModel = {
     Sets: Array<MdxSetModel>,
-    Values: Array<MdxValueModel>
+    Values: Array<MdxValueModel>,
+    IsAggregated: boolean
 }
 export type HeaderCellModel = {
     IsTotal: boolean,

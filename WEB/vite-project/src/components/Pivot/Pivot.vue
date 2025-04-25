@@ -40,7 +40,7 @@ watch(()=>props.QueryString, async (query: String)=>{
         try{
             const mdxData = parseMDX(res.data);
             console.log('mdxData',mdxData);
-            const mdxHeaders = getPivotHeaders(mdxData.Columns,mdxData.Rows);
+            const mdxHeaders = getPivotHeaders(mdxData.Columns,mdxData.Rows,res.data.IsAggregated);
             pivotColumns.value = getPivotColumns(mdxHeaders.columns,mdxData.Columns)
             Object.assign(pivotData,{
                 columns: mdxHeaders.columns,

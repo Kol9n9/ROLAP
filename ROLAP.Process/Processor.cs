@@ -23,7 +23,7 @@ public class Processor : IProcessor
             case QueryType.Select:
             { 
                 var cube = _selectProcessor.ExecuteQuery(cubeQuery);
-                return Task.FromResult(JsonFormatter.Format(cube.Axes,cube.Values));
+                return Task.FromResult(JsonFormatter.Format(cube.Axes,cube.Values, cube.IsAggregated));
             }
             default:
             {

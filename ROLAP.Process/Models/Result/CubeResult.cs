@@ -10,9 +10,11 @@ internal class CubeResult
 {
     public IEnumerable<CubeItemSet> Axes { get; }
     public IEnumerable<ICubeItem> Values { get; }
-    public CubeResult(IEnumerable<CubeItemSet> axes, IEnumerable<ICubeItem> values)
+    public bool IsAggregated { get; }
+    public CubeResult(IEnumerable<CubeItemSet> axes, IEnumerable<ICubeItem> values, bool isAggregated)
     {
         Axes = axes;
         Values = values;
+        IsAggregated = isAggregated;
     }
 }
