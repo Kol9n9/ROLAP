@@ -27,7 +27,10 @@ function createCells(member: MdxMemberModel): HeaderCellModel{
     const keys = member.Key.split('.');
     const names = member.Name.split('.');
     const cell = createCell(keys[0],names[0],keys[0] === '[All]',names[0]);
-
+    if(keys.length === 1){
+        keys.push(keys[0]);
+        names.push(names[0]);
+    }
     let currentCell = cell;
     for(let i = 1; i < keys.length; i++){
         const createdCell = createCell(keys[i],names[i],keys[i] === '[All]',names.slice(0,i+1).join('.'))
