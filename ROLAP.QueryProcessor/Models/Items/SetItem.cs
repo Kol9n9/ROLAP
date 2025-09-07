@@ -17,7 +17,15 @@ internal class SetItem : IQueryItem
 
         foreach (var member in Members)
         {
-            items.Add(member.Execute(configurationCube));
+            var memberExecute = member.Execute(configurationCube);
+            if (memberExecute is SetItem setItem)
+            {
+                items.AddRange(setItem.Members);
+            }
+            else
+            {
+                items.Add(memberExecute);
+            }
         }
 
         return new SetItem(items);

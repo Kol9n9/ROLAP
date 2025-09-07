@@ -13,7 +13,7 @@ internal class CrossJoinFunc : FunctionItem
 
     protected override IQueryItem Run(ICubeConfiguration configurationCube, IEnumerable<IQueryItem> args)
     {
-        return Union(configurationCube,  args.ToList());
+        return Union(configurationCube, args.ToList());
     }
 
 

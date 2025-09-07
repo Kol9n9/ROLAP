@@ -181,8 +181,28 @@ internal static class QueryParser
 
     private static IQueryItem GetMember()
     {
-        var hierarchy = GetHierarchy();
-        return new MemberItem(hierarchy);
+        List<string> hierarchy = new List<string>();
+        string memberFunctionName = string.Empty;
+        hierarchy.Add(GetHierarchyIdentifier());
+
+        while (MatchToken(TokenType.Dot))
+        {
+            ThrowIfNextTokenFailed();
+            if (!MatchToken(TokenType.Ampersand) && !MatchToken(TokenType.LBracket)) // MemberFunction
+            {
+                if (!TryGetIdentifier(GetToken(), out memberFunctionName))
+                {
+                    throw new Exception("");
+                }
+                ThrowIfNextTokenFailed();
+            }
+            else
+            {
+                hierarchy.Add(GetHierarchyIdentifier());
+            }
+        }
+        
+        return new MemberItem(hierarchy.ToArray(),memberFunctionName);
     }
 
     private static bool MatchToken(TokenType type) => _lexer.GetTokenType() == type;
@@ -197,22 +217,7 @@ internal static class QueryParser
     {
         return GetHierarchyIdentifier();
     }
-
-    private static string[] GetHierarchy()
-    {
-        List<string> hierarchies = new List<string>();
-        
-        hierarchies.Add(GetHierarchyIdentifier());
-
-        while (MatchToken(TokenType.Dot))
-        {
-            ThrowIfNextTokenFailed();
-            hierarchies.Add(GetHierarchyIdentifier());
-        }
-
-        return hierarchies.ToArray();
-    }
-
+    
     private static string GetHierarchyIdentifier()
     {
         if (MatchToken(TokenType.Ampersand))

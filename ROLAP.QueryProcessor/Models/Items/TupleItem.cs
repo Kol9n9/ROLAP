@@ -20,7 +20,7 @@ internal class TupleItem : IQueryItem
         {
             items.Add(item.Execute(configurationCube));
         }
-        
+
         return new TupleItem(items);
     }
 }

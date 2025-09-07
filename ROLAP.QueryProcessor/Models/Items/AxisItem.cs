@@ -17,6 +17,6 @@ internal class AxisItem : IQueryItem
     public IQueryItem Execute(ICubeConfiguration configurationCube)
     {
         var newMember = Member.Execute(configurationCube);
-        return new AxisItem(newMember,Number);
+        return new AxisItem(newMember, Number);
     }
 }
