@@ -27,11 +27,6 @@ function mapHeaderCellModel(cell: HeaderCellModel): HeaderTdModelWithParent {
 
 const measureName = '[Индикаторы]';
 
-function isTotalDimension(cell: HeaderCellModel): boolean {
-    const hierarchyParts = cell.Hierarchy.split('.');
-    return cell.Name === measureName || (hierarchyParts.length === 2 && hierarchyParts[1] === '[All]' && (cell.DataIndex === undefined || cell.DataIndex === null) && cell.Key !== '[All]');
-}
-
 function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]) {
     for (const [index, row] of rowHeader.Cells.entries()) {
         row.RowSpan = trs.length;
@@ -41,7 +36,7 @@ function addRowHeaderToColumns(rowHeader: HeaderTr, trs: HeaderTr[]) {
 
 export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel | null, IsAggregated: boolean): PivotData {
     const parsedColumns = getColumns(columns);
-    const parsedRows = rows ? getRows(rows,IsAggregated) : undefined;
+    const parsedRows = rows ? getRows(rows) : undefined;
     if (parsedRows) {
         addRowHeaderToColumns(parsedRows[0], parsedColumns);
         parsedRows.splice(0, 1);
@@ -53,19 +48,17 @@ export function getPivotHeaders(columns: HeaderCellModel, rows: HeaderCellModel 
     };
 }
 
-function getHierarchyDepth(cell: HeaderCellModel): number {
-    let maxDepth = 0;
-    const hierarchy = cell.Hierarchy.split(".").slice(0, -1).join('.');
-    const memory = [cell];
-    while (memory.length) {
-        maxDepth++;
-        const memoryItems = memory.splice(0);
-        for (const item of memoryItems) {
-            for (const child of item.Children) {
-                if (child.Hierarchy.startsWith(hierarchy)) {
-                    memory.push(child)
-                }
-            }
+function getHierarchyDepth(cell: HeaderCellModel): number{
+    const stack: Array<[HeaderCellModel,number]> = [[cell,1]];
+    const hierarchyStarts = cell.Hierarchy.split('.')[0];
+    let maxDepth = 1;
+    while(stack.length){
+        const [item,depth] = stack.pop()!;
+        if(item.Hierarchy.startsWith(hierarchyStarts) && depth > maxDepth){
+            maxDepth = depth;
+        }
+        for(let i = item.Children.length - 1; i >= 0; i--){
+            stack.push([item.Children[i],depth+1])
         }
     }
     return maxDepth;
@@ -182,90 +175,102 @@ function getColumns(columns: HeaderCellModel): HeaderTr[] {
         index--;
     }
 
-    if(!trs.slice(-1)[0].Cells.length) trs.splice(trs.length-1);
+    if (!trs.slice(-1)[0].Cells.length) trs.splice(trs.length - 1);
 
     return trs;
 }
 
-function getRows(rows: HeaderCellModel, IsAggregated: boolean = true): HeaderTr[] {
-    const memory = [rows];
-    const hierarchies: string[] = [];
-    const totalDimensions: HeaderCellModel[] = [];
-    const headerTr: HeaderTr = { Cells: [] };
-    const trs: HeaderTr[] = [{ Cells: [] }];
-    let currentTr = trs[0];
-    const parents: HeaderTr[] = [];
-    const maxDepthes: number[] = [];
-    let isFirst = true;
-
-    while (memory.length) {
-        const first = memory.splice(0, 1)[0];
-        const hierarchy = first.Hierarchy.split('.')[0];
-        if(!hierarchies.includes(hierarchy)) hierarchies.push(hierarchy);
-        const map = mapHeaderCellModel(first);
-        const depth = maxDepthes.splice(0, 1)[0];
-
-        memory.unshift(...first.Children);
-        if(!IsAggregated && isFirst){
-            isFirst = false;
-            continue;
-        }
-        if (isTotalDimension(first)) {
-            totalDimensions.push(first);
-            const depthLevel = getHierarchyDepth(first);
-            map.ColSpan = depthLevel - 1;
-            headerTr.Cells.push(map);
-            if (first.Children.length) {
-                const firstParent = parents.length ? { Cells: [...parents.splice(0, 1)[0].Cells] } : { Cells: [] };
-                parents.unshift(...Array.from({ length: first.Children.length }, () => firstParent))
-                maxDepthes.unshift(...Array.from({ length: first.Children.length }, () => depthLevel - 1));
-            }
-            continue;
-        }
-
-        if (!first.Children.length || !first.Children[0].Hierarchy.startsWith(first.Hierarchy.split('.').slice(0, -1).join('.'))) {
-            map.ColSpan = depth || 1;
-        }
-
-        currentTr.Cells.push(map);
-        if (first.Children.length) {
-            const firstParent = parents.length ? { Cells: [...parents.splice(0, 1)[0].Cells] } : { Cells: [] };
-            firstParent.Cells.push(map);
-            parents.unshift(...Array.from({ length: first.Children.length }, () => firstParent));
-            const isChildSomeHierarchy = first.Children[0].Hierarchy.startsWith(hierarchy);
-            maxDepthes.unshift(...Array.from({ length: first.Children.length }, () => isChildSomeHierarchy ? depth - 1 : getHierarchyDepth(first) - 1));
-        } else {
-            currentTr = { Cells: [] };
-            trs.push(currentTr);
-            const firstParent = parents.splice(0, 1)[0];
-            if(firstParent)
-                for (const cell of firstParent.Cells) {
-                    cell.RowSpan++;
-                }
-        }
-    }
-    if (!trs[trs.length - 1].Cells.length) trs.splice(trs.length - 1, 1);
-    headerTr.Cells = headerTr.Cells.filter((cell, index) => headerTr.Cells.findIndex(i => i.Hierarchy === cell.Hierarchy) === index);
-    for (const tr of trs) {
-        for (const cell of tr.Cells) {
-            cell.RowSpan = cell.RowSpan > 1 ? cell.RowSpan - 1 : 1;
-        }
-    }
-
-    for(let i = 0; i < hierarchies.length; i++){
-        const hierarchy = hierarchies[i];
-        const totalDimension = totalDimensions.find(dimension => dimension.Hierarchy.startsWith(hierarchy));
-        if(totalDimension) continue;
-        headerTr.Cells.splice(i,0,{
-            Key: hierarchy,
-            Name: hierarchy,
-            DisplayName: hierarchy,
-            Hierarchy: hierarchy + '.[All]',
-            IsTotal: true,
-            ColSpan: 1,
-            RowSpan: 1
-        })
-    }
-
-    return [headerTr, ...trs];
+function isDimensionHierarchy(cell: HeaderCellModel): boolean{
+    return (cell.Hierarchy.split('.').length === 1) || (cell.Children.length !== 0 && cell.Children[0].Hierarchy === cell.Hierarchy);
 }
+
+type HeaderCellModelWithDepth = HeaderCellModel & {
+    depthLevel?: number
+}
+
+type StackItem = {
+    model: HeaderCellModelWithDepth,
+    isProcessed: boolean,
+    parent?: StackItem,
+    trs: HeaderTr[]
+}
+
+
+function getRows(rows: HeaderCellModel): HeaderTr[] {
+    const headerTr: HeaderTr = {Cells: []};
+    const trs: HeaderTr[] = [];
+    const stack: Array<StackItem> = [{
+        model: rows,
+        isProcessed: false,
+        trs: []
+    }];
+
+    while(stack.length){
+        const item = stack.pop()!;
+        if(!item.isProcessed){
+            stack.push({
+                ...item,
+                isProcessed: true
+            });
+
+            for(let i = item.model.Children.length - 1; i >= 0; i--){
+                const stackItem: StackItem  = {
+                    model: item.model.Children[i],
+                    isProcessed: false,
+                    parent: item,
+                    trs: []
+                }
+                stackItem.model.depthLevel = getHierarchyDepth(stackItem.model);
+                stack.push(stackItem);
+            }
+        } else {
+            if(isDimensionHierarchy(item.model)){
+                const headerCell = (()=>{
+                    const index = headerTr.Cells.findIndex(c => c.Hierarchy === item.model.Hierarchy);
+                    if(index !== -1) return headerTr.Cells[index];
+                    headerTr.Cells.unshift(item.model);
+                    return headerTr.Cells[0]
+                })();
+
+                const maxDepthLevel = getHierarchyDepth(item.model);
+                for(const child of (item.model.Children as HeaderCellModelWithDepth[])){
+                    if(maxDepthLevel < child.depthLevel!) continue;
+                    child.ColSpan = maxDepthLevel - child.depthLevel!;
+                }
+
+                if(item.parent){
+                    item.parent.trs.push(...item.trs)
+                } else {
+                    trs.push(...item.trs);
+                }
+                headerCell.ColSpan = (item.model.Children as HeaderCellModelWithDepth[]).reduce((prev:number,curr: HeaderCellModelWithDepth)=>{
+                    if(curr.depthLevel && curr.depthLevel > prev) return curr.depthLevel;
+                    return prev;
+                },1);
+                continue;
+            }
+
+            if(item.trs.length){
+                item.model.RowSpan = item.trs.length;
+                const maxDepthLevel = item.model.depthLevel!;
+                for(const child of (item.model.Children as HeaderCellModelWithDepth[])){
+                    if(maxDepthLevel < child.depthLevel!) continue;
+                    child.ColSpan = maxDepthLevel - child.depthLevel!;
+                }
+                item.trs[0].Cells.unshift(item.model)
+                if(item.parent){
+                    item.parent.trs.push(...item.trs)
+                }
+            } else if(item.parent){
+                item.parent.trs.push({Cells: [item.model]})
+                item.parent.model.RowSpan += 1;
+            }
+            if(!item.parent){
+                trs.push(...item.trs);
+            }
+        }
+    }
+
+    return [headerTr,...trs];
+}
+
